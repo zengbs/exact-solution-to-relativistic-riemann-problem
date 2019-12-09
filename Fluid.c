@@ -1,9 +1,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
+#include <stdbool.h>
+#include "Struct.h"
 #include "Prototypes.h"
 #include "Global.h"
-#include "Struct.h"
 
 double Flu_SoundSpeed( double Pres, double Dens )
 {

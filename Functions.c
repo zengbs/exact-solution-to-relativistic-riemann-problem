@@ -2,8 +2,8 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <math.h>
-#include "Prototypes.h"
 #include "Struct.h"
+#include "Prototypes.h"
 #include "Global.h"
 #include "Macro.h"
 
@@ -30,10 +30,20 @@ int GetWavePattern( struct InitialCondition *IC )
   double A_Plus, A_Minus;
 
   // shock-shock
-  V_LC  = 0.0; // eq.(4.163)
-  V_RC = -Velocity_RC( PresLeft, NAN, PresRight, DensRight, Shock_Yes ); // eq.(4.164)
+  double A, B, C, EnthalpyRight, Root, Engy_Temp, EngyRight;
 
-  SS = ( V_LC - V_RC ) / ( 1.0 - V_LC*V_RC );
+  EnthalpyRight = Flu_Enthalpy ( PresRight, DensRight );
+  EngyRight     = Flu_TotalEngy( PresRight, DensRight );
+
+  A = 1.0 + ( Gamma_1 / Gamma ) * ( PresRight / PresLeft - 1.0 );
+  B = - ( Gamma_1 / Gamma ) * ( PresRight / PresLeft - 1.0 );
+  C = EnthalpyRight * ( PresRight - PresLeft ) / DensRight - SQR(EnthalpyRight);
+
+  QuadraticSolver( A, B, C, &Root, NULL ); 
+
+  Engy_Temp = ( Gamma / Gamma_1 ) * ( Root / (Root-1.0) ) * PresLeft - PresLeft;// eq. (4.165)
+
+  SS = sqrt( ( PresLeft-PresRight )*( Engy_Temp-EngyRight )/( Engy_Temp+PresRight )/( EngyRight+PresLeft ) );
 
   // rarefaction-shock
   double DensStarLeft = DensLeft*pow(  PresRight/PresLeft, 1.0/Gamma );
@@ -56,17 +66,23 @@ int GetWavePattern( struct InitialCondition *IC )
   int Pattern;
   RelitiveVelocity = ( VelocityLeft - VelocityRight ) / ( 1.0 - VelocityLeft*VelocityRight );
 
+  printf("RelitiveVelocity=%e\n", RelitiveVelocity);
+  printf("SS=%e, RS=%e, RR=%e\n", SS, RS, RR);
+
   if ( RelitiveVelocity >= SS )
   {
     Pattern = 1;
+	printf("you have shock-shock wave pattern !!\n", Pattern);
   }
   else if (  RS <= RelitiveVelocity && RelitiveVelocity < SS )
   {
     Pattern = 2;
+	printf("you have rarefaction-shock wave pattern !!\n", Pattern);
   }
   else if ( RR <= RelitiveVelocity && RelitiveVelocity < RS )
   {
     Pattern = 3;
+	printf("you have rarefaction-rarefaction wave pattern !!\n", Pattern);
   }
   else
   {
@@ -88,13 +104,20 @@ double Velocity_LC ( double PresStar, double DensStarLeft, double PresLeft, doub
      double EngyStarLeft, EngyLeft, EnthalpyStarLeft;
 
      EnthalpyStarLeft = TaubAdiabatic( PresLeft, DensLeft, PresStar );
-
+ printf("PresStar=%e\n", PresStar);
 	 EngyStarLeft = PresStar * ( EnthalpyStarLeft / (EnthalpyStarLeft-1.0) ) * ( Gamma / Gamma_1 ) - PresStar;
-
+     printf("EnthalpyStarLeft=%e, EngyStarLeft=%e\n", EnthalpyStarLeft, EngyStarLeft );
 	 EngyLeft = Flu_TotalEngy( PresLeft, DensLeft );
 
      Velocity_LC  = ( PresStar - PresLeft ) * ( EngyStarLeft - EngyLeft );
 	 Velocity_LC /= ( EngyLeft + PresStar ) * ( EngyStarLeft + PresLeft );
+
+     if ( Velocity_LC < 0.0 )
+	 {
+	   printf("Velocity_LC = nan !!", Velocity_LC);
+	   exit(1);
+	 }
+
 	 Velocity_LC  = sqrt( Velocity_LC );
   
      return Velocity_LC;
@@ -129,9 +152,20 @@ double Velocity_RC ( double PresStar, double DensStarRight, double PresRight, do
 	 EngyRight = Flu_TotalEngy( PresRight, DensRight );
 
      Velocity_RC  = ( PresStar - PresRight ) * ( EngyStarRight - EngyRight );
+
+	 printf("PresStar=%e, PresRight=%e, EngyStarRight=%e, EngyRight=%e\n", 
+			PresStar, PresRight, EngyStarRight, EngyRight); 
+
 	 Velocity_RC /= ( EngyRight + PresStar ) * ( EngyStarRight + PresRight );
+
+     if ( Velocity_RC < 0.0 )
+	 {
+	   printf("Velocity_RC = nan !!", Velocity_RC);
+	   exit(1);
+	 }
+
 	 Velocity_RC  = -sqrt( Velocity_RC );
-  
+
      return Velocity_RC;
   }
   else
@@ -160,7 +194,7 @@ double A_PlusFun ( double Pres, double Dens, double PresLeft, double DensLeft )
     Sqrt_Gamma_1 = sqrt( Gamma_1 );
 
 	A_Plus  = ( Sqrt_Gamma_1 - Cs     ) / ( Sqrt_Gamma_1 + Cs     );
-	A_Plus *= ( Sqrt_Gamma_1 + CsLeft ) / ( Sqrt_Gamma_1 + CsLeft );
+	A_Plus *= ( Sqrt_Gamma_1 + CsLeft ) / ( Sqrt_Gamma_1 - CsLeft );
     A_Plus  = pow( A_Plus, 2.0/Sqrt_Gamma_1 );
 
 	return A_Plus;
@@ -177,7 +211,7 @@ double A_MinusFun ( double Pres, double Dens, double PresRight, double DensRight
     Sqrt_Gamma_1 = sqrt( Gamma_1 );
 
 	A_Minus  = ( Sqrt_Gamma_1 - Cs      ) / ( Sqrt_Gamma_1 + Cs      );
-	A_Minus *= ( Sqrt_Gamma_1 + CsRight ) / ( Sqrt_Gamma_1 + CsRight );
+	A_Minus *= ( Sqrt_Gamma_1 + CsRight ) / ( Sqrt_Gamma_1 - CsRight );
     A_Minus  = pow( A_Minus, -2.0/Sqrt_Gamma_1 );
 
 	return A_Minus;
@@ -205,6 +239,12 @@ double TaubAdiabatic ( double PresUp, double DensUp, double PresDown )
 double PresFunction( double PresStar, void  *params )
 {
 
+  if ( PresStar <= 0.0 )
+  {
+    printf("PresStar=%e !!\n", PresStar);
+	exit(1);
+  }
+
   struct InitialCondition *IC = ( struct InitialCondition * ) params;
   double DensLeft      = IC -> DensLeft     ;
   double VelocityLeft  = IC -> VelocityLeft ;
@@ -226,7 +266,7 @@ double PresFunction( double PresStar, void  *params )
     V_LC = Velocity_LC( PresStar, NAN, PresLeft,   DensLeft, Shock_Yes ); // left side of eq. (4.161)
     V_RC = Velocity_RC( PresStar, NAN, PresRight, DensRight, Shock_Yes ); // right side of eq. (4.161)
 
-    V_LR = ( V_LC - V_LR )/( 1.0 - V_LC*V_LR );
+    V_LR = ( V_LC - V_RC )/( 1.0 - V_LC*V_RC );
   }
   else if ( Pattern == 2 )
   {
@@ -235,7 +275,7 @@ double PresFunction( double PresStar, void  *params )
     V_LC = Velocity_LC( PresStar, DensStarLeft, PresLeft,   DensLeft, Shock_No  ); // eq. (4.168)
     V_RC = Velocity_RC( PresStar, NAN,         PresRight,  DensRight, Shock_Yes ); // right side of eq. (4.161) 
 
-    V_LR = ( V_LC - V_LR )/( 1.0 - V_LC*V_LR );
+    V_LR = ( V_LC - V_RC )/( 1.0 - V_LC*V_RC );
   }
   else if ( Pattern == 3 )
   {
@@ -253,7 +293,6 @@ double PresFunction( double PresStar, void  *params )
   double RelitiveVelocity;
 
   RelitiveVelocity = ( VelocityLeft - VelocityRight ) / ( 1.0 - VelocityLeft*VelocityRight );
-
   return RelitiveVelocity - V_LR;
 }
 
@@ -265,7 +304,7 @@ void QuadraticSolver( double A, double B, double C , double *PlusRoot, double *M
 
   Delta = sqrt( B*B - 4.0*A*C );
 
-  if ( PlusRoot  != NULL )  *PlusRoot  = -2.0*C/( +B + sqrt(Delta) );
-  if ( MinusRoot != NULL )  *MinusRoot = +2.0*C/( -B + sqrt(Delta) );
+  if ( PlusRoot  != NULL )  *PlusRoot  = -2.0*C/( +B + Delta);
+  if ( MinusRoot != NULL )  *MinusRoot = +2.0*C/( -B + Delta);
 
 }

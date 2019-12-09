@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <stdbool.h>
 #include <gsl/gsl_errno.h>
 #include <gsl/gsl_math.h>
 #include <gsl/gsl_roots.h>
@@ -35,7 +36,9 @@ double RootFinder( struct InitialCondition *IC, double AbsErr, double RelErr )
   T = gsl_root_fsolver_brent;
 
   s = gsl_root_fsolver_alloc (T); 
- 
+
+  gsl_root_fsolver_set (s, &F, PresRight+0.0000000001, PresLeft-0.00000001);
+
   Root = Guess;
 
   do
@@ -47,6 +50,7 @@ double RootFinder( struct InitialCondition *IC, double AbsErr, double RelErr )
 	RootTemp = Root;
 
     Root = gsl_root_fsolver_root (s);
+	printf("Root=%e\n", Root);
 
     status = gsl_root_test_delta (Root, RootTemp, AbsErr, RelErr );
   }
@@ -54,5 +58,5 @@ double RootFinder( struct InitialCondition *IC, double AbsErr, double RelErr )
 
   gsl_root_fsolver_free;
   
-  return status;
+  return Root;
 }
