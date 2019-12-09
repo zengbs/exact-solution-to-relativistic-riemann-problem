@@ -2,7 +2,7 @@
 #include <gsl/gsl_errno.h>
 #include <gsl/gsl_math.h>
 #include <gsl/gsl_roots.h>
-
+#include "Struct.h"
 #include "Prototypes.h"
 
 double RootFinder( struct InitialCondition *IC, double AbsErr, double RelErr )
@@ -48,10 +48,11 @@ double RootFinder( struct InitialCondition *IC, double AbsErr, double RelErr )
 
     Root = gsl_root_fsolver_root (s);
 
-    status = gsl_root_test_delta (Root, RootTemp, AbsErr, EpsErr );
+    status = gsl_root_test_delta (Root, RootTemp, AbsErr, RelErr );
   }
   while (status == GSL_CONTINUE && iter < max_iter);
 
-  gsl_root_fsolver_freereturn status;
-
+  gsl_root_fsolver_free;
+  
+  return status;
 }

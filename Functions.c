@@ -1,11 +1,17 @@
 #include <stdbool.h>
+#include <stdlib.h>
+#include <stdio.h>
 #include <math.h>
 #include "Prototypes.h"
 #include "Struct.h"
+#include "Global.h"
+#include "Macro.h"
 
 // Pattern 1: shock-shock
 //         2: rarefaction-shock
 //         3: rarefaction-rarefaction
+
+void QuadraticSolver( double A, double B, double C , double *PlusRoot, double *MinusRoot);
 
 int GetWavePattern( struct InitialCondition *IC )
 {
@@ -16,11 +22,12 @@ int GetWavePattern( struct InitialCondition *IC )
   double VelocityRight = IC -> VelocityRight;
   double PresRight     = IC -> PresRight    ;
 
-  double SS, SR, RR;
+  double SS, RS, RR;
   double V_LC, V_RC;
   bool Shock_Yes = true;
   bool Shock_No  = false;
 
+  double A_Plus, A_Minus;
 
   // shock-shock
   V_LC  = 0.0; // eq.(4.163)
@@ -31,17 +38,16 @@ int GetWavePattern( struct InitialCondition *IC )
   // rarefaction-shock
   double DensStarLeft = DensLeft*pow(  PresRight/PresLeft, 1.0/Gamma );
 
-  double A_Plus = A_Plus( PresRight, DensStarLeft, PresLeft, DensLeft );
+  A_Plus = A_PlusFun( PresRight, DensStarLeft, PresLeft, DensLeft );
 
   V_LC  = ( 1.0 - A_Plus ) / ( 1.0 + A_Plus ); // eq.(4.172)
 
-  SR = V_LC;
+  RS = V_LC;
 
   // rarefaction-rarefaction
-  double A_Plus, A_Minus;
 
-  A_Plus  = A_Plus ( 0.0, NAN, PresLeft,  DensLeft  );
-  A_Minus = A_Minus( 0.0, NAN, PresRight, DensRight );
+  A_Plus  = A_PlusFun ( 0.0, NAN, PresLeft,  DensLeft  );
+  A_Minus = A_MinusFun( 0.0, NAN, PresRight, DensRight );
 
   RR = - ( A_Plus - A_Minus )/( A_Plus + A_Minus ); // put p3=p3'=0 into eq.(4.177) 
 
@@ -85,7 +91,7 @@ double Velocity_LC ( double PresStar, double DensStarLeft, double PresLeft, doub
 
 	 EngyStarLeft = PresStar * ( EnthalpyStarLeft / (EnthalpyStarLeft-1.0) ) * ( Gamma / Gamma_1 ) - PresStar;
 
-	 EngyLeft = TotalEngy( PresLeft, DensLeft );
+	 EngyLeft = Flu_TotalEngy( PresLeft, DensLeft );
 
      Velocity_LC  = ( PresStar - PresLeft ) * ( EngyStarLeft - EngyLeft );
 	 Velocity_LC /= ( EngyLeft + PresStar ) * ( EngyStarLeft + PresLeft );
@@ -101,8 +107,8 @@ double Velocity_LC ( double PresStar, double DensStarLeft, double PresLeft, doub
 	   exit(1);
 	 }
 
-     Velocity_LC  = 1.0 - A_Plus( PresStar, DensStarLeft, PresLeft, DensLeft ); 
-     Velocity_LC /= 1.0 + A_Plus( PresStar, DensStarLeft, PresLeft, DensLeft ); 
+     Velocity_LC  = 1.0 - A_PlusFun( PresStar, DensStarLeft, PresLeft, DensLeft ); 
+     Velocity_LC /= 1.0 + A_PlusFun( PresStar, DensStarLeft, PresLeft, DensLeft ); 
   
      return Velocity_LC; 
   }
@@ -120,7 +126,7 @@ double Velocity_RC ( double PresStar, double DensStarRight, double PresRight, do
 
 	 EngyStarRight = PresStar * ( EnthalpyStarRight / (EnthalpyStarRight-1.0) ) * ( Gamma / Gamma_1 ) - PresStar;
 
-	 EngyRight = TotalEngy( PresRight, DensRight );
+	 EngyRight = Flu_TotalEngy( PresRight, DensRight );
 
      Velocity_RC  = ( PresStar - PresRight ) * ( EngyStarRight - EngyRight );
 	 Velocity_RC /= ( EngyRight + PresStar ) * ( EngyStarRight + PresRight );
@@ -136,20 +142,20 @@ double Velocity_RC ( double PresStar, double DensStarRight, double PresRight, do
 	   exit(1);
 	 }
 
-     Velocity_RC  = 1.0 - A_Minus( PresStar, DensStarRight, PresRight, DensRight ); 
-     Velocity_RC /= 1.0 + A_Minus( PresStar, DensStarRight, PresRight, DensRight ); 
+     Velocity_RC  = 1.0 - A_MinusFun( PresStar, DensStarRight, PresRight, DensRight ); 
+     Velocity_RC /= 1.0 + A_MinusFun( PresStar, DensStarRight, PresRight, DensRight ); 
   
      return Velocity_RC; 
   }
 }
 
 
-double A_Plus ( double Pres, double Dens, double PresLeft, double DensLeft )
+double A_PlusFun ( double Pres, double Dens, double PresLeft, double DensLeft )
 {
-    double CsLeft, Cs, Sqrt_Gamma_1;
+    double CsLeft, Cs, Sqrt_Gamma_1, A_Plus;
 
-	CsLeft = SoundSpeed ( double PresLeft, double DensLeft );
-	Cs     = SoundSpeed ( double Pres    , double Dens     );
+	CsLeft = Flu_SoundSpeed ( PresLeft, DensLeft );
+	Cs     = Flu_SoundSpeed ( Pres    , Dens     );
 
     Sqrt_Gamma_1 = sqrt( Gamma_1 );
 
@@ -161,12 +167,12 @@ double A_Plus ( double Pres, double Dens, double PresLeft, double DensLeft )
 }
 
 
-double A_Minus ( double Pres, double Dens, double PresRight, double DensRight )
+double A_MinusFun ( double Pres, double Dens, double PresRight, double DensRight )
 {
-    double CsRight, Cs, Sqrt_Gamma_1;
+    double CsRight, Cs, Sqrt_Gamma_1, A_Minus;
 
-	CsRight = SoundSpeed ( double PresRight, double DensRight );
-	Cs      = SoundSpeed ( double Pres     , double Dens      );
+	CsRight = Flu_SoundSpeed ( PresRight, DensRight );
+	Cs      = Flu_SoundSpeed ( Pres     , Dens      );
 
     Sqrt_Gamma_1 = sqrt( Gamma_1 );
 
@@ -181,11 +187,11 @@ double TaubAdiabatic ( double PresUp, double DensUp, double PresDown )
 {
     double EnthalpyUp, EnthalpyDown, PresDiff;
 
-	EnthalpyUp = Enthalpy( PresUp, DensUp );
+	EnthalpyUp = Flu_Enthalpy( PresUp, DensUp );
 
     PresDiff = PresUp - PresDown;
 
-    double A, B, C, ;
+    double A, B, C;
 
 	A = 1.0 + Gamma_1 * PresUp / PresDown;
 	B = - Gamma_1 * PresDiff / PresDown;
@@ -196,8 +202,10 @@ double TaubAdiabatic ( double PresUp, double DensUp, double PresDown )
     return EnthalpyDown;
 }
 
-double PresFunction( double PresStar, struct InitialCondition *IC )
+double PresFunction( double PresStar, void  *params )
 {
+
+  struct InitialCondition *IC = ( struct InitialCondition * ) params;
   double DensLeft      = IC -> DensLeft     ;
   double VelocityLeft  = IC -> VelocityLeft ;
   double PresLeft      = IC -> PresLeft     ;
@@ -222,7 +230,7 @@ double PresFunction( double PresStar, struct InitialCondition *IC )
   }
   else if ( Pattern == 2 )
   {
-    DensStarLeft = DensLeft*pow(  PresPresStar/PresLeft, 1.0/Gamma );
+    DensStarLeft = DensLeft*pow(  PresStar/PresLeft, 1.0/Gamma );
 
     V_LC = Velocity_LC( PresStar, DensStarLeft, PresLeft,   DensLeft, Shock_No  ); // eq. (4.168)
     V_RC = Velocity_RC( PresStar, NAN,         PresRight,  DensRight, Shock_Yes ); // right side of eq. (4.161) 
@@ -231,13 +239,13 @@ double PresFunction( double PresStar, struct InitialCondition *IC )
   }
   else if ( Pattern == 3 )
   {
-    DensStarLeft  = DensLeft *pow(  PresPresStar/PresLeft,  1.0/Gamma );
-    DensStarRight = DensRight*pow(  PresPresStar/PresRight, 1.0/Gamma );
+    DensStarLeft  = DensLeft *pow(  PresStar/PresLeft,  1.0/Gamma );
+    DensStarRight = DensRight*pow(  PresStar/PresRight, 1.0/Gamma );
 
 	double A_Plus, A_Minus;
 
-	A_Plus  = A_Plus( PresStar,  DensStarLeft,  PresLeft,  DensLeft );
-	A_Minus = A_Minus( PresStar, DensStarRight, PresRight, DensRight ); 
+	A_Plus  = A_PlusFun( PresStar,  DensStarLeft,  PresLeft,  DensLeft );
+	A_Minus = A_MinusFun( PresStar, DensStarRight, PresRight, DensRight ); 
 
     V_LR    = - ( A_Plus - A_Minus ) / ( A_Plus + A_Minus ); // eq. (4.177)
   }
