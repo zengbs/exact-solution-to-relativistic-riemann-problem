@@ -23,4 +23,8 @@ double Flu_TotalEngy ( double Pres, double Dens );
 
 double RootFinder( struct InitialCondition *, double AbsErr, double RelErr );
 
+void ShockVelocity( double MassCurrent, double Dens, double Velocity, double *Vs_Left, double *Vs_Right );
+
+double MassCurrent( double PresUp, double DensUp, double PresDown, double DensDown );
+
 #endif

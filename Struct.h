@@ -12,4 +12,16 @@ struct InitialCondition
 };
 
 
+struct RareFactionFan
+{
+  bool   Right_Yes;
+  double PresHead;
+  double DensHead;
+  double VelocityHead;
+  double PresTail;
+  double DensTail;
+  double VelocityTail;
+  double Xi;
+};
+
 #endif

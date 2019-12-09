@@ -6,15 +6,8 @@
 #include "Struct.h"
 #include "Prototypes.h"
 
-double RootFinder( struct InitialCondition *IC, double AbsErr, double RelErr )
+double RootFinder(  , void *params, double AbsErr, double RelErr )
 {
-  double DensLeft      = IC -> DensLeft     ;
-  double VelocityLeft  = IC -> VelocityLeft ;
-  double PresLeft      = IC -> PresLeft     ;
-  double DensRight     = IC -> DensRight    ;
-  double VelocityRight = IC -> VelocityRight;
-  double PresRight     = IC -> PresRight    ;
-
   int status;
 
   int iter = 0, max_iter = 50;
@@ -23,21 +16,23 @@ double RootFinder( struct InitialCondition *IC, double AbsErr, double RelErr )
 
   gsl_root_fsolver *s;
 
-  double Guess = 0.5 * ( PresLeft + PresRight );
+  double Guess = 0.5;
 
   double Root, RootTemp;
 
   gsl_function F;
 
-  F.function = &PresFunction;
+  F.function = &;
 
-  F.params = IC;
+  F.params = params;
 
   T = gsl_root_fsolver_brent;
 
   s = gsl_root_fsolver_alloc (T); 
 
-  gsl_root_fsolver_set (s, &F, PresRight+0.0000000001, PresLeft-0.00000001);
+  double LowerBound, UpperBound;
+
+  gsl_root_fsolver_set (s, &F, LowerBound, UpperBound );
 
   Root = Guess;
 
