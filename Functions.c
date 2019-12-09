@@ -11,7 +11,6 @@
 //         2: rarefaction-shock
 //         3: rarefaction-rarefaction
 
-void QuadraticSolver( double A, double B, double C , double *PlusRoot, double *MinusRoot);
 
 int GetWavePattern( struct InitialCondition *IC )
 {
@@ -213,24 +212,6 @@ double A_MinusFun ( double Pres, double Dens, double PresRight, double DensRight
 	return A_Minus;
 }
 
-double TaubAdiabatic ( double PresUp, double DensUp, double PresDown )
-{
-    double EnthalpyUp, EnthalpyDown, PresDiff;
-
-	EnthalpyUp = Flu_Enthalpy( PresUp, DensUp );
-
-    PresDiff = PresUp - PresDown;
-
-    double A, B, C;
-
-	A = 1.0 + Gamma_1 * PresUp / PresDown;
-	B = - Gamma_1 * PresDiff / PresDown;
-	C = - Gamma_1 * PresDiff * EnthalpyUp / PresUp - ( 1.0 + Gamma_1 * PresDown / PresUp )*SQR(EnthalpyUp);
-
-    QuadraticSolver( A, B, C, &EnthalpyDown, NULL );
-
-    return EnthalpyDown;
-}
 
 double PresFunction( double PresStar, void  *params )
 {
@@ -300,6 +281,12 @@ void QuadraticSolver( double A, double B, double C , double *PlusRoot, double *M
   double Delta;
 
   Delta = sqrt( B*B - 4.0*A*C );
+
+  if ( Delta != Delta )
+  {
+    printf("no solutions in quadratic equation!!\n");
+	exit(1);
+  }
 
   if ( PlusRoot  != NULL )  *PlusRoot  = -2.0*C/( +B + Delta);
   if ( MinusRoot != NULL )  *MinusRoot = +2.0*C/( -B + Delta);

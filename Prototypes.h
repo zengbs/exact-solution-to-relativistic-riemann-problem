@@ -21,10 +21,24 @@ double Flu_Enthalpy( double Pres, double Dens );
 
 double Flu_TotalEngy ( double Pres, double Dens );
 
-double RootFinder( struct InitialCondition *, double AbsErr, double RelErr );
+double RootFinder( double(*Function)(double X, void *params) , void *params, double AbsErr, double RelErr,
+			       double Guess, double LowerBound, double UpperBound );
 
-void ShockVelocity( double MassCurrent, double Dens, double Velocity, double *Vs_Left, double *Vs_Right );
 
 double MassCurrent( double PresUp, double DensUp, double PresDown, double DensDown );
+
+int GetAllInfomation( struct InitialCondition *, struct RiemannProblem  * );
+
+double GetVelocityDown( double PresUp,   double DensUp, double ShockFrontVelocity,
+                        double PresDown, double DensDown );
+
+
+double GetDensDown( double PresUp, double DensUp, double PresDown  );
+
+void ShockVelocity( double PresUp,   double DensUp,   double V_Up, 
+				    double PresDown, double DensDown, double V_Down,
+			        double *Vs_Left, double *Vs_Right );
+
+void QuadraticSolver( double A, double B, double C , double *PlusRoot, double *MinusRoot);
 
 #endif

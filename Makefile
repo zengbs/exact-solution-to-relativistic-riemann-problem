@@ -1,6 +1,6 @@
 # object files-------------------------------------------------------
 
-CORE_OBJ = Fluid.o Functions.o Main.o RootFinder.o
+CORE_OBJ = Fluid.o Functions.o Main.o RootFinder.o Utility.o ShockWaves.o
 
 ALL_OBJ = ${CORE_OBJ}
 

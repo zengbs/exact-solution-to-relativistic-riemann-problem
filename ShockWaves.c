@@ -7,11 +7,11 @@
 #include "Global.h"
 #include "Macro.h"
 
-void ShockFrontVelocity( double PresUp,   double DensUp,   double V_Up, 
-				         double PresDown, double DensDown, double V_Down,
-			             double *Vs_Left, double *Vs_Right )
+void ShockVelocity( double PresUp,   double DensUp,   double V_Up, 
+				    double PresDown, double DensDown, double V_Down,
+			        double *Vs_Left, double *Vs_Right )
 {
-  double ShockVelocity, LorentzFactor, J, Velocity;
+  double ShockVelocity, LorentzFactor, J;
   double A, B, C;
   
   J = MassCurrent( PresUp, DensUp, PresDown, DensDown );
@@ -21,8 +21,8 @@ void ShockFrontVelocity( double PresUp,   double DensUp,   double V_Up,
     LorentzFactor = 1.0 / sqrt( 1.0 - SQR(V_Down) );
 
     A = SQR(J) + SQR( DensDown * LorentzFactor );
-    B = -2.0 * Velocity * SQR( DensDown * LorentzFactor );
-    C = SQR( DensDown*LorentzFactor*Velocity ) - SQR( J );
+    B = -2.0 * V_Down * SQR( DensDown * LorentzFactor );
+    C = SQR( DensDown*LorentzFactor*V_Down ) - SQR( J );
   }
 
   if ( V_Down != V_Down )
@@ -30,43 +30,53 @@ void ShockFrontVelocity( double PresUp,   double DensUp,   double V_Up,
     LorentzFactor = 1.0 / sqrt( 1.0 - SQR(V_Up) );
 
     A = SQR(J) + SQR( DensUp * LorentzFactor );
-    B = -2.0 * Velocity * SQR( DensUp * LorentzFactor );
-    C = SQR( DensUp*LorentzFactor*Velocity ) - SQR( J );
+    B = -2.0 * V_Up * SQR( DensUp * LorentzFactor );
+    C = SQR( DensUp*LorentzFactor*V_Up ) - SQR( J );
   }
 
-  QuadraticSover( A, B, C, Vs_Right, Vs_Left );
+  QuadraticSolver( A, B, C, Vs_Right, Vs_Left );
 }
 
 // solve eq. (4.140) for Va or Vb
 
-void ShockVelocityUpDown( double PresUp,   double DensUp,  double ShockFrontVelocity,
-				          double PresDown, double DensDown,
-			              double *V_Left,    double *V_Right, bool Up_Yes )
+double GetVelocityDown( double PresUp,   double DensUp, double ShockFrontVelocity,
+                        double PresDown, double DensDown )
 {
-  double A, B, C, LorentzFactor;
+  double A, B, C, LorentzFactor, J, V_Left, V_Right;
 
   LorentzFactor = 1.0 / sqrt( 1.0 - SQR(ShockFrontVelocity) );
 
   J = MassCurrent( PresUp, DensUp, PresDown, DensDown );
 
-  if ( Up_Yes == true )
-  {
-    A = SQR( DensUp * LorentzFactor ) - SQR( J );
+  A = SQR( DensDown * LorentzFactor ) + SQR( J );
 
-    B = 2.0 * SQR( J ) - 2.0 * ShockFrontVelocity * SQR( DensUp * LorentzFactor );
+  B = -2.0 * ShockFrontVelocity * SQR( DensDown * LorentzFactor );
 
-    C = SQR( DensUp * LorentzFactor * ShockFrontVelocity ) - SQR( J );
-  }
-  else
-  {
-    A = SQR( DensDown * LorentzFactor ) - SQR( J );
+  C = SQR( DensDown * LorentzFactor * ShockFrontVelocity ) - SQR( J );
 
-    B = 2.0 * SQR( J ) - 2.0 * ShockFrontVelocity * SQR( DensDown * LorentzFactor );
+  QuadraticSolver( A, B, C, &V_Left, &V_Right );
 
-    C = SQR( DensDown * LorentzFactor * ShockFrontVelocity ) - SQR( J );
-  }
+  if( ShockFrontVelocity > 0.0 ) return V_Right; 
+  else                           return  V_Left;
 
-  QuadraticSolver( A, B, C, V_Left, V_Right );
+}
+
+double GetContactCelocity( double PresLeft,  double DensLeft,  double VelocityLeft,
+			               double PresRight, double DensRight, double VelocityRight )
+{
+
+
+}
+
+double GetDensDown( double PresUp, double DensUp, double PresDown  )
+{
+  double EnthalpyDown, DensDown;
+
+  EnthalpyDown = TaubAdiabatic(PresUp, DensUp, PresDown);
+  
+  DensDown = ( Gamma / Gamma_1 ) * ( PresDown / ( EnthalpyDown - 1.0 ) );
+
+  return DensDown;
 }
 
 double MassCurrent( double PresUp, double DensUp, double PresDown, double DensDown )
@@ -89,4 +99,24 @@ double MassCurrent( double PresUp, double DensUp, double PresDown, double DensDo
   MassCurrent = sqrt( MassCurrent );
   
   return MassCurrent;
+}
+
+
+double TaubAdiabatic ( double PresUp, double DensUp, double PresDown )
+{
+    double EnthalpyUp, EnthalpyDown, PresDiff;
+
+	EnthalpyUp = Flu_Enthalpy( PresUp, DensUp );
+
+    PresDiff = PresUp - PresDown;
+
+    double A, B, C;
+
+	A = 1.0 + Gamma_1 * PresUp / PresDown;
+	B = - Gamma_1 * PresDiff / PresDown;
+	C = - Gamma_1 * PresDiff * EnthalpyUp / PresUp - ( 1.0 + Gamma_1 * PresDown / PresUp )*SQR(EnthalpyUp);
+
+    QuadraticSolver( A, B, C, &EnthalpyDown, NULL );
+
+    return EnthalpyDown;
 }

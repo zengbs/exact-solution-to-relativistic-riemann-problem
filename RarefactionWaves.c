@@ -22,7 +22,7 @@ void FanVelocity( double PresHead, double DensHead, double VelocityHead,
 
 
 
-void RareFactionFan( double PresHead, double DensHead, double VelocityHead,
+void RareFaction( double PresHead, double DensHead, double VelocityHead,
                      double PresTail, double DensTail, double VelocityTail, )
 
 {
@@ -33,9 +33,9 @@ void RareFactionFan( double PresHead, double DensHead, double VelocityHead,
 
 }
 
-void GetSoundSpeedInFan ( double Cs, void *params )
+double GetSoundSpeedInFan ( double Cs, void *params )
 {
-  struct RareFactionFan *Fan = ( struct RareFactionFan * ) params;
+  struct RareFaction *Fan = ( struct RareFaction * ) params;
 
   bool   Right_Yes    = Fan -> Right_Yes   ;
   double PresHead     = Fan -> PresHead    ;

@@ -6,7 +6,8 @@
 #include "Struct.h"
 #include "Prototypes.h"
 
-double RootFinder(  , void *params, double AbsErr, double RelErr )
+double RootFinder( double(*Function)(double X, void *params) , void *params, double AbsErr, double RelErr,
+			       double Guess, double LowerBound, double UpperBound )
 {
   int status;
 
@@ -16,21 +17,17 @@ double RootFinder(  , void *params, double AbsErr, double RelErr )
 
   gsl_root_fsolver *s;
 
-  double Guess = 0.5;
-
   double Root, RootTemp;
 
   gsl_function F;
 
-  F.function = &;
+  F.function = Function;
 
   F.params = params;
 
   T = gsl_root_fsolver_brent;
 
   s = gsl_root_fsolver_alloc (T); 
-
-  double LowerBound, UpperBound;
 
   gsl_root_fsolver_set (s, &F, LowerBound, UpperBound );
 
