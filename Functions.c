@@ -66,23 +66,21 @@ int GetWavePattern( struct InitialCondition *IC )
   int Pattern;
   RelitiveVelocity = ( VelocityLeft - VelocityRight ) / ( 1.0 - VelocityLeft*VelocityRight );
 
-  printf("RelitiveVelocity=%e\n", RelitiveVelocity);
-  printf("SS=%e, RS=%e, RR=%e\n", SS, RS, RR);
 
   if ( RelitiveVelocity >= SS )
   {
     Pattern = 1;
-	printf("you have shock-shock wave pattern !!\n", Pattern);
+//	printf("you have shock-shock wave pattern !!\n", Pattern);
   }
   else if (  RS <= RelitiveVelocity && RelitiveVelocity < SS )
   {
     Pattern = 2;
-	printf("you have rarefaction-shock wave pattern !!\n", Pattern);
+//	printf("you have rarefaction-shock wave pattern !!\n", Pattern);
   }
   else if ( RR <= RelitiveVelocity && RelitiveVelocity < RS )
   {
     Pattern = 3;
-	printf("you have rarefaction-rarefaction wave pattern !!\n", Pattern);
+//	printf("you have rarefaction-rarefaction wave pattern !!\n", Pattern);
   }
   else
   {
@@ -104,9 +102,9 @@ double Velocity_LC ( double PresStar, double DensStarLeft, double PresLeft, doub
      double EngyStarLeft, EngyLeft, EnthalpyStarLeft;
 
      EnthalpyStarLeft = TaubAdiabatic( PresLeft, DensLeft, PresStar );
- printf("PresStar=%e\n", PresStar);
+
 	 EngyStarLeft = PresStar * ( EnthalpyStarLeft / (EnthalpyStarLeft-1.0) ) * ( Gamma / Gamma_1 ) - PresStar;
-     printf("EnthalpyStarLeft=%e, EngyStarLeft=%e\n", EnthalpyStarLeft, EngyStarLeft );
+
 	 EngyLeft = Flu_TotalEngy( PresLeft, DensLeft );
 
      Velocity_LC  = ( PresStar - PresLeft ) * ( EngyStarLeft - EngyLeft );
@@ -153,8 +151,6 @@ double Velocity_RC ( double PresStar, double DensStarRight, double PresRight, do
 
      Velocity_RC  = ( PresStar - PresRight ) * ( EngyStarRight - EngyRight );
 
-	 printf("PresStar=%e, PresRight=%e, EngyStarRight=%e, EngyRight=%e\n", 
-			PresStar, PresRight, EngyStarRight, EngyRight); 
 
 	 Velocity_RC /= ( EngyRight + PresStar ) * ( EngyStarRight + PresRight );
 

@@ -34,10 +34,3 @@ ${BIN}: ${ALL_OBJ}
 	${CC}  -o ${EXEDIR}a.out ${ALL_OBJ} -lm ${DLIB}libgslcblas.so.0.0.0 ${DLIB}libgsl.so.23.1.0    # shared library
 clean:
 	rm -f *.o Makedepend $(BIN)
-
-#depend: Makedepend
-#
-#Makedepend:
-#	${CC} -MM ${CFLAGS} ${SRC} > Makedepend
-
-#include Makedepend

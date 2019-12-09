@@ -50,7 +50,6 @@ double RootFinder( struct InitialCondition *IC, double AbsErr, double RelErr )
 	RootTemp = Root;
 
     Root = gsl_root_fsolver_root (s);
-	printf("Root=%e\n", Root);
 
     status = gsl_root_test_delta (Root, RootTemp, AbsErr, RelErr );
   }
