@@ -3,10 +3,9 @@
 #include "Global.h"
 #include "Prototypes.h"
 
-
-void GetVelocityInFan( double PresHead, double DensHead, double VelocityHead,
-				       double PresTail, double DensTail, double VelocityTail,
-                       double *HeadVelocity, double *TailVelocity, bool Right_Yes )
+void GetHeadTailVelocity( double PresHead, double DensHead, double VelocityHead,
+			              double PresTail, double DensTail, double VelocityTail,
+                          double *HeadVelocity, double *TailVelocity, bool Right_Yes )
 {
   double Cs_Head, Cs_Tail;
 
@@ -25,34 +24,32 @@ void GetVelocityInFan( double PresHead, double DensHead, double VelocityHead,
   }
 }
 
-double GetDensInFan(  )
+
+void GetDensInFan( double Cs2, double PresHead, double DensHead, double Xi )
 {
+  double k = PresHead * pow (DensHead, -Gamma);
+  double tmp = ( 1.0 / (Cs2 * Cs2)) - (1.0 / Gamma_1 );
+  double Dens = pow ( k * Gamma * tmp, -1.0 / Gamma_1 );
 
-
+  return Dens;
 }
 
-double GetPresInFan(  )
+void GetPresInFan( double DensInFan, double PresHead, double DensHead )
 {
+  double Pres = PresHead * pow (DensInFan / DensHead, Gamma);
 
-
+  return Pres;
 }
 
-double GetPresInTail()
+void GetVelicityInFan( double Cs2, double Xi )
 {
+  double Velocity = (Cs2 + Xi) / (1.0 + Cs2 * Xi);
 
-
-
+  return Velocity;
 }
 
 
-double GetDensInTail()
-{
-
-
-
-}
-
-double GetSoundSpeedInFan ( double Cs, void *params )
+double SoundSpeedFunction ( double Cs, void *params )
 {
   struct RareFaction *Fan = ( struct RareFaction * ) params;
 
@@ -110,3 +107,13 @@ double GetSoundSpeedInFan ( double Cs, void *params )
   return Var1 - Var0;
 
 }
+
+double GetSoundSpeedInFan ( struct RareFaction *Fan )
+{
+  double Cs2;
+
+  Cs2 = RootFinder( SoundSpeedFunction, (void*)Fan, 0.0, __DBL_EPSILON__, 0.5, 1e-2, 1.0 );
+
+  return Cs2;
+}
+
