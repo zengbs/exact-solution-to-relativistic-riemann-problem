@@ -44,6 +44,7 @@ double RootFinder( double(*Function)(double X, void *params) , void *params, dou
     Root = gsl_root_fsolver_root (s);
 
     status = gsl_root_test_delta (Root, RootTemp, AbsErr, RelErr );
+	printf("%e\n", RootTemp);
   }
   while (status == GSL_CONTINUE && iter < max_iter);
 

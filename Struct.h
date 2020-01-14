@@ -1,6 +1,8 @@
 #ifndef __STRUCT_H__
 #define __STRUCT_H__
 
+#include <stdbool.h>
+
 struct InitialCondition
 {
   double DensLeft;
@@ -59,6 +61,15 @@ struct RiemannProblem
   struct SSWaves SS;
   struct RSWaves RS;
   struct RRWaves RR;
+};
+
+struct PlotParams
+{
+  double DT;
+  double End_T;
+  double X_Left;
+  double X_Right;
+  int NCell;
 };
 
 #endif

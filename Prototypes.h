@@ -30,6 +30,7 @@ double RootFinder( double(*Function)(double X, void *params) , void *params, dou
 double MassCurrent( double PresUp, double DensUp, double PresDown, double DensDown );
 
 int GetAllInfomation( struct InitialCondition *, struct RiemannProblem  * );
+void Plot( int Pattern, struct RiemannProblem *, struct PlotParams   );
 
 double GetVelocityDown( double PresUp,   double DensUp, double ShockFrontVelocity,
                         double PresDown, double DensDown );
