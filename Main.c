@@ -11,10 +11,10 @@ int main()
 {
 
   double DensLeft      =  0.5;
-  double VelocityLeft  =  0.6;
-  double PresLeft      =  0.02;
+  double VelocityLeft  =  0.5;
+  double PresLeft      =  0.04;
 
-  double DensRight     =  2.0;
+  double DensRight     =  0.5;
   double VelocityRight = -0.5;
   double PresRight     =  0.04;
 
@@ -49,6 +49,15 @@ int main()
   printf("%e\n", RP.SS.Leftt.DensDownStream ); 
   printf("%e\n", RP.SS.Leftt.VelyDownStream ); 
 
+  printf("\n");
+
+  printf("%e\n", RP.SS.Right.ShockVelocity  );
+  printf("%e\n", RP.SS.Right.PresUpStream   ); 
+  printf("%e\n", RP.SS.Right.DensUpStream   ); 
+  printf("%e\n", RP.SS.Right.VelyUpStream   ); 
+  printf("%e\n", RP.SS.Right.PresDownStream ); 
+  printf("%e\n", RP.SS.Right.DensDownStream ); 
+  printf("%e\n", RP.SS.Right.VelyDownStream ); 
 
   return 0;
 }

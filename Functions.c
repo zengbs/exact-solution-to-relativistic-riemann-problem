@@ -111,7 +111,7 @@ double Velocity_LC ( double PresStar, double DensStarLeft, double PresLeft, doub
 
      if ( Velocity_LC < 0.0 )
 	 {
-	   printf("Velocity_LC = nan !!", Velocity_LC);
+	   printf("Velocity_LC = %e\n !!", Velocity_LC);
 	   exit(1);
 	 }
 
@@ -155,7 +155,7 @@ double Velocity_RC ( double PresStar, double DensStarRight, double PresRight, do
 
      if ( Velocity_RC < 0.0 )
 	 {
-	   printf("Velocity_RC = nan !!", Velocity_RC);
+	   printf("Velocity_RC = %e\n !!", Velocity_RC);
 	   exit(1);
 	 }
 

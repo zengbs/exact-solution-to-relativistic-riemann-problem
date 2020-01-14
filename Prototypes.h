@@ -1,6 +1,8 @@
 #ifndef __PROTOTYPE_H__
 #define __PROTOTYPE_H__
 
+#include "Struct.h"
+
 int GetWavePattern( struct InitialCondition *IC );
 
 double Velocity_LC ( double PresStar, double DensStarLeft, double PresLeft, double DensLeft, bool Shock );
@@ -35,7 +37,7 @@ double GetVelocityDown( double PresUp,   double DensUp, double ShockFrontVelocit
 
 double GetDensDown( double PresUp, double DensUp, double PresDown  );
 
-void ShockVelocity( double PresUp,   double DensUp,   double V_Up, 
+void GetShockVelocity( double PresUp,   double DensUp,   double V_Up, 
 				    double PresDown, double DensDown, double V_Down,
 			        double *Vs_Left, double *Vs_Right );
 

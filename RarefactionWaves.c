@@ -1,11 +1,17 @@
-void FanVelocity( double PresHead, double DensHead, double VelocityHead,
-				  double PresTail, double DensTail, double VelocityTail,
-                  double *HeadVelocity, double *TailVelocity, bool Right_Yes )
+#include <stdbool.h>
+#include <math.h>
+#include "Global.h"
+#include "Prototypes.h"
+
+
+void GetVelocityInFan( double PresHead, double DensHead, double VelocityHead,
+				       double PresTail, double DensTail, double VelocityTail,
+                       double *HeadVelocity, double *TailVelocity, bool Right_Yes )
 {
   double Cs_Head, Cs_Tail;
 
-  Cs_Head = Flu_SoundSpeeed( PresHead, DensHead ); 
-  Cs_Tail = Flu_SoundSpeeed( PresTail, DensTail ); 
+  Cs_Head = Flu_SoundSpeed( PresHead, DensHead ); 
+  Cs_Tail = Flu_SoundSpeed( PresTail, DensTail ); 
 
   if ( Right_Yes )
   {
@@ -19,15 +25,28 @@ void FanVelocity( double PresHead, double DensHead, double VelocityHead,
   }
 }
 
-
-
-
-void RareFaction( double PresHead, double DensHead, double VelocityHead,
-                     double PresTail, double DensTail, double VelocityTail, )
-
+double GetDensInFan(  )
 {
-                   
 
+
+}
+
+double GetPresInFan(  )
+{
+
+
+}
+
+double GetPresInTail()
+{
+
+
+
+}
+
+
+double GetDensInTail()
+{
 
 
 
@@ -49,6 +68,8 @@ double GetSoundSpeedInFan ( double Cs, void *params )
  
   double Velocity, Var0, Var1, Cs_Head;
 
+  double Sqrt_Gamma_1 = sqrt(Gamma_1);
+
   Cs_Head = Flu_SoundSpeed( PresHead, DensHead );
 
   if ( Right_Yes )
@@ -59,7 +80,7 @@ double GetSoundSpeedInFan ( double Cs, void *params )
 
 	Var0  = pow( Var0, -2.0 / Sqrt_Gamma_1 );
 
-	Var0 *= ( 1.0 + Velocity ) / ( 1.0 - Velocity )
+	Var0 *= ( 1.0 + Velocity ) / ( 1.0 - Velocity );
 
 
 	Var1  = ( Sqrt_Gamma_1 + Cs_Head ) / ( Sqrt_Gamma_1 - Cs_Head );
@@ -76,7 +97,7 @@ double GetSoundSpeedInFan ( double Cs, void *params )
 
 	Var0  = pow( Var0, +2.0 / Sqrt_Gamma_1 );
 
-	Var0 *= ( 1.0 + Velocity ) / ( 1.0 - Velocity )
+	Var0 *= ( 1.0 + Velocity ) / ( 1.0 - Velocity );
 
 
 	Var1  = ( Sqrt_Gamma_1 + Cs_Head ) / ( Sqrt_Gamma_1 - Cs_Head );

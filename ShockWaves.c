@@ -7,9 +7,9 @@
 #include "Global.h"
 #include "Macro.h"
 
-void ShockVelocity( double PresUp,   double DensUp,   double V_Up, 
-				    double PresDown, double DensDown, double V_Down,
-			        double *Vs_Left, double *Vs_Right )
+void GetShockVelocity( double PresUp,   double DensUp,   double V_Up, 
+		     		   double PresDown, double DensDown, double V_Down,
+			           double *Vs_Left, double *Vs_Right )
 {
   double ShockVelocity, LorentzFactor, J;
   double A, B, C;
@@ -61,12 +61,6 @@ double GetVelocityDown( double PresUp,   double DensUp, double ShockFrontVelocit
 
 }
 
-double GetContactCelocity( double PresLeft,  double DensLeft,  double VelocityLeft,
-			               double PresRight, double DensRight, double VelocityRight )
-{
-
-
-}
 
 double GetDensDown( double PresUp, double DensUp, double PresDown  )
 {
@@ -92,7 +86,7 @@ double MassCurrent( double PresUp, double DensUp, double PresDown, double DensDo
 
   if ( MassCurrent < 0.0 )
   {
-    printf("MassCurrent is nan!!\n", MassCurrent);
+    printf("MassCurrent is %e!!\n", MassCurrent);
     exit(1);
   }
 

@@ -34,8 +34,8 @@ int GetAllInfomation( struct InitialCondition *IC, struct RiemannProblem *RP )
 	 case 1:
          DensDown_Left  = GetDensDown( PresLeft,  DensLeft,  PresStar );
 
-         ShockVelocity( PresLeft, DensLeft, VelocityLeft, PresStar, DensDown_Left, NAN,
-						&ShockVelocity_Left, NULL );
+         GetShockVelocity( PresLeft, DensLeft, VelocityLeft, PresStar, DensDown_Left, NAN,
+			               &ShockVelocity_Left, NULL );
 
 		 VelocityStar = GetVelocityDown( PresLeft, DensLeft, ShockVelocity_Left, PresStar, DensDown_Left );
 
@@ -52,8 +52,8 @@ int GetAllInfomation( struct InitialCondition *IC, struct RiemannProblem *RP )
 
 		 DensDown_Right = GetDensDown( PresRight, DensRight, PresStar );
 
-         ShockVelocity( PresRight, DensRight, VelocityRight, PresStar, DensDown_Right, NAN, 
-						&ShockVelocity_Right, NULL );
+         GetShockVelocity( PresRight, DensRight, VelocityRight, PresStar, DensDown_Right, NAN, 
+						NULL, &ShockVelocity_Right );
 
 
          RP -> SS.Right.Right_Yes       = true;
@@ -68,6 +68,9 @@ int GetAllInfomation( struct InitialCondition *IC, struct RiemannProblem *RP )
 	     break;
 
 	 case 2:
+
+
+
 //         RP -> RS.Right.Right_Yes       = true;
 //         RP -> RS.Right.PresHead        = 
 //         RP -> RS.Right.DensHead        = 
@@ -76,6 +79,13 @@ int GetAllInfomation( struct InitialCondition *IC, struct RiemannProblem *RP )
 //         RP -> RS.Right.DensTail        = 
 //         RP -> RS.Right.VelocityTail    = 
 //         RP -> RS.Right.Xi              = 
+//
+//
+//		 DensDown_Right = GetDensDown( PresRight, DensRight, PresStar );
+//
+//         GetShockVelocity( PresRight, DensRight, VelocityRight, PresStar, DensDown_Right, NAN, 
+//						NULL, &ShockVelocity_Right );
+//
 //
 //         RP -> RS.Leftt.Right_Yes       = false;
 //         RP -> RS.Leftt.ShockVelocity   = 
