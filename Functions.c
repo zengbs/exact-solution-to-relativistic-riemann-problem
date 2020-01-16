@@ -9,7 +9,8 @@
 
 // Pattern 1: shock-shock
 //         2: rarefaction-shock
-//         3: rarefaction-rarefaction
+//         3: shock-rarefaction
+//         4: rarefaction-rarefaction
 
 
 int GetWavePattern( struct InitialCondition *IC )
@@ -21,12 +22,36 @@ int GetWavePattern( struct InitialCondition *IC )
   double VelocityRight = IC -> VelocityRight;
   double PresRight     = IC -> PresRight    ;
 
-  double SS, RS, SR, RR;
+  double SS, RS, RR;
   double V_LC, V_RC;
   bool Shock_Yes = true;
   bool Shock_No  = false;
+  bool Swap_Yes = false;
 
   double A_Plus, A_Minus;
+
+  // swap PresLeft and PresRight
+  if ( PresLeft < PresRight )
+  {
+    PresLeft  = PresLeft * PresRight;
+    PresRight = PresLeft / PresRight; 
+    PresLeft  = PresLeft / PresRight; 
+
+    DensLeft  = DensLeft * DensRight;
+    DensRight = DensLeft / DensRight; 
+    DensLeft  = DensLeft / DensRight; 
+
+    double temp1, temp2;
+
+	temp1 = -VelocityLeft;
+	temp2 = -VelocityRight;
+
+    VelocityLeft  = temp2;
+    VelocityRight = temp1; 
+
+    Swap_Yes = true;
+  }
+
 
   // shock-shock
   double A, B, C, EnthalpyRight, Root, Engy_Temp, EngyRight;
@@ -53,15 +78,6 @@ int GetWavePattern( struct InitialCondition *IC )
 
   RS = V_LC;
 
-  // shock-rarefaction
-  double DensStarRight = DensRight*pow(  PresLeft/PresRight, 1.0/Gamma );
-
-  A_Minus = A_MinusFun( PresLeft, DensStarRight, PresRight, DensRight );
-
-  V_LC  = ( 1.0 - A_Minus ) / ( 1.0 + A_Minus ); // eq.(4.172)
-
-  SR = V_LC;
-
   // rarefaction-rarefaction
 
   A_Plus  = A_PlusFun ( 0.0, NAN, PresLeft,  DensLeft  );
@@ -80,14 +96,19 @@ int GetWavePattern( struct InitialCondition *IC )
     Pattern = 1;
 	//printf("you have shock-shock wave pattern !!\n");
   }
-  else if (  RS <= RelitiveVelocity && RelitiveVelocity < SS )
+  else if (  RS <= RelitiveVelocity && RelitiveVelocity < SS && Swap_Yes == false )
   {
     Pattern = 2;
 	//printf("you have rarefaction-shock wave pattern !!\n");
   }
-  else if ( RR <= RelitiveVelocity && RelitiveVelocity < RS )
+  else if (  RS <= RelitiveVelocity && RelitiveVelocity < SS && Swap_Yes == true )
   {
     Pattern = 3;
+	//printf("you have shock-rarefaction wave pattern !!\n");
+  }
+  else if ( RR <= RelitiveVelocity && RelitiveVelocity < RS )
+  {
+    Pattern = 4;
 	//printf("you have rarefaction-rarefaction wave pattern !!\n");
   }
   else
@@ -95,7 +116,6 @@ int GetWavePattern( struct InitialCondition *IC )
     printf("wave pattern was not found!!\n");
 	exit(1);
   }
-
   return Pattern;
 
 }

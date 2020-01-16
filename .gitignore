@@ -1,4 +1,5 @@
 .*.swp
 a.out
 *.dat
+*.dat*
 *.o

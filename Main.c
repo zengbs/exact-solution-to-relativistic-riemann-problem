@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdbool.h>
+#include <math.h>
 #include "Struct.h"
 #include "Prototypes.h"
 #include "Global.h"
@@ -13,12 +14,12 @@ double Gamma_1 = 0.333333333333333333333;
 int main()
 {
   double DensLeft      =  1.0;
-  double VelocityLeft  =  0.0;
-  double PresLeft      =  1e3;
+  double U_Left        =  0.1;
+  double PresLeft      =  1.0;
 
   double DensRight     =  1.0;
-  double VelocityRight =  0.0;
-  double PresRight     =  1.0;
+  double U_Right       =  -0.1;
+  double PresRight     =  10.0;
 
   
   double DT            = 0.1;
@@ -27,7 +28,8 @@ int main()
   double X_Right       = 1.0;
   int NCell            = 1024;
  
-
+  double VelocityLeft = U_Left / sqrt(1.0 + U_Left*U_Left);
+  double VelocityRight = U_Right / sqrt(1.0 + U_Right*U_Right);
 
   struct InitialCondition IC = 
   {
@@ -56,7 +58,6 @@ int main()
 
   Plot( Pattern, &RP, plot );
 
-  printf("Pattern=%d\n", Pattern);
 
   return 0;
 }

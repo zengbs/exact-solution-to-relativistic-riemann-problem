@@ -23,7 +23,7 @@ int GetAllInfomation( struct InitialCondition *IC, struct RiemannProblem *RP )
   
   double PresStar, VelocityStar;
 
-  PresStar = RootFinder( PresFunction, (void*)IC, 0.0, __DBL_EPSILON__, 0.5, 1e-2, 50.0 );
+  PresStar = RootFinder( PresFunction, (void*)IC, 0.0, __DBL_EPSILON__, 0.5, 1e-10, 50.0 );
 
 
   double ShockVelocity_Left,  DensDown_Left;
@@ -140,6 +140,43 @@ int GetAllInfomation( struct InitialCondition *IC, struct RiemannProblem *RP )
          RP -> SR.Right.VelocityHead    = HeadVelocity_Right; // x
          RP -> SR.Right.VelocityTail    = TailVelocity_Right; // x
      break;
+
+	 case 4:
+         DensDown_Left = GetDensDownRarefaction( PresStar, PresLeft, DensLeft );
+
+		 VelocityStar = GetVelocityDownRarefaction( PresStar, DensDown_Left, PresLeft, DensLeft, VelocityLeft, false );
+
+	     GetHeadTailVelocity( PresLeft, DensLeft, VelocityLeft, PresStar, DensDown_Left, VelocityStar,
+						      &HeadVelocity_Left, &TailVelocity_Left, false );
+
+         RP -> RR.Leftt.Right_Yes       = false;
+         RP -> RR.Leftt.PresUpStream    = PresLeft;
+         RP -> RR.Leftt.DensUpStream    = DensLeft;
+         RP -> RR.Leftt.VelyUpStream    = VelocityLeft;
+         RP -> RR.Leftt.PresDownStream  = PresStar;
+         RP -> RR.Leftt.DensDownStream  = DensDown_Left;
+         RP -> RR.Leftt.VelyDownStream  = VelocityStar;
+         RP -> RR.Leftt.VelocityHead    = HeadVelocity_Left;
+         RP -> RR.Leftt.VelocityTail    = TailVelocity_Left;
+
+
+         DensDown_Right = GetDensDownRarefaction( PresStar, PresRight, DensRight );
+
+		 VelocityStar = GetVelocityDownRarefaction( PresStar, DensDown_Right, PresRight, DensRight, VelocityRight, true );
+
+	     GetHeadTailVelocity( PresRight, DensRight, VelocityRight, PresStar, DensDown_Right, VelocityStar,
+						      &HeadVelocity_Right, &TailVelocity_Right, true );
+
+         RP -> RR.Right.Right_Yes       = true;
+         RP -> RR.Right.PresUpStream    = PresRight;
+         RP -> RR.Right.DensUpStream    = DensRight;
+         RP -> RR.Right.VelyUpStream    = VelocityRight;
+         RP -> RR.Right.PresDownStream  = PresStar;  // o
+         RP -> RR.Right.DensDownStream  = DensDown_Right; // o
+         RP -> RR.Right.VelyDownStream  = VelocityStar;       // x
+         RP -> RR.Right.VelocityHead    = HeadVelocity_Right; // x
+         RP -> RR.Right.VelocityTail    = TailVelocity_Right; // x
+	 break;
 
      default:
 		 printf("wave pattern was not found!!\n");
