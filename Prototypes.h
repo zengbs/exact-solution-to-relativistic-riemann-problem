@@ -50,14 +50,14 @@ void GetHeadTailVelocity( double PresHead, double DensHead, double VelocityHead,
 
 double GetDensDownRarefaction( double PresDown, double PresUp, double DensUp );
 
-double GetVelocityDownRarefaction( double PresDown, double DensDown, double PresUp, double DensUp, double VelocityUp );
+double GetVelocityDownRarefaction( double PresDown, double DensDown, double PresUp, double DensUp, double VelocityUp, bool Right_Yes );
 
 double GetDensInFan( double Cs2, double PresHead, double DensHead );
 
 
 double GetPresInFan( double DensInFan, double PresHead, double DensHead );
 
-double GetVelocityInFan( double Cs2, double Xi );
+double GetVelocityInFan( double Cs2, double Xi, bool Right_Yes );
 
 double GetSoundSpeedInFan ( struct Rarefaction *Rarefaction );
 

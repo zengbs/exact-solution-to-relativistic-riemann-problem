@@ -52,6 +52,12 @@ struct RSWaves
   struct Shock       Right;
 };
 
+struct SRWaves
+{
+  struct Shock       Leftt;
+  struct Rarefaction Right;
+};
+
 struct RRWaves
 {
   struct Rarefaction Right;
@@ -62,6 +68,7 @@ struct RiemannProblem
 {
   struct SSWaves SS;
   struct RSWaves RS;
+  struct SRWaves SR;
   struct RRWaves RR;
 };
 

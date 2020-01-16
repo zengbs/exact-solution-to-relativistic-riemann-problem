@@ -13,11 +13,11 @@ double Gamma_1 = 0.333333333333333333333;
 int main()
 {
   double DensLeft      =  1.0;
-  double VelocityLeft  =  0.5;
-  double PresLeft      =  20.0;
+  double VelocityLeft  =  0.0;
+  double PresLeft      =  1e3;
 
   double DensRight     =  1.0;
-  double VelocityRight = -0.5;
+  double VelocityRight =  0.0;
   double PresRight     =  1.0;
 
   
@@ -25,7 +25,7 @@ int main()
   double End_T         = 0.5;
   double X_Left        = 0.0;
   double X_Right       = 1.0;
-  int NCell            = 512;
+  int NCell            = 1024;
  
 
 

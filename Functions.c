@@ -21,7 +21,7 @@ int GetWavePattern( struct InitialCondition *IC )
   double VelocityRight = IC -> VelocityRight;
   double PresRight     = IC -> PresRight    ;
 
-  double SS, RS, RR;
+  double SS, RS, SR, RR;
   double V_LC, V_RC;
   bool Shock_Yes = true;
   bool Shock_No  = false;
@@ -52,6 +52,15 @@ int GetWavePattern( struct InitialCondition *IC )
   V_LC  = ( 1.0 - A_Plus ) / ( 1.0 + A_Plus ); // eq.(4.172)
 
   RS = V_LC;
+
+  // shock-rarefaction
+  double DensStarRight = DensRight*pow(  PresLeft/PresRight, 1.0/Gamma );
+
+  A_Minus = A_MinusFun( PresLeft, DensStarRight, PresRight, DensRight );
+
+  V_LC  = ( 1.0 - A_Minus ) / ( 1.0 + A_Minus ); // eq.(4.172)
+
+  SR = V_LC;
 
   // rarefaction-rarefaction
 
@@ -196,6 +205,7 @@ double A_PlusFun ( double Pres, double Dens, double PresLeft, double DensLeft )
 	return A_Plus;
 }
 
+// A6(-) / A4(-), eq.(179) in 'Exact solution of the 1D riemann problem in Newtonian and relativistic hydrodynamics'
 
 double A_MinusFun ( double Pres, double Dens, double PresRight, double DensRight )
 {
@@ -256,6 +266,15 @@ double PresFunction( double PresStar, void  *params )
     V_LR = ( V_LC - V_RC )/( 1.0 - V_LC*V_RC );
   }
   else if ( Pattern == 3 )
+  {
+    DensStarRight = DensRight*pow(  PresStar/PresRight, 1.0/Gamma );
+  
+    V_LC = Velocity_LC( PresStar, NAN,          PresLeft,  DensLeft, Shock_Yes );
+    V_RC = Velocity_RC( PresStar, DensStarRight, PresRight, DensRight, Shock_No  );
+
+    V_LR = ( V_LC - V_RC )/( 1.0 - V_LC*V_RC );
+  }
+  else if ( Pattern == 4 )
   {
     DensStarLeft  = DensLeft *pow(  PresStar/PresLeft,  1.0/Gamma );
     DensStarRight = DensRight*pow(  PresStar/PresRight, 1.0/Gamma );

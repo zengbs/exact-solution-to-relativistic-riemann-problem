@@ -37,12 +37,20 @@ double GetDensDownRarefaction( double PresDown, double PresUp, double DensUp )
 }
 
 
-double GetVelocityDownRarefaction( double PresDown, double DensDown, double PresUp, double DensUp, double VelocityUp )
+double GetVelocityDownRarefaction( double PresDown, double DensDown, double PresUp, double DensUp, double VelocityUp, bool Right_Yes )
 {
   double Velocity;
 
-  Velocity  = (1.0 + VelocityUp) * A_PlusFun( PresDown, DensDown, PresUp, DensUp ) - (1.0 - VelocityUp);
-  Velocity /= (1.0 + VelocityUp) * A_PlusFun( PresDown, DensDown, PresUp, DensUp ) + (1.0 - VelocityUp);
+  if ( Right_Yes )
+  {
+    Velocity  = (1.0 + VelocityUp) * A_MinusFun( PresDown, DensDown, PresUp, DensUp ) - (1.0 - VelocityUp);
+    Velocity /= (1.0 + VelocityUp) * A_MinusFun( PresDown, DensDown, PresUp, DensUp ) + (1.0 - VelocityUp);
+  }
+  else
+  {
+    Velocity  = (1.0 + VelocityUp) * A_PlusFun( PresDown, DensDown, PresUp, DensUp ) - (1.0 - VelocityUp);
+    Velocity /= (1.0 + VelocityUp) * A_PlusFun( PresDown, DensDown, PresUp, DensUp ) + (1.0 - VelocityUp);
+  }
 
   return Velocity;
 }
@@ -63,9 +71,14 @@ double GetPresInFan( double DensInFan, double PresUp, double DensUp )
   return Pres;
 }
 
-double GetVelocityInFan( double Cs2, double Xi )
+double GetVelocityInFan( double Cs, double Xi, bool Right_Yes )
 {
-  double Velocity = (Cs2 + Xi) / (1.0 + Cs2 * Xi);
+  double Velocity;
+ 
+  if ( Right_Yes )
+  Velocity = (Xi - Cs) / (1.0 - Cs * Xi);
+  else
+  Velocity = (Xi + Cs) / (1.0 + Cs * Xi);
 
   return Velocity;
 }

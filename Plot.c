@@ -48,6 +48,22 @@ void Plot( int Pattern, struct RiemannProblem *RP, struct PlotParams plot )
     fprintf (fptr[0], "%e %e %e %e\n", X0,      RP->RS.Right.DensUpStream, RP->RS.Right.VelyUpStream, RP->RS.Right.PresUpStream);
     fprintf (fptr[0], "%e %e %e %e\n", X_Right, RP->RS.Right.DensUpStream, RP->RS.Right.VelyUpStream, RP->RS.Right.PresUpStream);
   }
+  else if ( Pattern == 3 )
+  {
+    fprintf (fptr[0], "%e %e %e %e\n", X_Left,  RP->SR.Leftt.DensUpStream, RP->SR.Leftt.VelyUpStream, RP->SR.Leftt.PresUpStream);
+    fprintf (fptr[0], "%e %e %e %e\n", X0-dX,   RP->SR.Leftt.DensUpStream, RP->SR.Leftt.VelyUpStream, RP->SR.Leftt.PresUpStream);
+
+    fprintf (fptr[0], "%e %e %e %e\n", X0,      RP->SR.Right.DensUpStream, RP->SR.Right.VelyUpStream, RP->SR.Right.PresUpStream);
+    fprintf (fptr[0], "%e %e %e %e\n", X_Right, RP->SR.Right.DensUpStream, RP->SR.Right.VelyUpStream, RP->SR.Right.PresUpStream);
+  }
+  else if ( Pattern == 4 )
+  {
+    fprintf (fptr[0], "%e %e %e %e\n", X_Left,  RP->RR.Leftt.DensUpStream, RP->RR.Leftt.VelyUpStream, RP->RR.Leftt.PresUpStream);
+    fprintf (fptr[0], "%e %e %e %e\n", X0-dX,   RP->RR.Leftt.DensUpStream, RP->RR.Leftt.VelyUpStream, RP->RR.Leftt.PresUpStream);
+
+    fprintf (fptr[0], "%e %e %e %e\n", X0,      RP->RR.Right.DensUpStream, RP->RR.Right.VelyUpStream, RP->RR.Right.PresUpStream);
+    fprintf (fptr[0], "%e %e %e %e\n", X_Right, RP->RR.Right.DensUpStream, RP->RR.Right.VelyUpStream, RP->RR.Right.PresUpStream);
+  }
 
 
 
@@ -91,7 +107,20 @@ void Plot( int Pattern, struct RiemannProblem *RP, struct PlotParams plot )
 		    }
 		    else if ( Pattern == 3 )
 		    {
+              X_Min = 0.0;
+              X_Max = RP->SR.Leftt.ShockVelocity * time + X0 - dX;
+
+              fprintf (fptr[j], "%e %e %e %e\n", X_Min, RP->SR.Leftt.DensUpStream, RP->SR.Leftt.VelyUpStream, RP->SR.Leftt.PresUpStream );
+              fprintf (fptr[j], "%e %e %e %e\n", X_Max, RP->SR.Leftt.DensUpStream, RP->SR.Leftt.VelyUpStream, RP->SR.Leftt.PresUpStream );
 		    }
+			else if ( Pattern == 4 )
+			{
+              X_Min = 0.0;
+              X_Max = RP->RR.Leftt.VelocityHead * time + X0 - dX;
+
+              fprintf (fptr[j], "%e %e %e %e\n", X_Min, RP->RR.Leftt.DensUpStream, RP->RR.Leftt.VelyUpStream, RP->RR.Leftt.PresUpStream );
+              fprintf (fptr[j], "%e %e %e %e\n", X_Max, RP->RR.Leftt.DensUpStream, RP->RR.Leftt.VelyUpStream, RP->RR.Leftt.PresUpStream );
+			}
           break;
 
           case 2:
@@ -107,15 +136,34 @@ void Plot( int Pattern, struct RiemannProblem *RP, struct PlotParams plot )
                 Cs          = GetSoundSpeedInFan( &(RP->RS.Leftt) );
                 DensFan     = GetDensInFan(Cs, RP -> RS.Leftt.PresUpStream, RP -> RS.Leftt.DensUpStream );
                 PresFan     = GetPresInFan(DensFan, RP -> RS.Leftt.PresUpStream, RP -> RS.Leftt.DensUpStream );
-                VelocityFan = GetVelocityInFan(Cs, RP->RS.Leftt.Xi);
+                VelocityFan = GetVelocityInFan(Cs, RP->RS.Leftt.Xi, false);
 
                 fprintf (fptr[j], "%e %e %e %e\n", RP->RS.Leftt.Xi*time+X0, DensFan, VelocityFan, PresFan );
 
 			    RP->RS.Leftt.Xi += dX/time;
 			  }
 			  while( RP->RS.Leftt.Xi <= (X_Max-X0+dX)/time );
-
 		    }
+			else if ( Pattern == 4 )
+			{
+			  X_Min = RP->RR.Leftt.VelocityHead * time + X0;
+			  X_Max = RP->RR.Leftt.VelocityTail * time + X0 - dX;
+
+			  RP->RR.Leftt.Xi = ( X_Min - X0 )/time;
+
+              do
+			  {
+                Cs          = GetSoundSpeedInFan( &(RP->RR.Leftt) );
+                DensFan     = GetDensInFan(Cs, RP -> RR.Leftt.PresUpStream, RP -> RR.Leftt.DensUpStream );
+                PresFan     = GetPresInFan(DensFan, RP -> RR.Leftt.PresUpStream, RP -> RR.Leftt.DensUpStream );
+                VelocityFan = GetVelocityInFan(Cs, RP->RR.Leftt.Xi, false);
+
+                fprintf (fptr[j], "%e %e %e %e\n", RP->RR.Leftt.Xi*time+X0, DensFan, VelocityFan, PresFan );
+
+			    RP->RR.Leftt.Xi += dX/time;
+			  }
+			  while( RP->RR.Leftt.Xi <= (X_Max-X0+dX)/time );
+			}
 		  break;
 
           case 3:
@@ -134,6 +182,22 @@ void Plot( int Pattern, struct RiemannProblem *RP, struct PlotParams plot )
 
               fprintf (fptr[j], "%e %e %e %e\n", X_Min,  RP->RS.Leftt.DensDownStream, RP->RS.Leftt.VelyDownStream, RP->RS.Leftt.PresDownStream );
               fprintf (fptr[j], "%e %e %e %e\n", X_Max,  RP->RS.Leftt.DensDownStream, RP->RS.Leftt.VelyDownStream, RP->RS.Leftt.PresDownStream );
+		    }
+		    else if ( Pattern == 3 )
+		    {
+              X_Min = RP->SR.Leftt.ShockVelocity  * time + X0;
+              X_Max = RP->SR.Leftt.VelyDownStream * time + X0 - dX;
+
+              fprintf (fptr[j], "%e %e %e %e %d\n", X_Min,  RP->SR.Leftt.DensDownStream, RP->SR.Leftt.VelyDownStream, RP->SR.Leftt.PresDownStream, 3 );
+              fprintf (fptr[j], "%e %e %e %e %d\n", X_Max,  RP->SR.Leftt.DensDownStream, RP->SR.Leftt.VelyDownStream, RP->SR.Leftt.PresDownStream, 3 );
+		    }
+		    else if ( Pattern == 4 )
+		    {
+              X_Min = RP->RR.Leftt.VelocityTail   * time + X0;
+              X_Max = RP->RR.Leftt.VelyDownStream * time + X0 - dX;
+
+              fprintf (fptr[j], "%e %e %e %e\n", X_Min,  RP->RR.Leftt.DensDownStream, RP->RR.Leftt.VelyDownStream, RP->RR.Leftt.PresDownStream );
+              fprintf (fptr[j], "%e %e %e %e\n", X_Max,  RP->RR.Leftt.DensDownStream, RP->RR.Leftt.VelyDownStream, RP->RR.Leftt.PresDownStream );
 		    }
           break;
 
@@ -156,19 +220,63 @@ void Plot( int Pattern, struct RiemannProblem *RP, struct PlotParams plot )
 		    }
 		    else if ( Pattern == 3 )
 		    {
+              X_Min = RP->SR.Leftt.VelyDownStream * time + X0;
+              X_Max = RP->SR.Right.VelocityTail   * time + X0 - dX;
+
+              fprintf (fptr[j], "%e %e %e %e %d\n", X_Min, RP->SR.Right.DensDownStream, RP->SR.Right.VelyDownStream, RP->SR.Right.PresDownStream, 4 );
+              fprintf (fptr[j], "%e %e %e %e %d\n", X_Max, RP->SR.Right.DensDownStream, RP->SR.Right.VelyDownStream, RP->SR.Right.PresDownStream, 4 );
+		    }
+		    else if ( Pattern == 4 )
+		    {
+              X_Min = RP->RR.Right.VelyDownStream * time + X0;
+              X_Max = RP->RR.Right.VelocityTail   * time + X0 - dX;
+
+              fprintf (fptr[j], "%e %e %e %e\n", X_Min, RP->RR.Right.DensDownStream, RP->RR.Right.VelyDownStream, RP->RR.Right.PresDownStream );
+              fprintf (fptr[j], "%e %e %e %e\n", X_Max, RP->RR.Right.DensDownStream, RP->RR.Right.VelyDownStream, RP->RR.Right.PresDownStream );
 		    }
           break;
 
           case 5:
-		    if ( Pattern == 1 )
+		    if ( Pattern == 3 )
 		    {
+			  X_Min = RP->SR.Right.VelocityTail * time + X0;
+			  X_Max = RP->SR.Right.VelocityHead * time + X0 - dX;
+
+			  RP->SR.Right.Xi = ( X_Min - X0 )/time;
+
+              do
+			  {
+                Cs          = GetSoundSpeedInFan( &(RP->SR.Right) );
+                DensFan     = GetDensInFan(Cs, RP -> SR.Right.PresUpStream, RP -> SR.Right.DensUpStream );
+                PresFan     = GetPresInFan(DensFan, RP -> SR.Right.PresUpStream, RP -> SR.Right.DensUpStream );
+                VelocityFan = GetVelocityInFan(Cs, RP->SR.Right.Xi, true);
+
+                fprintf (fptr[j], "%e %e %e %e %d\n", RP->SR.Right.Xi*time+X0, DensFan, VelocityFan, PresFan, 5 );
+
+			    RP->SR.Right.Xi += dX/time;
+			  }
+			  while( RP->SR.Right.Xi <= (X_Max-X0+dX)/time );
 		    }
-		    else if ( Pattern == 2 )
-		    {
-		    }
-		    else if ( Pattern == 3 )
-		    {
-		    }
+			else if ( Pattern == 4 )
+			{
+			  X_Min = RP->RR.Right.VelocityTail * time + X0;
+			  X_Max = RP->RR.Right.VelocityHead * time + X0 - dX;
+
+			  RP->RR.Right.Xi = ( X_Min - X0 )/time;
+
+              do
+			  {
+                Cs          = GetSoundSpeedInFan( &(RP->RR.Right) );
+                DensFan     = GetDensInFan(Cs, RP -> RR.Right.PresUpStream, RP -> RR.Right.DensUpStream );
+                PresFan     = GetPresInFan(DensFan, RP -> RR.Right.PresUpStream, RP -> RR.Right.DensUpStream );
+                VelocityFan = GetVelocityInFan(Cs, RP->RR.Right.Xi, true);
+
+                fprintf (fptr[j], "%e %e %e %e %d\n", RP->RR.Right.Xi*time+X0, DensFan, VelocityFan, PresFan, 5 );
+
+			    RP->RR.Right.Xi += dX/time;
+			  }
+			  while( RP->RR.Right.Xi <= (X_Max-X0+dX)/time );
+			}
 		  break;
 
           case 6:
@@ -190,7 +298,20 @@ void Plot( int Pattern, struct RiemannProblem *RP, struct PlotParams plot )
 		    }
 		    else if ( Pattern == 3 )
 		    {
+              X_Min = RP->SR.Right.VelocityHead * time + X0;
+              X_Max = X_Right;
+
+              fprintf (fptr[j], "%e %e %e %e\n", X_Min, RP->SR.Right.DensUpStream, RP->SR.Right.VelyUpStream, RP->SR.Right.PresUpStream );
+              fprintf (fptr[j], "%e %e %e %e\n", X_Max, RP->SR.Right.DensUpStream, RP->SR.Right.VelyUpStream, RP->SR.Right.PresUpStream );
 		    }
+			else if ( Pattern == 4 )
+			{
+              X_Min = RP->RR.Right.VelocityHead * time + X0;
+              X_Max = X_Right;
+
+              fprintf (fptr[j], "%e %e %e %e\n", X_Min, RP->RR.Right.DensUpStream, RP->RR.Right.VelyUpStream, RP->RR.Right.PresUpStream );
+              fprintf (fptr[j], "%e %e %e %e\n", X_Max, RP->RR.Right.DensUpStream, RP->RR.Right.VelyUpStream, RP->RR.Right.PresUpStream );
+			}
           break;
         }
     }
