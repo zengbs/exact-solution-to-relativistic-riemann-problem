@@ -20,14 +20,16 @@ int GetAllInfomation( struct InitialCondition *IC, struct RiemannProblem *RP )
   int Pattern;
 
   Pattern = GetWavePattern( IC );
-
+  
   double PresStar, VelocityStar;
 
-  PresStar = RootFinder( PresFunction, (void*)IC, 0.0, __DBL_EPSILON__, 0.5, 1e-2, 1.0 );
+  PresStar = RootFinder( PresFunction, (void*)IC, 0.0, __DBL_EPSILON__, 0.5, 1e-2, 50.0 );
 
 
   double ShockVelocity_Left,  DensDown_Left;
   double ShockVelocity_Right, DensDown_Right;
+  double HeadVelocity_Right,  TailVelocity_Right;
+  double HeadVelocity_Left,   TailVelocity_Left;
 
   switch ( Pattern )
   {
@@ -53,7 +55,7 @@ int GetAllInfomation( struct InitialCondition *IC, struct RiemannProblem *RP )
 		 DensDown_Right = GetDensDown( PresRight, DensRight, PresStar );
 
          GetShockVelocity( PresRight, DensRight, VelocityRight, PresStar, DensDown_Right, NAN, 
-						NULL, &ShockVelocity_Right );
+		                   NULL, &ShockVelocity_Right );
 
 
          RP -> SS.Right.Right_Yes       = true;
@@ -67,50 +69,65 @@ int GetAllInfomation( struct InitialCondition *IC, struct RiemannProblem *RP )
 	 break;
 
 	 case 2:
-         RP -> RS.Right.Right_Yes       = true;
-         RP -> RS.Right.PresHead        = 
-         RP -> RS.Right.DensHead        = 
-         RP -> RS.Right.VelocityHead    = 
-         RP -> RS.Right.PresTail        = 
-         RP -> RS.Right.DensTail        = 
-         RP -> RS.Right.VelocityTail    = 
-         RP -> RS.Right.Xi              = 
+         DensDown_Left = GetDensDownRarefaction( PresStar, PresLeft, DensLeft );
+
+		 VelocityStar = GetVelocityDownRarefaction( PresStar, DensDown_Left, PresLeft, DensLeft, VelocityLeft );
+
+	     GetHeadTailVelocity( PresLeft, DensLeft, VelocityLeft, PresStar, DensDown_Left, VelocityStar,
+						      &HeadVelocity_Left, &TailVelocity_Left, false );
+
+         RP -> RS.Leftt.Right_Yes       = false;
+         RP -> RS.Leftt.PresUpStream    = PresLeft;
+         RP -> RS.Leftt.DensUpStream    = DensLeft;
+         RP -> RS.Leftt.VelyUpStream    = VelocityLeft;
+         RP -> RS.Leftt.PresDownStream  = PresStar;
+         RP -> RS.Leftt.DensDownStream  = DensDown_Left;
+         RP -> RS.Leftt.VelyDownStream  = VelocityStar;
+         RP -> RS.Leftt.VelocityHead    = HeadVelocity_Left;
+         RP -> RS.Leftt.VelocityTail    = TailVelocity_Left;
 
 
 		 DensDown_Right = GetDensDown( PresRight, DensRight, PresStar );
 
          GetShockVelocity( PresRight, DensRight, VelocityRight, PresStar, DensDown_Right, NAN, 
-						NULL, &ShockVelocity_Right );
+		                   NULL, &ShockVelocity_Right );
 
+		 VelocityStar = GetVelocityDown( PresRight, DensRight, ShockVelocity_Right, PresStar, DensDown_Right );
 
-         RP -> RS.Leftt.Right_Yes       = false;
-         RP -> RS.Leftt.ShockVelocity   = 
-         RP -> RS.Leftt.PresUpStream    = 
-         RP -> RS.Leftt.DensUpStream    = 
-         RP -> RS.Leftt.VelyUpStream    = 
-         RP -> RS.Leftt.PresDownStream  = 
-         RP -> RS.Leftt.DensDownStream  = 
-         RP -> RS.Leftt.VelyDownStream  = 
+         RP -> RS.Right.Right_Yes       = true;
+         RP -> RS.Right.ShockVelocity   = ShockVelocity_Right;
+         RP -> RS.Right.PresUpStream    = PresRight;
+         RP -> RS.Right.DensUpStream    = DensRight;
+         RP -> RS.Right.VelyUpStream    = VelocityRight;
+         RP -> RS.Right.PresDownStream  = PresStar;
+         RP -> RS.Right.DensDownStream  = DensDown_Right;
+         RP -> RS.Right.VelyDownStream  = VelocityStar;
      break;
 
 	 case 3:
-         RP -> RR.Right.Right_Yes       = 
-         RP -> RR.Right.PresHead        = 
-         RP -> RR.Right.DensHead        = 
-         RP -> RR.Right.VelocityHead    = 
-         RP -> RR.Right.PresTail        = 
-         RP -> RR.Right.DensTail        = 
-         RP -> RR.Right.VelocityTail    = 
-         RP -> RR.Right.Xi              = 
+         //DensTail = GetDensInTail( PresStar, PresLeft, DensLeft );
+	     //GetHeadTailVelocity( PresLeft, DensLeft, VelocityLeft, PresStar, DensTail, VelocityStar,
+		 //   			      &HeadVelocity_Left, &TailVelocity_Left, false );
 
-         RP -> RR.Leftt.Right_Yes       = 
-         RP -> RR.Leftt.PresHead        = 
-         RP -> RR.Leftt.DensHead        = 
-         RP -> RR.Leftt.VelocityHead    = 
-         RP -> RR.Leftt.PresTail        = 
-         RP -> RR.Leftt.DensTail        = 
-         RP -> RR.Leftt.VelocityTail    = 
-         RP -> RR.Leftt.Xi              = 
+		 //VelocityStar = GetVelocityInTail( PresStar, DensTail, PresLeft, DensLeft, VelocityLeft );
+
+         //RP -> RS.Leftt.Right_Yes       = false;
+         //RP -> RS.Leftt.PresHead        = PresLeft;
+         //RP -> RS.Leftt.DensHead        = DensLeft;
+         //RP -> RS.Leftt.VelocityHead    = VelocityLeft;
+         //RP -> RS.Leftt.PresTail        = PresStar;
+         //RP -> RS.Leftt.DensTail        = DensTail;
+         //RP -> RS.Leftt.VelocityTail    = VelocityStar;
+
+         //DensTail = GetDensInTail( PresStar, PresRight, DensRight );
+
+         //RP -> RS.Right.Right_Yes       = true;
+         //RP -> RS.Right.PresHead        = PresRight;
+         //RP -> RS.Right.DensHead        = DensRight;
+         //RP -> RS.Right.VelocityHead    = VelocityRight;
+         //RP -> RS.Right.PresTail        = PresStar;
+         //RP -> RS.Right.DensTail        = DensTail;
+         //RP -> RS.Right.VelocityTail    = VelocityStar;
      break;
 
      default:

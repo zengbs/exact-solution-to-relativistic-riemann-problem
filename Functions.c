@@ -69,17 +69,17 @@ int GetWavePattern( struct InitialCondition *IC )
   if ( RelitiveVelocity >= SS )
   {
     Pattern = 1;
-//	printf("you have shock-shock wave pattern !!\n", Pattern);
+	//printf("you have shock-shock wave pattern !!\n");
   }
   else if (  RS <= RelitiveVelocity && RelitiveVelocity < SS )
   {
     Pattern = 2;
-//	printf("you have rarefaction-shock wave pattern !!\n", Pattern);
+	//printf("you have rarefaction-shock wave pattern !!\n");
   }
   else if ( RR <= RelitiveVelocity && RelitiveVelocity < RS )
   {
     Pattern = 3;
-//	printf("you have rarefaction-rarefaction wave pattern !!\n", Pattern);
+	//printf("you have rarefaction-rarefaction wave pattern !!\n");
   }
   else
   {
@@ -178,6 +178,7 @@ double Velocity_RC ( double PresStar, double DensStarRight, double PresRight, do
   }
 }
 
+// A1(+) / A3(+), eq.(176) in 'Exact solution of the 1D riemann problem in Newtonian and relativistic hydrodynamics'
 
 double A_PlusFun ( double Pres, double Dens, double PresLeft, double DensLeft )
 {

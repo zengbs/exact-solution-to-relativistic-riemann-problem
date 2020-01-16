@@ -26,14 +26,16 @@ struct Shock
   double VelyDownStream;
 };
 
-struct RareFaction
+struct Rarefaction
 {
   bool   Right_Yes;
-  double PresHead;
-  double DensHead;
+  double PresUpStream;
+  double DensUpStream;
+  double VelyUpStream;
+  double PresDownStream;
+  double DensDownStream;
+  double VelyDownStream;
   double VelocityHead;
-  double PresTail;
-  double DensTail;
   double VelocityTail;
   double Xi;
 };
@@ -46,14 +48,14 @@ struct SSWaves
 
 struct RSWaves
 {
-  struct RareFaction Right;
-  struct Shock       Leftt;
+  struct Rarefaction Leftt;
+  struct Shock       Right;
 };
 
 struct RRWaves
 {
-  struct RareFaction Right;
-  struct RareFaction Leftt;
+  struct Rarefaction Right;
+  struct Rarefaction Leftt;
 };
 
 struct RiemannProblem

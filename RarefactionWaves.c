@@ -1,4 +1,5 @@
 #include <stdbool.h>
+#include <stdio.h>
 #include <math.h>
 #include "Global.h"
 #include "Prototypes.h"
@@ -24,24 +25,45 @@ void GetHeadTailVelocity( double PresHead, double DensHead, double VelocityHead,
   }
 }
 
-
-void GetDensInFan( double Cs2, double PresHead, double DensHead, double Xi )
+double GetDensDownRarefaction( double PresDown, double PresUp, double DensUp )
 {
-  double k = PresHead * pow (DensHead, -Gamma);
-  double tmp = ( 1.0 / (Cs2 * Cs2)) - (1.0 / Gamma_1 );
+  double DensDown;
+
+  DensDown = pow( DensUp, Gamma )*PresDown / PresUp;
+
+  DensDown = pow( DensDown, 1.0 / Gamma );
+ 
+  return DensDown;
+}
+
+
+double GetVelocityDownRarefaction( double PresDown, double DensDown, double PresUp, double DensUp, double VelocityUp )
+{
+  double Velocity;
+
+  Velocity  = (1.0 + VelocityUp) * A_PlusFun( PresDown, DensDown, PresUp, DensUp ) - (1.0 - VelocityUp);
+  Velocity /= (1.0 + VelocityUp) * A_PlusFun( PresDown, DensDown, PresUp, DensUp ) + (1.0 - VelocityUp);
+
+  return Velocity;
+}
+
+double GetDensInFan( double Cs, double PresUp, double DensUp )
+{
+  double k = PresUp * pow (DensUp, -Gamma);
+  double tmp = ( 1.0 / (Cs * Cs)) - (1.0 / Gamma_1 );
   double Dens = pow ( k * Gamma * tmp, -1.0 / Gamma_1 );
 
   return Dens;
 }
 
-void GetPresInFan( double DensInFan, double PresHead, double DensHead )
+double GetPresInFan( double DensInFan, double PresUp, double DensUp )
 {
-  double Pres = PresHead * pow (DensInFan / DensHead, Gamma);
+  double Pres = PresUp * pow (DensInFan / DensUp, Gamma);
 
   return Pres;
 }
 
-void GetVelicityInFan( double Cs2, double Xi )
+double GetVelocityInFan( double Cs2, double Xi )
 {
   double Velocity = (Cs2 + Xi) / (1.0 + Cs2 * Xi);
 
@@ -49,25 +71,30 @@ void GetVelicityInFan( double Cs2, double Xi )
 }
 
 
+double GetSoundSpeedInFan ( struct Rarefaction *Rarefaction )
+{
+  double Cs;
+
+  Cs = RootFinder( SoundSpeedFunction, (void*)Rarefaction, 0.0, __DBL_EPSILON__, 0.11, 0.0, sqrt (Gamma_1) - 1e-16 );
+
+  return Cs;
+}
+
 double SoundSpeedFunction ( double Cs, void *params )
 {
-  struct RareFaction *Fan = ( struct RareFaction * ) params;
+  struct Rarefaction *Fan = ( struct Rarefaction * ) params;
 
   bool   Right_Yes    = Fan -> Right_Yes   ;
-  double PresHead     = Fan -> PresHead    ;
-  double DensHead     = Fan -> DensHead    ;
-  double VelocityHead = Fan -> VelocityHead;
-  double PresTail     = Fan -> PresTail    ;
-  double DensTail     = Fan -> DensTail    ;
-  double VelocityTail = Fan -> VelocityTail;
+  double PresUp       = Fan -> PresUpStream;
+  double DensUp       = Fan -> DensUpStream;
+  double VelocityUp   = Fan -> VelyUpStream;
   double Xi           = Fan -> Xi          ;
-
  
-  double Velocity, Var0, Var1, Cs_Head;
+  double Velocity, Var0, Var1, Cs_Up;
 
   double Sqrt_Gamma_1 = sqrt(Gamma_1);
 
-  Cs_Head = Flu_SoundSpeed( PresHead, DensHead );
+  Cs_Up = Flu_SoundSpeed( PresUp, DensUp );
 
   if ( Right_Yes )
   {
@@ -80,11 +107,11 @@ double SoundSpeedFunction ( double Cs, void *params )
 	Var0 *= ( 1.0 + Velocity ) / ( 1.0 - Velocity );
 
 
-	Var1  = ( Sqrt_Gamma_1 + Cs_Head ) / ( Sqrt_Gamma_1 - Cs_Head );
+	Var1  = ( Sqrt_Gamma_1 + Cs_Up ) / ( Sqrt_Gamma_1 - Cs_Up );
 
 	Var1  = pow( Var1, -2.0 / Sqrt_Gamma_1 );
 
-	Var1 *= ( 1.0 + VelocityHead ) / ( 1.0 - VelocityHead );
+	Var1 *= ( 1.0 + VelocityUp ) / ( 1.0 - VelocityUp );
   }
   else
   {
@@ -97,23 +124,13 @@ double SoundSpeedFunction ( double Cs, void *params )
 	Var0 *= ( 1.0 + Velocity ) / ( 1.0 - Velocity );
 
 
-	Var1  = ( Sqrt_Gamma_1 + Cs_Head ) / ( Sqrt_Gamma_1 - Cs_Head );
+	Var1  = ( Sqrt_Gamma_1 + Cs_Up ) / ( Sqrt_Gamma_1 - Cs_Up );
 
-	Var1  = pow( Var1, -2.0 / Sqrt_Gamma_1 );
+	Var1  = pow( Var1, +2.0 / Sqrt_Gamma_1 );
 
-	Var1 *= ( 1.0 + VelocityHead ) / ( 1.0 - VelocityHead );
+	Var1 *= ( 1.0 + VelocityUp ) / ( 1.0 - VelocityUp );
   }
-
   return Var1 - Var0;
 
-}
-
-double GetSoundSpeedInFan ( struct RareFaction *Fan )
-{
-  double Cs2;
-
-  Cs2 = RootFinder( SoundSpeedFunction, (void*)Fan, 0.0, __DBL_EPSILON__, 0.5, 1e-2, 1.0 );
-
-  return Cs2;
 }
 

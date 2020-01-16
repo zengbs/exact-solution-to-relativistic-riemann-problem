@@ -44,4 +44,23 @@ void GetShockVelocity( double PresUp,   double DensUp,   double V_Up,
 
 void QuadraticSolver( double A, double B, double C , double *PlusRoot, double *MinusRoot);
 
+void GetHeadTailVelocity( double PresHead, double DensHead, double VelocityHead,
+			              double PresTail, double DensTail, double VelocityTail,
+                          double *HeadVelocity, double *TailVelocity, bool Right_Yes );
+
+double GetDensDownRarefaction( double PresDown, double PresUp, double DensUp );
+
+double GetVelocityDownRarefaction( double PresDown, double DensDown, double PresUp, double DensUp, double VelocityUp );
+
+double GetDensInFan( double Cs2, double PresHead, double DensHead );
+
+
+double GetPresInFan( double DensInFan, double PresHead, double DensHead );
+
+double GetVelocityInFan( double Cs2, double Xi );
+
+double GetSoundSpeedInFan ( struct Rarefaction *Rarefaction );
+
+double SoundSpeedFunction ( double Cs, void *params );
+
 #endif
