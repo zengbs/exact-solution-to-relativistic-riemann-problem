@@ -135,8 +135,8 @@ double Velocity_LC ( double PresStar, double DensStarLeft, double PresLeft, doub
 
 	 EngyLeft = Flu_TotalEngy( PresLeft, DensLeft );
 
-     Velocity_LC  = ( PresStar - PresLeft ) * ( EngyStarLeft - EngyLeft );
-	 Velocity_LC /= ( EngyLeft + PresStar ) * ( EngyStarLeft + PresLeft );
+     Velocity_LC  = ( PresStar     - PresLeft ) * ( EngyStarLeft - EngyLeft );
+	 Velocity_LC /= ( EngyStarLeft + PresStar ) * ( EngyLeft     + PresLeft );
 
      if ( Velocity_LC < 0.0 )
 	 {
@@ -145,6 +145,7 @@ double Velocity_LC ( double PresStar, double DensStarLeft, double PresLeft, doub
 	 }
 
 	 Velocity_LC  = sqrt( Velocity_LC );
+
   
      return Velocity_LC;
   }
@@ -156,9 +157,13 @@ double Velocity_LC ( double PresStar, double DensStarLeft, double PresLeft, doub
 	   exit(1);
 	 }
 
-     Velocity_LC  = 1.0 - A_PlusFun( PresStar, DensStarLeft, PresLeft, DensLeft ); 
-     Velocity_LC /= 1.0 + A_PlusFun( PresStar, DensStarLeft, PresLeft, DensLeft ); 
-  
+     //Velocity_LC  = 1.0 - A_PlusFun( PresStar, DensStarLeft, PresLeft, DensLeft ); 
+     //Velocity_LC /= 1.0 + A_PlusFun( PresStar, DensStarLeft, PresLeft, DensLeft ); 
+
+	 double A_Plus = A_PlusFun( PresStar, DensStarLeft, PresLeft, DensLeft );
+
+     Velocity_LC = ( 1.0 - A_Plus ) / ( 2.0 * sqrt(A_Plus) );
+
      return Velocity_LC; 
   }
 }
@@ -177,10 +182,8 @@ double Velocity_RC ( double PresStar, double DensStarRight, double PresRight, do
 
 	 EngyRight = Flu_TotalEngy( PresRight, DensRight );
 
-     Velocity_RC  = ( PresStar - PresRight ) * ( EngyStarRight - EngyRight );
-
-
-	 Velocity_RC /= ( EngyRight + PresStar ) * ( EngyStarRight + PresRight );
+     Velocity_RC  = ( PresStar      - PresRight ) * ( EngyStarRight - EngyRight );
+	 Velocity_RC /= ( EngyStarRight + PresStar  ) * ( EngyRight     + PresRight );
 
      if ( Velocity_RC < 0.0 )
 	 {
@@ -200,8 +203,12 @@ double Velocity_RC ( double PresStar, double DensStarRight, double PresRight, do
 	   exit(1);
 	 }
 
-     Velocity_RC  = 1.0 - A_MinusFun( PresStar, DensStarRight, PresRight, DensRight ); 
-     Velocity_RC /= 1.0 + A_MinusFun( PresStar, DensStarRight, PresRight, DensRight ); 
+     //Velocity_RC  = 1.0 - A_MinusFun( PresStar, DensStarRight, PresRight, DensRight ); 
+     //Velocity_RC /= 1.0 + A_MinusFun( PresStar, DensStarRight, PresRight, DensRight ); 
+
+	 double A_Minus = A_MinusFun( PresStar, DensStarRight, PresRight, DensRight );;
+
+     Velocity_RC = ( 1.0 - A_Minus ) / ( 2.0 * sqrt(A_Minus) );
   
      return Velocity_RC; 
   }
@@ -274,7 +281,8 @@ double PresFunction( double PresStar, void  *params )
     V_LC = Velocity_LC( PresStar, NAN, PresLeft,   DensLeft, Shock_Yes ); // left side of eq. (4.161)
     V_RC = Velocity_RC( PresStar, NAN, PresRight, DensRight, Shock_Yes ); // right side of eq. (4.161)
 
-    V_LR = ( V_LC - V_RC )/( 1.0 - V_LC*V_RC );
+    //V_LR = ( V_LC - V_RC )/( 1.0 - V_LC*V_RC );
+	V_LR = - V_RC * sqrt(1.0 + V_LC * V_LC) + sqrt(1.0 + V_RC * V_RC) * V_LC;
   }
   else if ( Pattern == 2 )
   {
@@ -283,7 +291,8 @@ double PresFunction( double PresStar, void  *params )
     V_LC = Velocity_LC( PresStar, DensStarLeft, PresLeft,   DensLeft, Shock_No  ); // eq. (4.168)
     V_RC = Velocity_RC( PresStar, NAN,         PresRight,  DensRight, Shock_Yes ); // right side of eq. (4.161) 
 
-    V_LR = ( V_LC - V_RC )/( 1.0 - V_LC*V_RC );
+    //V_LR = ( V_LC - V_RC )/( 1.0 - V_LC*V_RC );
+	V_LR = - V_RC * sqrt(1.0 + V_LC * V_LC) + sqrt(1.0 + V_RC * V_RC) * V_LC;
   }
   else if ( Pattern == 3 )
   {
@@ -292,7 +301,8 @@ double PresFunction( double PresStar, void  *params )
     V_LC = Velocity_LC( PresStar, NAN,          PresLeft,  DensLeft, Shock_Yes );
     V_RC = Velocity_RC( PresStar, DensStarRight, PresRight, DensRight, Shock_No  );
 
-    V_LR = ( V_LC - V_RC )/( 1.0 - V_LC*V_RC );
+    //V_LR = ( V_LC - V_RC )/( 1.0 - V_LC*V_RC );
+	V_LR = - V_RC * sqrt(1.0 + V_LC * V_LC) + sqrt(1.0 + V_RC * V_RC) * V_LC;
   }
   else if ( Pattern == 4 )
   {
@@ -304,14 +314,19 @@ double PresFunction( double PresStar, void  *params )
 	A_Plus  = A_PlusFun( PresStar,  DensStarLeft,  PresLeft,  DensLeft );
 	A_Minus = A_MinusFun( PresStar, DensStarRight, PresRight, DensRight ); 
 
-    V_LR    = - ( A_Plus - A_Minus ) / ( A_Plus + A_Minus ); // eq. (4.177)
+    //V_LR    = - ( A_Plus - A_Minus ) / ( A_Plus + A_Minus ); // eq. (4.177)
+	V_LR = ( A_Minus - A_Plus ) / sqrt( 4.0*A_Minus*A_Plus );
   }
 
   double RelitiveVelocity;
 
-  RelitiveVelocity = ( VelocityLeft - VelocityRight ) / ( 1.0 - VelocityLeft*VelocityRight );
+  //RelitiveVelocity = ( VelocityLeft - VelocityRight ) / ( 1.0 - VelocityLeft*VelocityRight );
+  RelitiveVelocity = - VelocityRight * sqrt(1.0 + VelocityLeft *VelocityLeft )
+		             +  VelocityLeft * sqrt(1.0 + VelocityRight*VelocityRight);
+
   return RelitiveVelocity - V_LR;
 }
+
 
 
 

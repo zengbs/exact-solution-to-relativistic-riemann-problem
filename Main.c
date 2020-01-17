@@ -19,7 +19,7 @@ int main()
 
   double DensRight     =  1.0;
   double U_Right       =  -0.1;
-  double PresRight     =  10.0;
+  double PresRight     =  2.0;
 
   
   double DT            = 0.1;

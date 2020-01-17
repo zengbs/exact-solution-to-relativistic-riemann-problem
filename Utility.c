@@ -23,7 +23,20 @@ int GetAllInfomation( struct InitialCondition *IC, struct RiemannProblem *RP )
   
   double PresStar, VelocityStar;
 
-  PresStar = RootFinder( PresFunction, (void*)IC, 0.0, __DBL_EPSILON__, 0.5, 1e-10, 50.0 );
+  double lb = 1e-10;
+  double up = 1e7;
+
+
+  double fun_lb = PresFunction(lb, IC);
+  double fun_up = PresFunction(up, IC);
+
+  if ( fun_lb*fun_up > 0.0 )
+  {
+    printf( "fun_lb=%e, fun_up=%e\n", fun_lb, fun_up );
+	exit(1);
+  }
+
+  PresStar = RootFinder( PresFunction, (void*)IC, 0.0, __DBL_EPSILON__, 0.5, lb, up );
 
 
   double ShockVelocity_Left,  DensDown_Left;
