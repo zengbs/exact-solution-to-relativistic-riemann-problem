@@ -19,7 +19,7 @@ int main()
 
   double DensRight     =  1.0;
   double U_Right       =  -0.1;
-  double PresRight     =  10.0;
+  double PresRight     =  1.0;
 
   
   double DT            = 0.1;
@@ -54,9 +54,29 @@ int main()
 
   int Pattern;
 
-  Pattern = GetAllInfomation( &IC, &RP );
+  //Pattern = GetAllInfomation( &IC, &RP );
 
-  Plot( Pattern, &RP, plot );
+  //Plot( Pattern, &RP, plot );
+
+  double up, lb;
+
+  up = 1e2;
+  lb = 1e-2;
+  int N = 1000;
+
+  double dp = (up-lb)/(double)N;
+
+  double pres = 0.0;
+
+  double fun_pres;
+
+  for (int i=1;i<=N;i++)
+  {
+    pres = i*dp;
+    fun_pres = PresFunction( pres, &IC );
+  
+	printf("%e  %e\n", pres, fun_pres);
+  }
 
 
   return 0;
