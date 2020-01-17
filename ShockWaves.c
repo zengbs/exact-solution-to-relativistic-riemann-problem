@@ -80,7 +80,6 @@ double MassCurrent( double PresUp, double DensUp, double PresDown, double DensDo
 
   EnthalpyUp   = Flu_Enthalpy(   PresUp,   DensUp );
   EnthalpyDown = Flu_Enthalpy( PresDown, DensDown );
-  
   MassCurrent  = PresDown - PresUp;
   MassCurrent /= ( EnthalpyUp / DensUp ) - ( EnthalpyDown / DensDown );
 
@@ -109,6 +108,7 @@ double TaubAdiabatic ( double PresUp, double DensUp, double PresDown )
 	A = 1.0 + Gamma_1 * PresUp / PresDown;
 	B = - Gamma_1 * PresDiff / PresDown;
 	C = - Gamma_1 * PresDiff * EnthalpyUp / PresUp - ( 1.0 + Gamma_1 * PresDown / PresUp )*SQR(EnthalpyUp);
+ 
 
     QuadraticSolver( A, B, C, &EnthalpyDown, NULL );
 
