@@ -261,22 +261,20 @@ double PresFunction( double PresStar, void  *params )
   double VelocityRight = IC -> VelocityRight;
   double PresRight     = IC -> PresRight    ;
   
-  int Pattern;
   bool Shock_Yes = true;
   bool Shock_No  = false;
   double V_LC, V_RC, V_LR;
   double DensStarLeft, DensStarRight;
 
-  Pattern = GetWavePattern( IC );
 
-  if ( Pattern == 1 )
+  if ( PresStar >= MAX(PresLeft, PresRight) )  // SS
   {
     V_LC = Velocity_LC( PresStar, NAN, PresLeft,   DensLeft, Shock_Yes ); // left side of eq. (4.161)
     V_RC = Velocity_RC( PresStar, NAN, PresRight, DensRight, Shock_Yes ); // right side of eq. (4.161)
 
     V_LR = ( V_LC - V_RC )/( 1.0 - V_LC*V_RC );
   }
-  else if ( Pattern == 2 )
+  else if ( MIN(PresLeft, PresRight) < PresStar && PresStar < MAX(PresLeft, PresRight) && PresLeft > PresRight ) // RS
   {
     DensStarLeft = DensLeft*pow(  PresStar/PresLeft, 1.0/Gamma );
 
@@ -285,7 +283,7 @@ double PresFunction( double PresStar, void  *params )
 
     V_LR = ( V_LC - V_RC )/( 1.0 - V_LC*V_RC );
   }
-  else if ( Pattern == 3 )
+  else if ( MIN(PresLeft, PresRight) < PresStar && PresStar < MAX(PresLeft, PresRight) && PresLeft < PresRight ) //SR
   {
     DensStarRight = DensRight*pow(  PresStar/PresRight, 1.0/Gamma );
   
@@ -294,7 +292,7 @@ double PresFunction( double PresStar, void  *params )
 
     V_LR = ( V_LC - V_RC )/( 1.0 - V_LC*V_RC );
   }
-  else if ( Pattern == 4 )
+  else if ( PresStar <= MIN(PresLeft, PresRight) ) // RR
   {
     DensStarLeft  = DensLeft *pow(  PresStar/PresLeft,  1.0/Gamma );
     DensStarRight = DensRight*pow(  PresStar/PresRight, 1.0/Gamma );
@@ -310,7 +308,8 @@ double PresFunction( double PresStar, void  *params )
   double RelitiveVelocity;
 
   RelitiveVelocity = ( VelocityLeft - VelocityRight ) / ( 1.0 - VelocityLeft*VelocityRight );
-  return RelitiveVelocity - V_LR;
+  //return RelitiveVelocity - V_LR;
+  return V_LR;
 }
 
 
