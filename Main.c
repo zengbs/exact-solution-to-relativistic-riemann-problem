@@ -14,12 +14,12 @@ double Gamma_1 = 0.333333333333333333333;
 int main()
 {
   double DensLeft      =  1.0;
-  double U_Left        =  0.1;
+  double U_Left        =  0.0;
   double PresLeft      =  1.0;
 
   double DensRight     =  1.0;
-  double U_Right       =  -0.1;
-  double PresRight     =  2.0;
+  double U_Right       =  0.0;
+  double PresRight     = 10.0;
 
   
   double DT            = 0.1;
@@ -56,6 +56,7 @@ int main()
 
   Pattern = GetAllInfomation( &IC, &RP );
 
+  printf("Pattern=%d\n", Pattern);
   Plot( Pattern, &RP, plot );
 
 
