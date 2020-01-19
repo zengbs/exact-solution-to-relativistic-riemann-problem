@@ -221,8 +221,8 @@ double A_PlusFun ( double Pres, double Dens, double PresLeft, double DensLeft )
 {
     double CsLeft, Cs, Sqrt_Gamma_1, A_Plus;
 
-	CsLeft = Flu_SoundSpeed ( PresLeft, DensLeft );
-	Cs     = Flu_SoundSpeed ( Pres    , Dens     );
+	CsLeft = Flu_SoundSpeed ( PresLeft / DensLeft );
+	Cs     = Flu_SoundSpeed ( Pres     / Dens     );
 
     Sqrt_Gamma_1 = sqrt( Gamma_1 );
 
@@ -239,8 +239,8 @@ double A_MinusFun ( double Pres, double Dens, double PresRight, double DensRight
 {
     double CsRight, Cs, Sqrt_Gamma_1, A_Minus;
 
-	CsRight = Flu_SoundSpeed ( PresRight, DensRight );
-	Cs      = Flu_SoundSpeed ( Pres     , Dens      );
+	CsRight = Flu_SoundSpeed ( PresRight / DensRight );
+	Cs      = Flu_SoundSpeed ( Pres      / Dens      );
 
     Sqrt_Gamma_1 = sqrt( Gamma_1 );
 
@@ -319,7 +319,6 @@ double PresFunction( double PresStar, void  *params )
   RelitiveVelocity = ( VelocityLeft - VelocityRight ) / ( 1.0 - VelocityLeft*VelocityRight );
 
   return RelitiveVelocity - V_LR;
-  //return V_LR;
 }
 
 

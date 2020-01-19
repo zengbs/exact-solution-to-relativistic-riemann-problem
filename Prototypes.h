@@ -9,15 +9,15 @@ double Velocity_LC ( double PresStar, double DensStarLeft, double PresLeft, doub
 
 double Velocity_RC ( double PresStar, double DensStarRight, double PresRight, double DensRight, bool Shock );
 
-double A_PlusFun ( double Pres, double Dens, double PresLeft, double DensLeft );
+double A_PlusFun ( double Temp );
 
-double A_MinusFun ( double Pres, double Dens, double PresRight, double DensRight );
+double A_MinusFun ( double Temp);
 
 double TaubAdiabatic ( double PresUp, double DensUp, double PresDown );
 
 double PresFunction( double PresStar, void * );
 
-double Flu_SoundSpeed( double Pres, double Dens );
+double Flu_SoundSpeed( double Temp );
 
 double Flu_Enthalpy( double Pres, double Dens );
 
@@ -39,7 +39,7 @@ double GetVelocityDown( double PresUp,   double DensUp, double ShockFrontVelocit
 double GetDensDown( double PresUp, double DensUp, double PresDown  );
 
 void GetShockVelocity( double PresUp,   double DensUp,   double V_Up, 
-				    double PresDown, double DensDown, double V_Down,
+				    double PresDown, double DensDown,
 			        double *Vs_Left, double *Vs_Right );
 
 void QuadraticSolver( double A, double B, double C , double *PlusRoot, double *MinusRoot);
@@ -61,6 +61,8 @@ double GetVelocityInFan( double Cs2, double Xi, bool Right_Yes );
 
 double GetSoundSpeedInFan ( struct Rarefaction *Rarefaction );
 
-double SoundSpeedFunction ( double Cs, void *params );
+double TemperatureFunction ( double Temp, void *params );
+
+double U2V(double U);
 
 #endif
