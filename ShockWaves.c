@@ -8,56 +8,46 @@
 #include "Macro.h"
 
 void GetShockVelocity( double PresUp,   double DensUp,   double V_Up, 
-		     		   double PresDown, double DensDown, double V_Down,
+		     		   double PresDown, double DensDown,
 			           double *Vs_Left, double *Vs_Right )
 {
-  double ShockVelocity, LorentzFactor, J;
-  double A, B, C;
+  double J;
   
   J = MassCurrent( PresUp, DensUp, PresDown, DensDown );
-  
-  if ( V_Up != V_Up   )
-  {
-    LorentzFactor = 1.0 / sqrt( 1.0 - SQR(V_Down) );
 
-    A = SQR(J) + SQR( DensDown * LorentzFactor );
-    B = -2.0 * V_Down * SQR( DensDown * LorentzFactor );
-    C = SQR( DensDown*LorentzFactor*V_Down ) - SQR( J );
-  }
+  if ( Vs_Right != NULL )
+     *Vs_Right = +( J * sqrt( 1.0 + V_Up*V_Up ) + V_Up * sqrt( J*J + DensUp*DensUp ) ) / DensUp;
 
-  if ( V_Down != V_Down )
-  {
-    LorentzFactor = 1.0 / sqrt( 1.0 - SQR(V_Up) );
-
-    A = SQR(J) + SQR( DensUp * LorentzFactor );
-    B = -2.0 * V_Up * SQR( DensUp * LorentzFactor );
-    C = SQR( DensUp*LorentzFactor*V_Up ) - SQR( J );
-  }
-
-  QuadraticSolver( A, B, C, Vs_Right, Vs_Left );
+  if ( Vs_Left != NULL )
+     *Vs_Left  = -( J * sqrt( 1.0 + V_Up*V_Up ) - V_Up * sqrt( J*J + DensUp*DensUp ) ) / DensUp;
 }
 
-// solve eq. (4.140) for Va or Vb
 
-double GetVelocityDown( double PresUp,   double DensUp, double ShockFrontVelocity,
+double GetVelocityDown( double PresUp,   double DensUp, double ShockVelocity,
                         double PresDown, double DensDown )
 {
-  double A, B, C, LorentzFactor, J, V_Left, V_Right;
-
-  LorentzFactor = 1.0 / sqrt( 1.0 - SQR(ShockFrontVelocity) );
+  double J;
 
   J = MassCurrent( PresUp, DensUp, PresDown, DensDown );
 
-  A = SQR( DensDown * LorentzFactor ) + SQR( J );
+  if( ShockVelocity > 0.0 )
+  {
+     double Velocity_Left;
 
-  B = -2.0 * ShockFrontVelocity * SQR( DensDown * LorentzFactor );
+	 Velocity_Left = -J * sqrt( 1.0 + SQR(ShockVelocity) ) + ShockVelocity * sqrt( J*J + SQR(DensDown) );
+	 Velocity_Left /= DensDown;
 
-  C = SQR( DensDown * LorentzFactor * ShockFrontVelocity ) - SQR( J );
+	 return Velocity_Left;
+  }
+  else
+  {
+     double Velocity_Right;
 
-  QuadraticSolver( A, B, C, &V_Left, &V_Right );
+	 Velocity_Right = J * sqrt( 1.0 + SQR(ShockVelocity) ) + ShockVelocity * sqrt( J*J + SQR(DensDown) );
+	 Velocity_Right /= DensDown;
 
-  if( ShockFrontVelocity > 0.0 ) return V_Right; 
-  else                           return  V_Left;
+	 return Velocity_Right;
+  }
 
 }
 
@@ -80,7 +70,6 @@ double MassCurrent( double PresUp, double DensUp, double PresDown, double DensDo
 
   EnthalpyUp   = Flu_Enthalpy(   PresUp,   DensUp );
   EnthalpyDown = Flu_Enthalpy( PresDown, DensDown );
-  
   MassCurrent  = PresDown - PresUp;
   MassCurrent /= ( EnthalpyUp / DensUp ) - ( EnthalpyDown / DensDown );
 
@@ -109,6 +98,7 @@ double TaubAdiabatic ( double PresUp, double DensUp, double PresDown )
 	A = 1.0 + Gamma_1 * PresUp / PresDown;
 	B = - Gamma_1 * PresDiff / PresDown;
 	C = - Gamma_1 * PresDiff * EnthalpyUp / PresUp - ( 1.0 + Gamma_1 * PresDown / PresUp )*SQR(EnthalpyUp);
+ 
 
     QuadraticSolver( A, B, C, &EnthalpyDown, NULL );
 

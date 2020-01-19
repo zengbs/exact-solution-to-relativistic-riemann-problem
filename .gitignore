@@ -3,3 +3,5 @@ a.out
 *.dat
 *.dat*
 *.o
+log
+Xline*

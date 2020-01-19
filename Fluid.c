@@ -6,27 +6,22 @@
 #include "Prototypes.h"
 #include "Global.h"
 
-double Flu_SoundSpeed( double Pres, double Dens )
+double Flu_SoundSpeed( double Temp )
 {
-	double Cs_2, Enthalpy;
+	double CsSqr;
 
-	Enthalpy = Flu_Enthalpy( Pres, Dens );
-
-	if( Pres > 0.0 )  
+	if( Temp > 0.0 )  
 	{
-	   Cs_2 = Gamma * Pres / Dens / Enthalpy;
-	}
-	else if ( Pres == 0.0 ) 
-	{
-	   Cs_2 = 0.0;
+	   CsSqr  = Gamma * Temp * Gamma_1;
+	   CsSqr /= Gamma * Temp * (2.0 - Gamma) + Gamma_1;
 	}
 	else
 	{
-	   printf("pressure == 0.0 was found!!\n");
+	   printf("Temp = %e !!\n", Temp);
 	   exit(1);
 	}
 
-    return sqrt( Cs_2 );
+    return sqrt( CsSqr );
 }
 
 double Flu_Enthalpy( double Pres, double Dens )

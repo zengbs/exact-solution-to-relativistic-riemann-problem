@@ -14,12 +14,12 @@ double Gamma_1 = 0.333333333333333333333;
 int main()
 {
   double DensLeft      =  1.0;
-  double U_Left        =  0.0995037190209989;
+  double VelocityLeft  = -1e1;
   double PresLeft      =  1.0;
 
   double DensRight     =  1.0;
-  double U_Right       =  -0.1961161351381840;
-  double PresRight     =  2.0;
+  double VelocityRight =  1e1;
+  double PresRight     =  1.0;
 
   
   double DT            = 0.1;
@@ -28,8 +28,6 @@ int main()
   double X_Right       = 1.0;
   int NCell            = 1024;
  
-  double VelocityLeft = U_Left / sqrt(1.0 + U_Left*U_Left);
-  double VelocityRight = U_Right / sqrt(1.0 + U_Right*U_Right);
 
   struct InitialCondition IC = 
   {
@@ -55,7 +53,8 @@ int main()
   int Pattern;
 
   Pattern = GetAllInfomation( &IC, &RP );
-
+  
+  printf("Pattern=%d\n", Pattern);
   Plot( Pattern, &RP, plot );
 
   //double up, lb;
@@ -77,6 +76,27 @@ int main()
   //
   //  printf("%e  %e\n", pres, fun_pres);
   //}
+
+
+  //double up, lb;
+  //up = 1e13;
+  //lb = 1e12;
+  //int N = 1000;
+
+  //double dp = (up-lb)/(double)N;
+
+  //double pres = 0.0;
+
+  //double fun_pres;
+
+  //for (int i=1;i<=N;i++)
+  //{
+  //  pres = i*dp;
+  //  fun_pres = PresFunction( pres, &IC );
+  //
+  //     printf("%e  %e\n", pres, fun_pres);
+  //}
+
 
 
   return 0;

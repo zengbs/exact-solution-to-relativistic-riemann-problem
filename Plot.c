@@ -92,7 +92,7 @@ void Plot( int Pattern, struct RiemannProblem *RP, struct PlotParams plot )
 		    if ( Pattern == 1 )
 		    {
               X_Min = 0.0;
-              X_Max = RP->SS.Leftt.ShockVelocity * time + X0 - dX;
+              X_Max = U2V(RP->SS.Leftt.ShockVelocity) * time + X0 - dX;
 
               fprintf (fptr[j], "%e %e %e %e\n", X_Min, RP->SS.Leftt.DensUpStream, RP->SS.Leftt.VelyUpStream, RP->SS.Leftt.PresUpStream );
               fprintf (fptr[j], "%e %e %e %e\n", X_Max, RP->SS.Leftt.DensUpStream, RP->SS.Leftt.VelyUpStream, RP->SS.Leftt.PresUpStream );
@@ -100,7 +100,7 @@ void Plot( int Pattern, struct RiemannProblem *RP, struct PlotParams plot )
 		    else if ( Pattern == 2 )
 		    {
               X_Min = 0.0;
-              X_Max = RP->RS.Leftt.VelocityHead * time + X0 - dX;
+              X_Max = U2V(RP->RS.Leftt.VelocityHead) * time + X0 - dX;
 
               fprintf (fptr[j], "%e %e %e %e\n", X_Min, RP->RS.Leftt.DensUpStream, RP->RS.Leftt.VelyUpStream, RP->RS.Leftt.PresUpStream );
               fprintf (fptr[j], "%e %e %e %e\n", X_Max, RP->RS.Leftt.DensUpStream, RP->RS.Leftt.VelyUpStream, RP->RS.Leftt.PresUpStream );
@@ -108,7 +108,7 @@ void Plot( int Pattern, struct RiemannProblem *RP, struct PlotParams plot )
 		    else if ( Pattern == 3 )
 		    {
               X_Min = 0.0;
-              X_Max = RP->SR.Leftt.ShockVelocity * time + X0 - dX;
+              X_Max = U2V(RP->SR.Leftt.ShockVelocity) * time + X0 - dX;
 
               fprintf (fptr[j], "%e %e %e %e\n", X_Min, RP->SR.Leftt.DensUpStream, RP->SR.Leftt.VelyUpStream, RP->SR.Leftt.PresUpStream );
               fprintf (fptr[j], "%e %e %e %e\n", X_Max, RP->SR.Leftt.DensUpStream, RP->SR.Leftt.VelyUpStream, RP->SR.Leftt.PresUpStream );
@@ -116,7 +116,7 @@ void Plot( int Pattern, struct RiemannProblem *RP, struct PlotParams plot )
 			else if ( Pattern == 4 )
 			{
               X_Min = 0.0;
-              X_Max = RP->RR.Leftt.VelocityHead * time + X0 - dX;
+              X_Max = U2V(RP->RR.Leftt.VelocityHead) * time + X0 - dX;
 
               fprintf (fptr[j], "%e %e %e %e\n", X_Min, RP->RR.Leftt.DensUpStream, RP->RR.Leftt.VelyUpStream, RP->RR.Leftt.PresUpStream );
               fprintf (fptr[j], "%e %e %e %e\n", X_Max, RP->RR.Leftt.DensUpStream, RP->RR.Leftt.VelyUpStream, RP->RR.Leftt.PresUpStream );
@@ -126,8 +126,8 @@ void Plot( int Pattern, struct RiemannProblem *RP, struct PlotParams plot )
           case 2:
 		    if ( Pattern == 2 )
 		    {
-			  X_Min = RP->RS.Leftt.VelocityHead * time + X0;
-			  X_Max = RP->RS.Leftt.VelocityTail * time + X0 - dX;
+			  X_Min = U2V(RP->RS.Leftt.VelocityHead) * time + X0;
+			  X_Max = U2V(RP->RS.Leftt.VelocityTail) * time + X0 - dX;
 
 			  RP->RS.Leftt.Xi = ( X_Min - X0 )/time;
 
@@ -146,8 +146,8 @@ void Plot( int Pattern, struct RiemannProblem *RP, struct PlotParams plot )
 		    }
 			else if ( Pattern == 4 )
 			{
-			  X_Min = RP->RR.Leftt.VelocityHead * time + X0;
-			  X_Max = RP->RR.Leftt.VelocityTail * time + X0 - dX;
+			  X_Min = U2V(RP->RR.Leftt.VelocityHead) * time + X0;
+			  X_Max = U2V(RP->RR.Leftt.VelocityTail) * time + X0 - dX;
 
 			  RP->RR.Leftt.Xi = ( X_Min - X0 )/time;
 
@@ -169,32 +169,32 @@ void Plot( int Pattern, struct RiemannProblem *RP, struct PlotParams plot )
           case 3:
 		    if ( Pattern == 1 )
 		    {
-              X_Min = RP->SS.Leftt.ShockVelocity  * time + X0;
-              X_Max = RP->SS.Leftt.VelyDownStream * time + X0 - dX;
+              X_Min = U2V(RP->SS.Leftt.ShockVelocity)  * time + X0;
+              X_Max = U2V(RP->SS.Leftt.VelyDownStream) * time + X0 - dX;
 
               fprintf (fptr[j], "%e %e %e %e\n", X_Min, RP->SS.Leftt.DensDownStream, RP->SS.Leftt.VelyDownStream, RP->SS.Leftt.PresDownStream );
               fprintf (fptr[j], "%e %e %e %e\n", X_Max, RP->SS.Leftt.DensDownStream, RP->SS.Leftt.VelyDownStream, RP->SS.Leftt.PresDownStream );
 		    }
 		    else if ( Pattern == 2 )
 		    {
-              X_Min = RP->RS.Leftt.VelocityTail   * time + X0;
-              X_Max = RP->RS.Leftt.VelyDownStream * time + X0 - dX;
+              X_Min = U2V(RP->RS.Leftt.VelocityTail)   * time + X0;
+              X_Max = U2V(RP->RS.Leftt.VelyDownStream) * time + X0 - dX;
 
               fprintf (fptr[j], "%e %e %e %e\n", X_Min,  RP->RS.Leftt.DensDownStream, RP->RS.Leftt.VelyDownStream, RP->RS.Leftt.PresDownStream );
               fprintf (fptr[j], "%e %e %e %e\n", X_Max,  RP->RS.Leftt.DensDownStream, RP->RS.Leftt.VelyDownStream, RP->RS.Leftt.PresDownStream );
 		    }
 		    else if ( Pattern == 3 )
 		    {
-              X_Min = RP->SR.Leftt.ShockVelocity  * time + X0;
-              X_Max = RP->SR.Leftt.VelyDownStream * time + X0 - dX;
+              X_Min = U2V(RP->SR.Leftt.ShockVelocity)  * time + X0;
+              X_Max = U2V(RP->SR.Leftt.VelyDownStream) * time + X0 - dX;
 
               fprintf (fptr[j], "%e %e %e %e %d\n", X_Min,  RP->SR.Leftt.DensDownStream, RP->SR.Leftt.VelyDownStream, RP->SR.Leftt.PresDownStream, 3 );
               fprintf (fptr[j], "%e %e %e %e %d\n", X_Max,  RP->SR.Leftt.DensDownStream, RP->SR.Leftt.VelyDownStream, RP->SR.Leftt.PresDownStream, 3 );
 		    }
 		    else if ( Pattern == 4 )
 		    {
-              X_Min = RP->RR.Leftt.VelocityTail   * time + X0;
-              X_Max = RP->RR.Leftt.VelyDownStream * time + X0 - dX;
+              X_Min = U2V(RP->RR.Leftt.VelocityTail)   * time + X0;
+              X_Max = U2V(RP->RR.Leftt.VelyDownStream) * time + X0 - dX;
 
               fprintf (fptr[j], "%e %e %e %e\n", X_Min,  RP->RR.Leftt.DensDownStream, RP->RR.Leftt.VelyDownStream, RP->RR.Leftt.PresDownStream );
               fprintf (fptr[j], "%e %e %e %e\n", X_Max,  RP->RR.Leftt.DensDownStream, RP->RR.Leftt.VelyDownStream, RP->RR.Leftt.PresDownStream );
@@ -204,32 +204,32 @@ void Plot( int Pattern, struct RiemannProblem *RP, struct PlotParams plot )
           case 4:
 		    if ( Pattern == 1 )
 		    {
-              X_Min = RP->SS.Right.VelyDownStream* time + X0;
-              X_Max = RP->SS.Right.ShockVelocity * time + X0 - dX;
+              X_Min = U2V(RP->SS.Right.VelyDownStream)* time + X0;
+              X_Max = U2V(RP->SS.Right.ShockVelocity) * time + X0 - dX;
 
               fprintf (fptr[j], "%e %e %e %e\n", X_Min, RP->SS.Right.DensDownStream, RP->SS.Right.VelyDownStream, RP->SS.Right.PresDownStream );
               fprintf (fptr[j], "%e %e %e %e\n", X_Max, RP->SS.Right.DensDownStream, RP->SS.Right.VelyDownStream, RP->SS.Right.PresDownStream );
 		    }
 		    else if ( Pattern == 2 )
 		    {
-              X_Min = RP->RS.Right.VelyDownStream* time + X0;
-              X_Max = RP->RS.Right.ShockVelocity * time + X0 - dX;
+              X_Min = U2V(RP->RS.Right.VelyDownStream)* time + X0;
+              X_Max = U2V(RP->RS.Right.ShockVelocity) * time + X0 - dX;
 
               fprintf (fptr[j], "%e %e %e %e\n", X_Min, RP->RS.Right.DensDownStream, RP->RS.Right.VelyDownStream, RP->RS.Right.PresDownStream );
               fprintf (fptr[j], "%e %e %e %e\n", X_Max, RP->RS.Right.DensDownStream, RP->RS.Right.VelyDownStream, RP->RS.Right.PresDownStream );
 		    }
 		    else if ( Pattern == 3 )
 		    {
-              X_Min = RP->SR.Leftt.VelyDownStream * time + X0;
-              X_Max = RP->SR.Right.VelocityTail   * time + X0 - dX;
+              X_Min = U2V(RP->SR.Leftt.VelyDownStream) * time + X0;
+              X_Max = U2V(RP->SR.Right.VelocityTail)   * time + X0 - dX;
 
               fprintf (fptr[j], "%e %e %e %e %d\n", X_Min, RP->SR.Right.DensDownStream, RP->SR.Right.VelyDownStream, RP->SR.Right.PresDownStream, 4 );
               fprintf (fptr[j], "%e %e %e %e %d\n", X_Max, RP->SR.Right.DensDownStream, RP->SR.Right.VelyDownStream, RP->SR.Right.PresDownStream, 4 );
 		    }
 		    else if ( Pattern == 4 )
 		    {
-              X_Min = RP->RR.Right.VelyDownStream * time + X0;
-              X_Max = RP->RR.Right.VelocityTail   * time + X0 - dX;
+              X_Min = U2V(RP->RR.Right.VelyDownStream) * time + X0;
+              X_Max = U2V(RP->RR.Right.VelocityTail)   * time + X0 - dX;
 
               fprintf (fptr[j], "%e %e %e %e\n", X_Min, RP->RR.Right.DensDownStream, RP->RR.Right.VelyDownStream, RP->RR.Right.PresDownStream );
               fprintf (fptr[j], "%e %e %e %e\n", X_Max, RP->RR.Right.DensDownStream, RP->RR.Right.VelyDownStream, RP->RR.Right.PresDownStream );
@@ -239,8 +239,8 @@ void Plot( int Pattern, struct RiemannProblem *RP, struct PlotParams plot )
           case 5:
 		    if ( Pattern == 3 )
 		    {
-			  X_Min = RP->SR.Right.VelocityTail * time + X0;
-			  X_Max = RP->SR.Right.VelocityHead * time + X0 - dX;
+			  X_Min = U2V(RP->SR.Right.VelocityTail) * time + X0;
+			  X_Max = U2V(RP->SR.Right.VelocityHead) * time + X0 - dX;
 
 			  RP->SR.Right.Xi = ( X_Min - X0 )/time;
 
@@ -259,8 +259,8 @@ void Plot( int Pattern, struct RiemannProblem *RP, struct PlotParams plot )
 		    }
 			else if ( Pattern == 4 )
 			{
-			  X_Min = RP->RR.Right.VelocityTail * time + X0;
-			  X_Max = RP->RR.Right.VelocityHead * time + X0 - dX;
+			  X_Min = U2V(RP->RR.Right.VelocityTail) * time + X0;
+			  X_Max = U2V(RP->RR.Right.VelocityHead) * time + X0 - dX;
 
 			  RP->RR.Right.Xi = ( X_Min - X0 )/time;
 
@@ -282,7 +282,7 @@ void Plot( int Pattern, struct RiemannProblem *RP, struct PlotParams plot )
           case 6:
 		    if ( Pattern == 1 )
 		    {
-              X_Min =  RP->SS.Right.ShockVelocity * time + X0;
+              X_Min =  U2V(RP->SS.Right.ShockVelocity) * time + X0;
               X_Max =  X_Right;
 
               fprintf (fptr[j], "%e %e %e %e\n", X_Min, RP->SS.Right.DensUpStream, RP->SS.Right.VelyUpStream, RP->SS.Right.PresUpStream );
@@ -290,7 +290,7 @@ void Plot( int Pattern, struct RiemannProblem *RP, struct PlotParams plot )
 		    }
 		    else if ( Pattern == 2 )
 		    {
-              X_Min =  RP->RS.Right.ShockVelocity * time + X0;
+              X_Min =  U2V(RP->RS.Right.ShockVelocity) * time + X0;
               X_Max =  X_Right;
 
               fprintf (fptr[j], "%e %e %e %e\n", X_Min, RP->RS.Right.DensUpStream, RP->RS.Right.VelyUpStream, RP->RS.Right.PresUpStream );
@@ -298,7 +298,7 @@ void Plot( int Pattern, struct RiemannProblem *RP, struct PlotParams plot )
 		    }
 		    else if ( Pattern == 3 )
 		    {
-              X_Min = RP->SR.Right.VelocityHead * time + X0;
+              X_Min = U2V(RP->SR.Right.VelocityHead) * time + X0;
               X_Max = X_Right;
 
               fprintf (fptr[j], "%e %e %e %e\n", X_Min, RP->SR.Right.DensUpStream, RP->SR.Right.VelyUpStream, RP->SR.Right.PresUpStream );
@@ -306,7 +306,7 @@ void Plot( int Pattern, struct RiemannProblem *RP, struct PlotParams plot )
 		    }
 			else if ( Pattern == 4 )
 			{
-              X_Min = RP->RR.Right.VelocityHead * time + X0;
+              X_Min = U2V(RP->RR.Right.VelocityHead) * time + X0;
               X_Max = X_Right;
 
               fprintf (fptr[j], "%e %e %e %e\n", X_Min, RP->RR.Right.DensUpStream, RP->RR.Right.VelyUpStream, RP->RR.Right.PresUpStream );

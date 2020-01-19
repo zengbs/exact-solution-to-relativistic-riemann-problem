@@ -23,8 +23,21 @@ int GetAllInfomation( struct InitialCondition *IC, struct RiemannProblem *RP )
   
   double PresStar, VelocityStar;
 
-  PresStar = RootFinder( PresFunction, (void*)IC, 0.0, __DBL_EPSILON__, 0.5, 1e-10, 50.0 );
+  double up = 1e20;
+  double lb = 1e-16;
 
+
+  double fun_lb = PresFunction(lb, IC);
+  double fun_up = PresFunction(up, IC);
+
+  if ( fun_lb*fun_up > 0.0 )
+  {
+    printf( "fun_lb=%e, fun_up=%e\n", fun_lb, fun_up );
+	exit(1);
+  }
+
+  PresStar = RootFinder( PresFunction, (void*)IC, 0.0, __DBL_EPSILON__, 5.0, lb, up );
+  printf("PresStar=%e\n", PresStar);
 
   double ShockVelocity_Left,  DensDown_Left;
   double ShockVelocity_Right, DensDown_Right;
@@ -36,7 +49,7 @@ int GetAllInfomation( struct InitialCondition *IC, struct RiemannProblem *RP )
 	 case 1:
          DensDown_Left  = GetDensDown( PresLeft,  DensLeft,  PresStar );
 
-         GetShockVelocity( PresLeft, DensLeft, VelocityLeft, PresStar, DensDown_Left, NAN,
+         GetShockVelocity( PresLeft, DensLeft, VelocityLeft, PresStar, DensDown_Left,
 			               &ShockVelocity_Left, NULL );
 
 		 VelocityStar = GetVelocityDown( PresLeft, DensLeft, ShockVelocity_Left, PresStar, DensDown_Left );
@@ -54,7 +67,7 @@ int GetAllInfomation( struct InitialCondition *IC, struct RiemannProblem *RP )
 
 		 DensDown_Right = GetDensDown( PresRight, DensRight, PresStar );
 
-         GetShockVelocity( PresRight, DensRight, VelocityRight, PresStar, DensDown_Right, NAN, 
+         GetShockVelocity( PresRight, DensRight, VelocityRight, PresStar, DensDown_Right,
 		                   NULL, &ShockVelocity_Right );
 
 
@@ -89,7 +102,7 @@ int GetAllInfomation( struct InitialCondition *IC, struct RiemannProblem *RP )
 
 		 DensDown_Right = GetDensDown( PresRight, DensRight, PresStar );
 
-         GetShockVelocity( PresRight, DensRight, VelocityRight, PresStar, DensDown_Right, NAN, 
+         GetShockVelocity( PresRight, DensRight, VelocityRight, PresStar, DensDown_Right,
 		                   NULL, &ShockVelocity_Right );
 
 		 VelocityStar = GetVelocityDown( PresRight, DensRight, ShockVelocity_Right, PresStar, DensDown_Right );
@@ -102,12 +115,13 @@ int GetAllInfomation( struct InitialCondition *IC, struct RiemannProblem *RP )
          RP -> RS.Right.PresDownStream  = PresStar;
          RP -> RS.Right.DensDownStream  = DensDown_Right;
          RP -> RS.Right.VelyDownStream  = VelocityStar;
+		 printf("VelocityStar=%e\n", VelocityStar);
      break;
 
 	 case 3:
 		 DensDown_Left = GetDensDown( PresLeft, DensLeft, PresStar );
 
-         GetShockVelocity( PresLeft, DensLeft, VelocityLeft, PresStar, DensDown_Left, NAN, 
+         GetShockVelocity( PresLeft, DensLeft, VelocityLeft, PresStar, DensDown_Left,
 		                   &ShockVelocity_Left, NULL );
 
 		 VelocityStar = GetVelocityDown( PresLeft, DensLeft, ShockVelocity_Left, PresStar, DensDown_Left );
@@ -186,3 +200,10 @@ int GetAllInfomation( struct InitialCondition *IC, struct RiemannProblem *RP )
   return Pattern;
 
 }
+
+
+double U2V(double U)
+{
+  return U / sqrt( 1.0 + U*U );
+}
+
