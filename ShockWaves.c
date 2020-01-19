@@ -16,10 +16,10 @@ void GetShockVelocity( double PresUp,   double DensUp,   double V_Up,
   J = MassCurrent( PresUp, DensUp, PresDown, DensDown );
 
   if ( Vs_Right != NULL )
- *Vs_Right = ( J * sqrt( 1.0 + V_Up*V_Up ) + V_Up * sqrt( J*J + DensUp*DensUp ) ) / DensUp;
+     *Vs_Right = +( J * sqrt( 1.0 + V_Up*V_Up ) + V_Up * sqrt( J*J + DensUp*DensUp ) ) / DensUp;
 
   if ( Vs_Left != NULL )
- *Vs_Left  = ( J * sqrt( 1.0 + V_Up*V_Up ) - V_Up * sqrt( J*J + DensUp*DensUp ) ) / DensUp;
+     *Vs_Left  = -( J * sqrt( 1.0 + V_Up*V_Up ) - V_Up * sqrt( J*J + DensUp*DensUp ) ) / DensUp;
 }
 
 

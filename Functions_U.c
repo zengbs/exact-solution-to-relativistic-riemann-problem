@@ -236,28 +236,24 @@ double Velocity_RC ( double PresStar, double DensStarRight, double PresRight, do
   }
 }
 
-// A1(+) / A3(+), eq.(176) in 'Exact solution of the 1D riemann problem in Newtonian and relativistic hydrodynamics'
 double A_PlusFun ( double Temp )
 {
     double Sqrt_Gamma_1 = sqrt( Gamma_1 );
     double A_Plus;
 
-    A_Plus  = sqrt( Gamma_1 + Gamma * Temp ) + sqrt( Gamma * Temp );
-	A_Plus *= A_Plus;
+    A_Plus  = SQR( sqrt( Gamma_1 + Gamma * Temp ) + sqrt( Gamma * Temp ) );
 	A_Plus /= Gamma_1;
 	A_Plus  = pow(A_Plus, +2.0/Sqrt_Gamma_1);
 
 	return A_Plus;
 }
 
-// A6(-) / A4(-), eq.(179) in 'Exact solution of the 1D riemann problem in Newtonian and relativistic hydrodynamics'
 double A_MinusFun ( double Temp )
 {
     double Sqrt_Gamma_1 = sqrt( Gamma_1 );
     double A_Minus;
 
-    A_Minus  = sqrt( Gamma_1 + Gamma * Temp ) + sqrt( Gamma * Temp );
-	A_Minus *= A_Minus;
+    A_Minus  = SQR( sqrt( Gamma_1 + Gamma * Temp ) + sqrt( Gamma * Temp ) );
 	A_Minus /= Gamma_1;
 	A_Minus  = pow(A_Minus, -2.0/Sqrt_Gamma_1);
 
@@ -318,13 +314,23 @@ double PresFunction( double PresStar, void  *params )
     DensStarLeft  = DensLeft *pow(  PresStar/PresLeft,  1.0/Gamma );
     DensStarRight = DensRight*pow(  PresStar/PresRight, 1.0/Gamma );
 
-	double A_Plus, A_Minus;
+	double V_LC, V_RC;
+    double A_PlusStar, A_MinusStar;
+    double A_PlusLeft, A_MinusRight;
 
-	A_Plus   = A_PlusFun( PresStar / DensStarLeft );
+    A_PlusStar   = A_PlusFun( PresStar  / DensStarLeft );
+    A_PlusLeft   = A_PlusFun( PresLeft  / DensLeft     );
 
-	A_Minus  = A_MinusFun( PresStar / DensStarRight ); 
+    A_MinusStar  = A_MinusFun( PresStar  / DensStarRight );
+    A_MinusRight = A_MinusFun( PresRight / DensRight    );
 
-	V_LR = ( A_Minus - A_Plus ) / sqrt( 4.0*A_Minus*A_Plus );
+    V_LC  = A_PlusStar - A_PlusLeft;
+    V_LC /= sqrt(4.0 * A_PlusStar * A_PlusLeft);
+
+    V_RC  = A_MinusStar - A_MinusRight;
+    V_RC /= sqrt(4.0 * A_MinusStar * A_MinusRight);
+
+	V_LR = -sqrt(1.0+V_LC*V_LC)*V_RC + sqrt(1.0+V_RC*V_RC)*V_LC;
   }
 
   double RelitiveVelocity;
@@ -333,6 +339,7 @@ double PresFunction( double PresStar, void  *params )
   RelitiveVelocity = - VelocityRight * sqrt(1.0 + VelocityLeft *VelocityLeft )
 		             +  VelocityLeft * sqrt(1.0 + VelocityRight*VelocityRight);
 
+  //return V_LR;
   return RelitiveVelocity - V_LR;
 }
 
