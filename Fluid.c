@@ -17,7 +17,7 @@ double Flu_SoundSpeed( double Temp )
 	}
 	else
 	{
-	   printf("Temp <= 0.0 was found!!\n");
+	   printf("Temp = %e !!\n", Temp);
 	   exit(1);
 	}
 

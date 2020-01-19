@@ -72,7 +72,13 @@ double GetVelocityDownRarefaction( double PresDown, double DensDown, double Pres
 double GetDensInFan( double Cs, double PresUp, double DensUp )
 {
   double k = PresUp * pow (DensUp, -Gamma);
-  double tmp = ( 1.0 / (Cs * Cs)) - (1.0 / Gamma_1 );
+  double tmp;
+
+  tmp  = Gamma_1 - Cs*Cs*(2.0-Gamma);
+  tmp /= Gamma_1 + Cs*Cs*Gamma_1;
+  tmp *= 1.0 + Cs*Cs;
+  tmp /= Cs*Cs;
+
   double Dens = pow ( k * Gamma * tmp, -1.0 / Gamma_1 );
 
   return Dens;
@@ -106,7 +112,7 @@ double GetSoundSpeedInFan ( struct Rarefaction *Rarefaction )
 {
   double Temp, Cs;
 
-  Temp = RootFinder( TemperatureFunction, (void*)Rarefaction, 0.0, __DBL_EPSILON__, 0.11, 0.0, sqrt (Gamma_1) - 1e-16 );
+  Temp = RootFinder( TemperatureFunction, (void*)Rarefaction, 0.0, __DBL_EPSILON__, 0.11, 1e-5, 1e2 );
 
   Cs = Flu_SoundSpeed( Temp );
 
@@ -123,11 +129,13 @@ double TemperatureFunction ( double Temp, void *params )
   double VelocityUp   = Fan -> VelyUpStream;
   double Xi           = Fan -> Xi          ;
  
-  double Velocity, Var0, Var1, Cs_Up, Cs;
+  double Velocity, Var0, Var1, Cs_Up, Cs, TempUp;
 
   double Sqrt_Gamma_1 = sqrt(Gamma_1);
 
-  Cs_Up = Flu_SoundSpeed( PresUp / DensUp );
+  TempUp = PresUp / DensUp;
+
+  Cs_Up = Flu_SoundSpeed( TempUp );
 
   Cs    = Flu_SoundSpeed( Temp );
 
@@ -137,22 +145,6 @@ double TemperatureFunction ( double Temp, void *params )
 
   if ( Right_Yes )
   {
-    //Velocity = ( Xi - Cs )/( 1.0 - Cs * Xi );
-
-    //Var0  = ( Sqrt_Gamma_1 + Cs ) / ( Sqrt_Gamma_1 - Cs );
-
-	//Var0  = pow( Var0, -2.0 / Sqrt_Gamma_1 );
-
-	//Var0 *= ( 1.0 + Velocity ) / ( 1.0 - Velocity );
-
-
-	//Var1  = ( Sqrt_Gamma_1 + Cs_Up ) / ( Sqrt_Gamma_1 - Cs_Up );
-
-	//Var1  = pow( Var1, -2.0 / Sqrt_Gamma_1 );
-
-	//Var1 *= ( 1.0 + VelocityUp ) / ( 1.0 - VelocityUp );
-	
-
     Velocity = - Cs * gamma_Xi + sqrt(1.0 + Cs*Cs) * U_Xi;
 
     double gamma_Velocity = sqrt( 1.0 + Velocity*Velocity );
@@ -165,7 +157,7 @@ double TemperatureFunction ( double Temp, void *params )
 
     double gamma_VelocityUp = sqrt( 1.0 + VelocityUp*VelocityUp );
 
-	Var1  = Sqrt_Gamma_1 / ( sqrt( Gamma_1 + Gamma * Temp ) + sqrt( Gamma * Temp ) );
+	Var1  = Sqrt_Gamma_1 / ( sqrt( Gamma_1 + Gamma * TempUp ) + sqrt( Gamma * TempUp ) );
 
 	Var1  = pow( Var1, 4.0 / Sqrt_Gamma_1 );
 
@@ -173,21 +165,6 @@ double TemperatureFunction ( double Temp, void *params )
   }
   else
   {
-    //Velocity = ( Xi + Cs )/( 1.0 + Cs * Xi );
-
-    //Var0  = ( Sqrt_Gamma_1 + Cs ) / ( Sqrt_Gamma_1 - Cs );
-
-	//Var0  = pow( Var0, +2.0 / Sqrt_Gamma_1 );
-
-	//Var0 *= ( 1.0 + Velocity ) / ( 1.0 - Velocity );
-
-
-	//Var1  = ( Sqrt_Gamma_1 + Cs_Up ) / ( Sqrt_Gamma_1 - Cs_Up );
-
-	//Var1  = pow( Var1, +2.0 / Sqrt_Gamma_1 );
-
-	//Var1 *= ( 1.0 + VelocityUp ) / ( 1.0 - VelocityUp );
-
     Velocity = + Cs * gamma_Xi + sqrt(1.0 + Cs*Cs) * U_Xi;
 
     double gamma_Velocity = sqrt( 1.0 + Velocity*Velocity );
@@ -200,7 +177,7 @@ double TemperatureFunction ( double Temp, void *params )
 
     double gamma_VelocityUp = sqrt( 1.0 + VelocityUp*VelocityUp );
 
-	Var1  = Sqrt_Gamma_1 / ( sqrt( Gamma_1 + Gamma * Temp ) + sqrt( Gamma * Temp ) );
+	Var1  = Sqrt_Gamma_1 / ( sqrt( Gamma_1 + Gamma * TempUp ) + sqrt( Gamma * TempUp ) );
 
 	Var1  = pow( Var1, -4.0 / Sqrt_Gamma_1 );
 

@@ -23,8 +23,8 @@ int GetAllInfomation( struct InitialCondition *IC, struct RiemannProblem *RP )
   
   double PresStar, VelocityStar;
 
-  double lb = 1.1;
-  double up = 10.0;
+  double up = 1e20;
+  double lb = 1e-16;
 
 
   double fun_lb = PresFunction(lb, IC);
@@ -36,7 +36,7 @@ int GetAllInfomation( struct InitialCondition *IC, struct RiemannProblem *RP )
 	exit(1);
   }
 
-  PresStar = RootFinder( PresFunction, (void*)IC, 0.0, __DBL_EPSILON__, 0.5, lb, up );
+  PresStar = RootFinder( PresFunction, (void*)IC, 0.0, __DBL_EPSILON__, 5.0, lb, up );
   printf("PresStar=%e\n", PresStar);
 
   double ShockVelocity_Left,  DensDown_Left;
@@ -56,13 +56,13 @@ int GetAllInfomation( struct InitialCondition *IC, struct RiemannProblem *RP )
 
 
          RP -> SS.Leftt.Right_Yes       = false;
-         RP -> SS.Leftt.ShockVelocity   = U2V(ShockVelocity_Left);
+         RP -> SS.Leftt.ShockVelocity   = ShockVelocity_Left;
          RP -> SS.Leftt.PresUpStream    = PresLeft;
          RP -> SS.Leftt.DensUpStream    = DensLeft;
-         RP -> SS.Leftt.VelyUpStream    = U2V(VelocityLeft);
+         RP -> SS.Leftt.VelyUpStream    = VelocityLeft;
          RP -> SS.Leftt.PresDownStream  = PresStar; 
          RP -> SS.Leftt.DensDownStream  = DensDown_Left;
-         RP -> SS.Leftt.VelyDownStream  = U2V(VelocityStar);
+         RP -> SS.Leftt.VelyDownStream  = VelocityStar;
 
 
 		 DensDown_Right = GetDensDown( PresRight, DensRight, PresStar );
@@ -72,13 +72,13 @@ int GetAllInfomation( struct InitialCondition *IC, struct RiemannProblem *RP )
 
 
          RP -> SS.Right.Right_Yes       = true;
-         RP -> SS.Right.ShockVelocity   = U2V(ShockVelocity_Right);
+         RP -> SS.Right.ShockVelocity   = ShockVelocity_Right;
          RP -> SS.Right.PresUpStream    = PresRight; 
          RP -> SS.Right.DensUpStream    = DensRight;
-         RP -> SS.Right.VelyUpStream    = U2V(VelocityRight);
+         RP -> SS.Right.VelyUpStream    = VelocityRight;
          RP -> SS.Right.PresDownStream  = PresStar;
          RP -> SS.Right.DensDownStream  = DensDown_Right;
-         RP -> SS.Right.VelyDownStream  = U2V(VelocityStar);
+         RP -> SS.Right.VelyDownStream  = VelocityStar;
 	 break;
 
 	 case 2:
@@ -92,12 +92,12 @@ int GetAllInfomation( struct InitialCondition *IC, struct RiemannProblem *RP )
          RP -> RS.Leftt.Right_Yes       = false;
          RP -> RS.Leftt.PresUpStream    = PresLeft;
          RP -> RS.Leftt.DensUpStream    = DensLeft;
-         RP -> RS.Leftt.VelyUpStream    = U2V(VelocityLeft);
+         RP -> RS.Leftt.VelyUpStream    = VelocityLeft;
          RP -> RS.Leftt.PresDownStream  = PresStar;
          RP -> RS.Leftt.DensDownStream  = DensDown_Left;
-         RP -> RS.Leftt.VelyDownStream  = U2V(VelocityStar);
-         RP -> RS.Leftt.VelocityHead    = U2V(HeadVelocity_Left);
-         RP -> RS.Leftt.VelocityTail    = U2V(TailVelocity_Left);
+         RP -> RS.Leftt.VelyDownStream  = VelocityStar;
+         RP -> RS.Leftt.VelocityHead    = HeadVelocity_Left;
+         RP -> RS.Leftt.VelocityTail    = TailVelocity_Left;
 
 
 		 DensDown_Right = GetDensDown( PresRight, DensRight, PresStar );
@@ -108,13 +108,14 @@ int GetAllInfomation( struct InitialCondition *IC, struct RiemannProblem *RP )
 		 VelocityStar = GetVelocityDown( PresRight, DensRight, ShockVelocity_Right, PresStar, DensDown_Right );
 
          RP -> RS.Right.Right_Yes       = true;
-         RP -> RS.Right.ShockVelocity   = U2V(ShockVelocity_Right);
+         RP -> RS.Right.ShockVelocity   = ShockVelocity_Right;
          RP -> RS.Right.PresUpStream    = PresRight;
          RP -> RS.Right.DensUpStream    = DensRight;
-         RP -> RS.Right.VelyUpStream    = U2V(VelocityRight);
+         RP -> RS.Right.VelyUpStream    = VelocityRight;
          RP -> RS.Right.PresDownStream  = PresStar;
          RP -> RS.Right.DensDownStream  = DensDown_Right;
-         RP -> RS.Right.VelyDownStream  = U2V(VelocityStar);
+         RP -> RS.Right.VelyDownStream  = VelocityStar;
+		 printf("VelocityStar=%e\n", VelocityStar);
      break;
 
 	 case 3:
@@ -126,13 +127,13 @@ int GetAllInfomation( struct InitialCondition *IC, struct RiemannProblem *RP )
 		 VelocityStar = GetVelocityDown( PresLeft, DensLeft, ShockVelocity_Left, PresStar, DensDown_Left );
 
          RP -> SR.Leftt.Right_Yes       = false;
-         RP -> SR.Leftt.ShockVelocity   = U2V(ShockVelocity_Left); // o
+         RP -> SR.Leftt.ShockVelocity   = ShockVelocity_Left; // o
          RP -> SR.Leftt.PresUpStream    = PresLeft; // o
          RP -> SR.Leftt.DensUpStream    = DensLeft; // o
-         RP -> SR.Leftt.VelyUpStream    = U2V(VelocityLeft); // o
+         RP -> SR.Leftt.VelyUpStream    = VelocityLeft; // o
          RP -> SR.Leftt.PresDownStream  = PresStar; // o
          RP -> SR.Leftt.DensDownStream  = DensDown_Left; // o
-         RP -> SR.Leftt.VelyDownStream  = U2V(VelocityStar); // o
+         RP -> SR.Leftt.VelyDownStream  = VelocityStar; // o
 
 
 
@@ -146,12 +147,12 @@ int GetAllInfomation( struct InitialCondition *IC, struct RiemannProblem *RP )
          RP -> SR.Right.Right_Yes       = true;
          RP -> SR.Right.PresUpStream    = PresRight;
          RP -> SR.Right.DensUpStream    = DensRight;
-         RP -> SR.Right.VelyUpStream    = U2V(VelocityRight);
+         RP -> SR.Right.VelyUpStream    = VelocityRight;
          RP -> SR.Right.PresDownStream  = PresStar;  // o
          RP -> SR.Right.DensDownStream  = DensDown_Right; // o
-         RP -> SR.Right.VelyDownStream  = U2V(VelocityStar);       // x
-         RP -> SR.Right.VelocityHead    = U2V(HeadVelocity_Right); // x
-         RP -> SR.Right.VelocityTail    = U2V(TailVelocity_Right); // x
+         RP -> SR.Right.VelyDownStream  = VelocityStar;       // x
+         RP -> SR.Right.VelocityHead    = HeadVelocity_Right; // x
+         RP -> SR.Right.VelocityTail    = TailVelocity_Right; // x
      break;
 
 	 case 4:
@@ -165,12 +166,12 @@ int GetAllInfomation( struct InitialCondition *IC, struct RiemannProblem *RP )
          RP -> RR.Leftt.Right_Yes       = false;
          RP -> RR.Leftt.PresUpStream    = PresLeft;
          RP -> RR.Leftt.DensUpStream    = DensLeft;
-         RP -> RR.Leftt.VelyUpStream    = U2V(VelocityLeft);
+         RP -> RR.Leftt.VelyUpStream    = VelocityLeft;
          RP -> RR.Leftt.PresDownStream  = PresStar;
          RP -> RR.Leftt.DensDownStream  = DensDown_Left;
-         RP -> RR.Leftt.VelyDownStream  = U2V(VelocityStar);
-         RP -> RR.Leftt.VelocityHead    = U2V(HeadVelocity_Left);
-         RP -> RR.Leftt.VelocityTail    = U2V(TailVelocity_Left);
+         RP -> RR.Leftt.VelyDownStream  = VelocityStar;
+         RP -> RR.Leftt.VelocityHead    = HeadVelocity_Left;
+         RP -> RR.Leftt.VelocityTail    = TailVelocity_Left;
 
 
          DensDown_Right = GetDensDownRarefaction( PresStar, PresRight, DensRight );
@@ -183,12 +184,12 @@ int GetAllInfomation( struct InitialCondition *IC, struct RiemannProblem *RP )
          RP -> RR.Right.Right_Yes       = true;
          RP -> RR.Right.PresUpStream    = PresRight;
          RP -> RR.Right.DensUpStream    = DensRight;
-         RP -> RR.Right.VelyUpStream    = U2V(VelocityRight);
+         RP -> RR.Right.VelyUpStream    = VelocityRight;
          RP -> RR.Right.PresDownStream  = PresStar;  // o
          RP -> RR.Right.DensDownStream  = DensDown_Right; // o
-         RP -> RR.Right.VelyDownStream  = U2V(VelocityStar);       // x
-         RP -> RR.Right.VelocityHead    = U2V(HeadVelocity_Right); // x
-         RP -> RR.Right.VelocityTail    = U2V(TailVelocity_Right); // x
+         RP -> RR.Right.VelyDownStream  = VelocityStar;       // x
+         RP -> RR.Right.VelocityHead    = HeadVelocity_Right; // x
+         RP -> RR.Right.VelocityTail    = TailVelocity_Right; // x
 	 break;
 
      default:

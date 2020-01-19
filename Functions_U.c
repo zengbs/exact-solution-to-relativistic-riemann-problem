@@ -339,7 +339,6 @@ double PresFunction( double PresStar, void  *params )
   RelitiveVelocity = - VelocityRight * sqrt(1.0 + VelocityLeft *VelocityLeft )
 		             +  VelocityLeft * sqrt(1.0 + VelocityRight*VelocityRight);
 
-  //return V_LR;
   return RelitiveVelocity - V_LR;
 }
 

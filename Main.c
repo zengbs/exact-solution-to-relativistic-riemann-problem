@@ -14,12 +14,12 @@ double Gamma_1 = 0.333333333333333333333;
 int main()
 {
   double DensLeft      =  1.0;
-  double VelocityLeft  = +0.1;
+  double VelocityLeft  = -1e1;
   double PresLeft      =  1.0;
 
   double DensRight     =  1.0;
-  double VelocityRight = -0.2;
-  double PresRight     =  2.0;
+  double VelocityRight =  1e1;
+  double PresRight     =  1.0;
 
   
   double DT            = 0.1;
@@ -59,8 +59,8 @@ int main()
 
 
   //double up, lb;
-  //up = 1e1;
-  //lb = 1e-2;
+  //up = 1e13;
+  //lb = 1e12;
   //int N = 1000;
 
   //double dp = (up-lb)/(double)N;
