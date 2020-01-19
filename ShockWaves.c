@@ -34,6 +34,7 @@ double GetVelocityDown( double PresUp,   double DensUp, double ShockVelocity,
   {
      double Velocity_Left;
 
+	 //Velocity_Left = +J * sqrt( 1.0 + SQR(ShockVelocity) ) + ShockVelocity * sqrt( J*J + SQR(DensDown) );
 	 Velocity_Left = -J * sqrt( 1.0 + SQR(ShockVelocity) ) + ShockVelocity * sqrt( J*J + SQR(DensDown) );
 	 Velocity_Left /= DensDown;
 

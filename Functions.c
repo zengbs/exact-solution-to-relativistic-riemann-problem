@@ -28,7 +28,7 @@ int GetWavePattern( struct InitialCondition *IC )
   bool Shock_No  = false;
   bool Swap_Yes = false;
 
-  double A_Plus, A_Minus;
+  double A_PlusLeft, A_MinusLeft, A_PlusRight, A_MinusRight;
 
   // swap PresLeft and PresRight
   if ( PresLeft < PresRight )
@@ -53,6 +53,7 @@ int GetWavePattern( struct InitialCondition *IC )
   }
 
 
+  //===============================================
   // shock-shock
   double A, B, C, EnthalpyRight, Root, Engy_Temp, EngyRight;
 
@@ -63,32 +64,43 @@ int GetWavePattern( struct InitialCondition *IC )
   B = - ( Gamma_1 / Gamma ) * ( PresRight / PresLeft - 1.0 );
   C = EnthalpyRight * ( PresRight - PresLeft ) / DensRight - SQR(EnthalpyRight);
 
+
   QuadraticSolver( A, B, C, &Root, NULL ); 
 
   Engy_Temp = ( Gamma / Gamma_1 ) * ( Root / (Root-1.0) ) * PresLeft - PresLeft;// eq. (4.165)
 
-  SS = sqrt( ( PresLeft-PresRight )*( Engy_Temp-EngyRight )/( Engy_Temp+PresRight )/( EngyRight+PresLeft ) );
+  // 4-velocity
+  SS = sqrt( ( Engy_Temp - EngyRight )*( PresLeft - PresRight )/( EngyRight + PresRight )/( Engy_Temp + PresLeft )  );
 
+  //===============================================
   // rarefaction-shock
   double DensStarLeft = DensLeft*pow(  PresRight/PresLeft, 1.0/Gamma );
 
-  A_Plus = A_PlusFun( PresRight, DensStarLeft, PresLeft, DensLeft );
+  A_PlusRight = A_PlusFun( PresRight / DensStarLeft );
 
-  V_LC  = ( 1.0 - A_Plus ) / ( 1.0 + A_Plus ); // eq.(4.172)
+  A_PlusLeft  = A_PlusFun( PresLeft  / DensLeft    );
 
+  V_LC  = ( A_PlusRight - A_PlusLeft )/sqrt( 4.0*A_PlusRight*A_PlusLeft );
+
+  // 4-velocity
   RS = V_LC;
 
+  //===============================================
   // rarefaction-rarefaction
 
-  A_Plus  = A_PlusFun ( 0.0, NAN, PresLeft,  DensLeft  );
-  A_Minus = A_MinusFun( 0.0, NAN, PresRight, DensRight );
+  A_PlusLeft  = A_PlusFun ( PresLeft  / DensLeft  );
+  A_MinusRight = A_MinusFun( PresRight / DensRight );
 
-  RR = - ( A_Plus - A_Minus )/( A_Plus + A_Minus ); // put p3=p3'=0 into eq.(4.177) 
+  // 4-velocity
+  RR = ( A_MinusRight - A_PlusLeft )/sqrt( 4.0 * A_PlusLeft * A_MinusRight );
 
   // relative velocity  
   double RelitiveVelocity;
   int Pattern;
-  RelitiveVelocity = ( VelocityLeft - VelocityRight ) / ( 1.0 - VelocityLeft*VelocityRight );
+
+
+  RelitiveVelocity = - VelocityRight * sqrt(1.0 + VelocityLeft *VelocityLeft )
+		             +  VelocityLeft * sqrt(1.0 + VelocityRight*VelocityRight);
 
 
   if ( RelitiveVelocity >= SS )
@@ -116,6 +128,7 @@ int GetWavePattern( struct InitialCondition *IC )
     printf("wave pattern was not found!!\n");
 	exit(1);
   }
+
   return Pattern;
 
 }
@@ -135,8 +148,11 @@ double Velocity_LC ( double PresStar, double DensStarLeft, double PresLeft, doub
 
 	 EngyLeft = Flu_TotalEngy( PresLeft, DensLeft );
 
-     Velocity_LC  = ( PresStar - PresLeft ) * ( EngyStarLeft - EngyLeft );
-	 Velocity_LC /= ( EngyLeft + PresStar ) * ( EngyStarLeft + PresLeft );
+	 // 4-velocity
+     Velocity_LC  = ( PresStar     - PresLeft ) * ( EngyStarLeft - EngyLeft );
+	 Velocity_LC /= ( EngyStarLeft + PresStar ) * ( EngyLeft     + PresLeft );
+
+
 
      if ( Velocity_LC < 0.0 )
 	 {
@@ -145,6 +161,7 @@ double Velocity_LC ( double PresStar, double DensStarLeft, double PresLeft, doub
 	 }
 
 	 Velocity_LC  = sqrt( Velocity_LC );
+
   
      return Velocity_LC;
   }
@@ -156,9 +173,15 @@ double Velocity_LC ( double PresStar, double DensStarLeft, double PresLeft, doub
 	   exit(1);
 	 }
 
-     Velocity_LC  = 1.0 - A_PlusFun( PresStar, DensStarLeft, PresLeft, DensLeft ); 
-     Velocity_LC /= 1.0 + A_PlusFun( PresStar, DensStarLeft, PresLeft, DensLeft ); 
-  
+
+	 // 4-velocity
+	 double A_PlusStar, A_PlusLeft;
+
+	 A_PlusStar  = A_PlusFun( PresStar / DensStarLeft);
+	 A_PlusLeft  = A_PlusFun( PresLeft / DensLeft );
+
+     Velocity_LC = ( A_PlusStar - A_PlusLeft )/sqrt( 4.0 * A_PlusStar * A_PlusLeft );
+
      return Velocity_LC; 
   }
 }
@@ -177,10 +200,10 @@ double Velocity_RC ( double PresStar, double DensStarRight, double PresRight, do
 
 	 EngyRight = Flu_TotalEngy( PresRight, DensRight );
 
-     Velocity_RC  = ( PresStar - PresRight ) * ( EngyStarRight - EngyRight );
 
-
-	 Velocity_RC /= ( EngyRight + PresStar ) * ( EngyStarRight + PresRight );
+	 // 4-velocity
+     Velocity_RC  = ( PresStar      - PresRight ) * ( EngyStarRight - EngyRight );
+	 Velocity_RC /= ( EngyStarRight + PresStar  ) * ( EngyRight     + PresRight );
 
      if ( Velocity_RC < 0.0 )
 	 {
@@ -200,45 +223,39 @@ double Velocity_RC ( double PresStar, double DensStarRight, double PresRight, do
 	   exit(1);
 	 }
 
-     Velocity_RC  = 1.0 - A_MinusFun( PresStar, DensStarRight, PresRight, DensRight ); 
-     Velocity_RC /= 1.0 + A_MinusFun( PresStar, DensStarRight, PresRight, DensRight ); 
+
+	 // 4-velocity
+	 double A_MinusStar, A_MinusRight;
+
+	 A_MinusStar  = A_MinusFun( PresStar / DensStarRight);
+	 A_MinusRight  = A_MinusFun( PresRight / DensRight );
+
+     Velocity_RC = ( A_MinusStar - A_MinusRight )/sqrt( 4.0 * A_MinusStar * A_MinusRight );
   
      return Velocity_RC; 
   }
 }
 
-// A1(+) / A3(+), eq.(176) in 'Exact solution of the 1D riemann problem in Newtonian and relativistic hydrodynamics'
-
-double A_PlusFun ( double Pres, double Dens, double PresLeft, double DensLeft )
+double A_PlusFun ( double Temp )
 {
-    double CsLeft, Cs, Sqrt_Gamma_1, A_Plus;
+    double Sqrt_Gamma_1 = sqrt( Gamma_1 );
+    double A_Plus;
 
-	CsLeft = Flu_SoundSpeed ( PresLeft, DensLeft );
-	Cs     = Flu_SoundSpeed ( Pres    , Dens     );
-
-    Sqrt_Gamma_1 = sqrt( Gamma_1 );
-
-	A_Plus  = ( Sqrt_Gamma_1 - Cs     ) / ( Sqrt_Gamma_1 + Cs     );
-	A_Plus *= ( Sqrt_Gamma_1 + CsLeft ) / ( Sqrt_Gamma_1 - CsLeft );
-    A_Plus  = pow( A_Plus, 2.0/Sqrt_Gamma_1 );
+    A_Plus  = SQR( sqrt( Gamma_1 + Gamma * Temp ) + sqrt( Gamma * Temp ) );
+	A_Plus /= Gamma_1;
+	A_Plus  = pow(A_Plus, +2.0/Sqrt_Gamma_1);
 
 	return A_Plus;
 }
 
-// A6(-) / A4(-), eq.(179) in 'Exact solution of the 1D riemann problem in Newtonian and relativistic hydrodynamics'
-
-double A_MinusFun ( double Pres, double Dens, double PresRight, double DensRight )
+double A_MinusFun ( double Temp )
 {
-    double CsRight, Cs, Sqrt_Gamma_1, A_Minus;
+    double Sqrt_Gamma_1 = sqrt( Gamma_1 );
+    double A_Minus;
 
-	CsRight = Flu_SoundSpeed ( PresRight, DensRight );
-	Cs      = Flu_SoundSpeed ( Pres     , Dens      );
-
-    Sqrt_Gamma_1 = sqrt( Gamma_1 );
-
-	A_Minus  = ( Sqrt_Gamma_1 - Cs      ) / ( Sqrt_Gamma_1 + Cs      );
-	A_Minus *= ( Sqrt_Gamma_1 + CsRight ) / ( Sqrt_Gamma_1 - CsRight );
-    A_Minus  = pow( A_Minus, -2.0/Sqrt_Gamma_1 );
+    A_Minus  = SQR( sqrt( Gamma_1 + Gamma * Temp ) + sqrt( Gamma * Temp ) );
+	A_Minus /= Gamma_1;
+	A_Minus  = pow(A_Minus, -2.0/Sqrt_Gamma_1);
 
 	return A_Minus;
 }
@@ -267,50 +284,64 @@ double PresFunction( double PresStar, void  *params )
   double DensStarLeft, DensStarRight;
 
 
-  if ( PresStar >= MAX(PresLeft, PresRight) )  // SS
+  if ( PresStar >= MAX(PresLeft, PresRight) )
   {
     V_LC = Velocity_LC( PresStar, NAN, PresLeft,   DensLeft, Shock_Yes ); // left side of eq. (4.161)
     V_RC = Velocity_RC( PresStar, NAN, PresRight, DensRight, Shock_Yes ); // right side of eq. (4.161)
 
-    V_LR = ( V_LC - V_RC )/( 1.0 - V_LC*V_RC );
+	V_LR = - V_RC * sqrt(1.0 + V_LC * V_LC) + sqrt(1.0 + V_RC * V_RC) * V_LC;
   }
-  else if ( MIN(PresLeft, PresRight) < PresStar && PresStar < MAX(PresLeft, PresRight) && PresLeft > PresRight ) // RS
+  else if ( MIN(PresLeft, PresRight) <= PresStar && PresStar < MAX(PresLeft, PresRight) && PresLeft >= PresRight  )
   {
     DensStarLeft = DensLeft*pow(  PresStar/PresLeft, 1.0/Gamma );
 
     V_LC = Velocity_LC( PresStar, DensStarLeft, PresLeft,   DensLeft, Shock_No  ); // eq. (4.168)
     V_RC = Velocity_RC( PresStar, NAN,         PresRight,  DensRight, Shock_Yes ); // right side of eq. (4.161) 
 
-    V_LR = ( V_LC - V_RC )/( 1.0 - V_LC*V_RC );
+	V_LR = - V_RC * sqrt(1.0 + V_LC * V_LC) + sqrt(1.0 + V_RC * V_RC) * V_LC;
   }
-  else if ( MIN(PresLeft, PresRight) < PresStar && PresStar < MAX(PresLeft, PresRight) && PresLeft < PresRight ) //SR
+  else if ( MIN(PresLeft, PresRight) <= PresStar && PresStar < MAX(PresLeft, PresRight) && PresLeft <= PresRight )
   {
     DensStarRight = DensRight*pow(  PresStar/PresRight, 1.0/Gamma );
   
     V_LC = Velocity_LC( PresStar, NAN,          PresLeft,  DensLeft, Shock_Yes );
     V_RC = Velocity_RC( PresStar, DensStarRight, PresRight, DensRight, Shock_No  );
 
-    V_LR = ( V_LC - V_RC )/( 1.0 - V_LC*V_RC );
+	V_LR = - V_RC * sqrt(1.0 + V_LC * V_LC) + sqrt(1.0 + V_RC * V_RC) * V_LC;
   }
-  else if ( PresStar <= MIN(PresLeft, PresRight) ) // RR
+  else if ( PresStar < MIN(PresLeft, PresRight)  )
   {
     DensStarLeft  = DensLeft *pow(  PresStar/PresLeft,  1.0/Gamma );
     DensStarRight = DensRight*pow(  PresStar/PresRight, 1.0/Gamma );
 
-	double A_Plus, A_Minus;
+	double V_LC, V_RC;
+    double A_PlusStar, A_MinusStar;
+    double A_PlusLeft, A_MinusRight;
 
-	A_Plus  = A_PlusFun( PresStar,  DensStarLeft,  PresLeft,  DensLeft );
-	A_Minus = A_MinusFun( PresStar, DensStarRight, PresRight, DensRight ); 
+    A_PlusStar   = A_PlusFun( PresStar  / DensStarLeft );
+    A_PlusLeft   = A_PlusFun( PresLeft  / DensLeft     );
 
-    V_LR    = - ( A_Plus - A_Minus ) / ( A_Plus + A_Minus ); // eq. (4.177)
+    A_MinusStar  = A_MinusFun( PresStar  / DensStarRight );
+    A_MinusRight = A_MinusFun( PresRight / DensRight    );
+
+    V_LC  = A_PlusStar - A_PlusLeft;
+    V_LC /= sqrt(4.0 * A_PlusStar * A_PlusLeft);
+
+    V_RC  = A_MinusStar - A_MinusRight;
+    V_RC /= sqrt(4.0 * A_MinusStar * A_MinusRight);
+
+	V_LR = -sqrt(1.0+V_LC*V_LC)*V_RC + sqrt(1.0+V_RC*V_RC)*V_LC;
   }
 
   double RelitiveVelocity;
 
-  RelitiveVelocity = ( VelocityLeft - VelocityRight ) / ( 1.0 - VelocityLeft*VelocityRight );
-  //return RelitiveVelocity - V_LR;
-  return V_LR;
+
+  RelitiveVelocity = - VelocityRight * sqrt(1.0 + VelocityLeft *VelocityLeft )
+		             +  VelocityLeft * sqrt(1.0 + VelocityRight*VelocityRight);
+
+  return RelitiveVelocity - V_LR;
 }
+
 
 
 
