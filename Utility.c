@@ -52,8 +52,16 @@ int GetAllInfomation( struct InitialCondition *IC, struct RiemannProblem *RP )
          GetShockVelocity( PresLeft, DensLeft, VelocityLeft, PresStar, DensDown_Left,
 			               &ShockVelocity_Left, NULL );
 
-		 VelocityStar = GetVelocityDown( PresLeft, DensLeft, ShockVelocity_Left, PresStar, DensDown_Left );
 
+		 DensDown_Right = GetDensDown( PresRight, DensRight, PresStar );
+
+         GetShockVelocity( PresRight, DensRight, VelocityRight, PresStar, DensDown_Right,
+		                   NULL, &ShockVelocity_Right );
+
+         if ( ShockVelocity_Left > 0.0 )
+            VelocityStar = GetVelocityDown( PresRight, DensRight, ShockVelocity_Right, PresStar, DensDown_Right );
+         else
+            VelocityStar = GetVelocityDown( PresLeft, DensLeft, ShockVelocity_Left, PresStar, DensDown_Left );
 
          RP -> SS.Leftt.Right_Yes       = false;
          RP -> SS.Leftt.ShockVelocity   = ShockVelocity_Left;
@@ -65,10 +73,6 @@ int GetAllInfomation( struct InitialCondition *IC, struct RiemannProblem *RP )
          RP -> SS.Leftt.VelyDownStream  = VelocityStar;
 
 
-		 DensDown_Right = GetDensDown( PresRight, DensRight, PresStar );
-
-         GetShockVelocity( PresRight, DensRight, VelocityRight, PresStar, DensDown_Right,
-		                   NULL, &ShockVelocity_Right );
 
 
          RP -> SS.Right.Right_Yes       = true;
