@@ -13,20 +13,50 @@ double Gamma_1 = 0.333333333333333333333;
 
 int main()
 {
-  double DensLeft      =  0.2;
-  double VelocityLeft  =  0.0;
-  double PresLeft      =  0.5;
+// RR
+  double DensLeft      =  1.0;
+  double VelocityLeft  = -1.0;
+  double PresLeft      =  0.1;
 
   double DensRight     =  1.0;
-  double VelocityRight =  -1.0;
+  double VelocityRight = +2.0;
   double PresRight     =  1.0;
+//
+//// RS
+//  double DensLeft      =  1.0;
+//  double VelocityLeft  =  0.0;
+//  double PresLeft      =  1.0;
+//
+//  double DensRight     =  1.0;
+//  double VelocityRight =  0.0;
+//  double PresRight     =  0.1;
+//
+//// SR
+//  double DensLeft      =  1.0;
+//  double VelocityLeft  =  0.0;
+//  double PresLeft      =  0.1;
+//
+//  double DensRight     =  1.0;
+//  double VelocityRight =  0.0;
+//  double PresRight     =  1.0;
+//
+////SS
+//  double DensLeft      =  5.0;
+//  double VelocityLeft  = +1.0;
+//  double PresLeft      = 10.0;
+//
+//  double DensRight     = 10.0;
+//  double VelocityRight = -1.0;
+//  double PresRight     =  1.0;
+
+
 
   
   double DT            = 0.1;
-  double End_T         = 0.5;
+  double End_T         = 0.7;
   double X_Left        = 0.0;
   double X_Right       = 1.0;
-  int NCell            = 1024;
+  int NCell            = 4096;
  
 
   struct InitialCondition IC = 
@@ -56,48 +86,6 @@ int main()
   
   printf("Pattern=%d\n", Pattern);
   Plot( Pattern, &RP, plot );
-
-  //double up, lb;
-
-  //up = 1e2;
-  //lb = 1e-2;
-  //int N = 1000;
-
-  //double dp = (up-lb)/(double)N;
-
-  //double pres = 0.0;
-
-  //double fun_pres;
-
-  //for (int i=1;i<=N;i++)
-  //{
-  //  pres = i*dp;
-  //  fun_pres = PresFunction( pres, &IC );
-  //
-  //  printf("%e  %e\n", pres, fun_pres);
-  //}
-
-
-  //double up, lb;
-  //up = 1e13;
-  //lb = 1e12;
-  //int N = 1000;
-
-  //double dp = (up-lb)/(double)N;
-
-  //double pres = 0.0;
-
-  //double fun_pres;
-
-  //for (int i=1;i<=N;i++)
-  //{
-  //  pres = i*dp;
-  //  fun_pres = PresFunction( pres, &IC );
-  //
-  //     printf("%e  %e\n", pres, fun_pres);
-  //}
-
-
 
   return 0;
 }
