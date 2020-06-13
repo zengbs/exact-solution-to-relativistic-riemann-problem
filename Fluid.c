@@ -19,7 +19,7 @@ double Flu_SoundSpeed( double Temp )
 #      elif ( EOS == TM )
        double h = Flu_Enthalpy(Temp, 1.0);
        CsSqr  = Temp / (3.0*h);
-       CsSqr *= 5.0*h - 8.0*T;
+       CsSqr *= 5.0*h - 8.0*Temp;
        CsSqr /= h - Temp;
 #      endif
 	}
@@ -39,7 +39,7 @@ double Flu_Enthalpy( double Pres, double Dens )
     return 1.0 + ( Gamma / Gamma_1 ) * ( Pres / Dens );
 #   elif ( EOS == TM )
     double Temp = Pres/Dens;
-    return 2.5*Temp + sqrt( 2.25*Temp*Temp + 1.0 )
+    return 2.5*Temp + sqrt( 2.25*Temp*Temp + 1.0 );
 #   endif
 }
 
@@ -61,12 +61,13 @@ double Flu_TotalInternalEngy ( double Pres, double Dens )
 double Enthalpy2Temperature( double Enthalpy )
 {
   double Temp;
+  double H_Tilde = Enthalpy - 1.0;
 # if ( EOS == GAMMA )
   Temp  = (Gamma-1.0)/Gamma;
-  Temp *= Enthalpy - 1.0;
+  Temp *= H_Tilde;
 # elif ( EOS == TM )
-  Temp  = 2.0*Enthalpy*Enthalpy + 4.0*Enthalpy;
-  Temp /= 5.0*(Enthalpy+1.0) + sqrt( 9.0*Enthalpy*Enthalpy+18.0*Enthalpy+25.0 );
+  Temp  = 2.0*H_Tilde*H_Tilde + 4.0*H_Tilde;
+  Temp /= 5.0*(H_Tilde+1.0) + sqrt( 9.0*H_Tilde*H_Tilde+18.0*H_Tilde+25.0 );
 # endif
   return Temp;
 }

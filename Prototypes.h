@@ -3,7 +3,13 @@
 
 #include "Struct.h"
 
+#define TM    0
+#define GAMMA 1
+
+
 int GetWavePattern( struct InitialCondition *IC );
+
+double EnthalpyFunction( double EnthalpyDown, void* params );
 
 double Velocity_LC ( double PresStar, double DensStarLeft, double PresLeft, double DensLeft, bool Shock );
 

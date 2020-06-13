@@ -158,7 +158,7 @@ double Velocity_LC ( double PresStar, double DensStarLeft, double PresLeft, doub
 
      if ( Velocity_LC < 0.0 )
 	 {
-	   printf("Velocity_LC = %e\n !!", Velocity_LC);
+	   printf("Velocity_LC = %e !!\n", Velocity_LC);
 	   exit(1);
 	 }
 

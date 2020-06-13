@@ -20,11 +20,15 @@ int GetAllInfomation( struct InitialCondition *IC, struct RiemannProblem *RP )
   int Pattern;
 
   Pattern = GetWavePattern( IC );
+
+# if ( EOS == TM )
+  Pattern = 1;
+# endif
   
   double PresStar, VelocityStar;
 
-  double up = 1e20;
-  double lb = 1e-16;
+  double up = 3;
+  double lb = 2;
 
 
   double fun_lb = PresFunction(lb, IC);
@@ -36,7 +40,7 @@ int GetAllInfomation( struct InitialCondition *IC, struct RiemannProblem *RP )
 	exit(1);
   }
 
-  PresStar = RootFinder( PresFunction, (void*)IC, 0.0, __DBL_EPSILON__, 5.0, lb, up );
+  PresStar = RootFinder( PresFunction, (void*)IC, 0.0, __DBL_EPSILON__, 2.4, lb, up );
   printf("PresStar=%e\n", PresStar);
 
   double ShockVelocity_Left,  DensDown_Left;

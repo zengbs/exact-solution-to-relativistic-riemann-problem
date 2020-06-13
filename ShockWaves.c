@@ -58,8 +58,9 @@ double GetDensDown( double PresUp, double DensUp, double PresDown  )
   double EnthalpyDown, DensDown;
 
   EnthalpyDown = TaubAdiabatic(PresUp, DensUp, PresDown);
-  
-  DensDown = ( Gamma / Gamma_1 ) * ( PresDown / ( EnthalpyDown - 1.0 ) );
+  double TempDown;
+  TempDown = Enthalpy2Temperature( EnthalpyDown );
+  DensDown = PresDown/TempDown;
 
   return DensDown;
 }
@@ -118,7 +119,7 @@ double TaubAdiabatic ( double PresUp, double DensUp, double PresDown )
     params.DensUp     = DensUp;
     params.PresDown   = PresDown;
 
-    EnthalpyDown = RootFinder( EnthalpyFunction, (void*)&params, 0.0, __DBL_EPSILON__, 5.0, 1e-5, 1e5  );
+    EnthalpyDown = RootFinder( EnthalpyFunction, (void*)&params, 0.0, __DBL_EPSILON__, 5.0, 0.01, 10  );
 #   endif
     return EnthalpyDown;
 }
@@ -132,13 +133,11 @@ double EnthalpyFunction( double EnthalpyDown, void* params )
     double PresUp     = pparams -> PresUp    ;
     double DensUp     = pparams -> DensUp    ;
     double PresDown   = pparams -> PresDown  ;
-
     double TempDown   = Enthalpy2Temperature( EnthalpyDown );
     double TempUp     = PresUp/DensUp;
 
     double LeftSide   = EnthalpyUp*EnthalpyUp - EnthalpyDown*EnthalpyDown;
     double RightSide  = ( TempUp - PresDown/DensUp )*EnthalpyUp + ( PresUp/PresDown - 1.0 )*EnthalpyDown*TempDown;
-
     return LeftSide - RightSide;
 }
 # endif
