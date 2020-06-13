@@ -60,13 +60,8 @@ int main()
 
 
   
-<<<<<<< HEAD
-  double DT            = 0.5;
-  double End_T         = 0.5;
-=======
   double DT            = 0.6;
   double End_T         = 0.6;
->>>>>>> TMeos
   double X_Left        = 0.0;
   double X_Right       = 1.0;
   int NCell            = 4096;
