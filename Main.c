@@ -5,8 +5,8 @@
 #include "Prototypes.h"
 #include "Global.h"
 
-//# define EOS GAMMA
-# define EOS TM
+# define EOS GAMMA
+//# define EOS TM
 
 //double Gamma = 5.0/3.0;
 //double Gamma_1 = 0.666666666666666666666;
@@ -16,12 +16,12 @@ double Gamma_1 = 0.333333333333333333333;
 
 int main()
 {
-  double DensLeft      =  1.0;
-  double VelocityLeft  =  1e6;
+  double DensLeft      =  1e-2;
+  double VelocityLeft  =  1.0;
   double PresLeft      =  1.0;
 
   double DensRight     =  1.0;
-  double VelocityRight = -1e6;
+  double VelocityRight = -1.0;
   double PresRight     =  1.0;
 //// RR
 //  double DensLeft      =  1.0;
@@ -62,8 +62,8 @@ int main()
 
 
   
-  double DT            = 0.1;
-  double End_T         = 0.1;
+  double DT            = 0.5;
+  double End_T         = 0.5;
   double X_Left        = 0.0;
   double X_Right       = 1.0;
   int NCell            = 4096;

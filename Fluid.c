@@ -68,5 +68,5 @@ double Enthalpy2Temperature( double Enthalpy )
   Temp  = 2.0*Enthalpy*Enthalpy + 4.0*Enthalpy;
   Temp /= 5.0*(Enthalpy+1.0) + sqrt( 9.0*Enthalpy*Enthalpy+18.0*Enthalpy+25.0 );
 # endif
-  return Temp
+  return Temp;
 }

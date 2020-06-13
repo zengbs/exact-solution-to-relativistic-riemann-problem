@@ -194,7 +194,7 @@ double Velocity_RC ( double PresStar, double DensStarRight, double PresRight, do
 
   if ( Shock == true )
   {
-     double EngyStarRight, EngyRight, EnthalpyStarRight;
+     double EngyStarRight, EngyRight, EnthalpyStarRight, TempStarRight;
 
      EnthalpyStarRight = TaubAdiabatic( PresRight, DensRight, PresStar );
 

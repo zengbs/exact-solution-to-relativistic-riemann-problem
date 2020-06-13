@@ -85,6 +85,13 @@ double MassCurrent( double PresUp, double DensUp, double PresDown, double DensDo
   return MassCurrent;
 }
 
+struct Parameters
+{
+  double EnthalpyUp;
+  double PresUp    ;
+  double DensUp    ;
+  double PresDown  ;
+};
 
 double TaubAdiabatic ( double PresUp, double DensUp, double PresDown )
 {
@@ -103,13 +110,6 @@ double TaubAdiabatic ( double PresUp, double DensUp, double PresDown )
 
     QuadraticSolver( A, B, C, &EnthalpyDown, NULL );
 #   elif ( EOS == TM )
-    struct Parameters
-    {
-      double EnthalpyUp;
-      double PresUp    ;
-      double DensUp    ;
-      double PresDown  ;
-    };
 
     struct Parameters params;
 
@@ -124,12 +124,14 @@ double TaubAdiabatic ( double PresUp, double DensUp, double PresDown )
 }
 
 # if ( EOS == TM )
-double EnthalpyFunction( double EnthalpyDown, (void*) params )
+double EnthalpyFunction( double EnthalpyDown, void* params )
 {
-    double EnthalpyUp = params -> EnthalpyUp; 
-    double PresUp     = params -> PresUp    ;
-    double DensUp     = params -> DensUp    ;
-    double PresDown   = params -> PresDown  ;
+    struct Parameters *pparams = (struct Parameters *) params;
+  
+    double EnthalpyUp = pparams -> EnthalpyUp; 
+    double PresUp     = pparams -> PresUp    ;
+    double DensUp     = pparams -> DensUp    ;
+    double PresDown   = pparams -> PresDown  ;
 
     double TempDown   = Enthalpy2Temperature( EnthalpyDown );
     double TempUp     = PresUp/DensUp;
