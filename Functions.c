@@ -202,7 +202,7 @@ double Velocity_RC ( double PresStar, double DensStarRight, double PresRight, do
 
      EnthalpyStarRight = TaubAdiabatic( PresRight, DensRight, PresStar );
 
-     TempStarRight     = Enthalpy2Temperature( EngyStarRight );
+     TempStarRight     = Enthalpy2Temperature( EnthalpyStarRight );
 
      EngyStarRight     = Flu_TotalInternalEngy( PresStar, PresStar/TempStarRight );
 
