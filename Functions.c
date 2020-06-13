@@ -152,10 +152,6 @@ double Velocity_LC ( double PresStar, double DensStarLeft, double PresLeft, doub
      Velocity_LC  = ( PresStar     - PresLeft ) * ( EngyStarLeft - EngyLeft );
 	 Velocity_LC /= ( EngyStarLeft + PresStar ) * ( EngyLeft     + PresLeft );
 
-     printf("EnthalpyStarLeft=%f\n", EnthalpyStarLeft);
-     printf("EngyStarLeft=%f\n", EngyStarLeft);
-     printf("EngyLeft=%f\n", EngyLeft);
-
      if ( Velocity_LC < 0.0 )
 	 {
 	   printf("Velocity_LC = %e\n !!", Velocity_LC);
@@ -201,10 +197,6 @@ double Velocity_RC ( double PresStar, double DensStarRight, double PresRight, do
 	 EngyStarRight = PresStar * ( EnthalpyStarRight / (EnthalpyStarRight-1.0) ) * ( Gamma / Gamma_1 ) - PresStar;
 
 	 EngyRight = Flu_TotalEngy( PresRight, DensRight );
-
-     printf("EnthalpyStarRight=%f\n", EnthalpyStarRight);
-     printf("EngyStarRight=%f\n", EngyStarRight);
-     printf("EngyRight=%f\n", EngyRight);
 
 	 // 4-velocity
      Velocity_RC  = ( PresStar      - PresRight ) * ( EngyStarRight - EngyRight );
