@@ -58,8 +58,9 @@ double GetDensDown( double PresUp, double DensUp, double PresDown  )
   double EnthalpyDown, DensDown;
 
   EnthalpyDown = TaubAdiabatic(PresUp, DensUp, PresDown);
-  
-  DensDown = ( Gamma / Gamma_1 ) * ( PresDown / ( EnthalpyDown - 1.0 ) );
+  double TempDown;
+  TempDown = Enthalpy2Temperature( EnthalpyDown );
+  DensDown = PresDown/TempDown;
 
   return DensDown;
 }
@@ -85,13 +86,20 @@ double MassCurrent( double PresUp, double DensUp, double PresDown, double DensDo
   return MassCurrent;
 }
 
+struct Parameters
+{
+  double EnthalpyUp;
+  double PresUp    ;
+  double DensUp    ;
+  double PresDown  ;
+};
 
 double TaubAdiabatic ( double PresUp, double DensUp, double PresDown )
 {
     double EnthalpyUp, EnthalpyDown, PresDiff;
 
 	EnthalpyUp = Flu_Enthalpy( PresUp, DensUp );
-
+#   if ( EOS == GAMMA )
     PresDiff = PresUp - PresDown;
 
     double A, B, C;
@@ -102,6 +110,34 @@ double TaubAdiabatic ( double PresUp, double DensUp, double PresDown )
  
 
     QuadraticSolver( A, B, C, &EnthalpyDown, NULL );
+#   elif ( EOS == TM )
 
+    struct Parameters params;
+
+    params.EnthalpyUp = EnthalpyUp;
+    params.PresUp     = PresUp;
+    params.DensUp     = DensUp;
+    params.PresDown   = PresDown;
+
+    EnthalpyDown = RootFinder( EnthalpyFunction, (void*)&params, 0.0, __DBL_EPSILON__, 5.0, 1e-3, 1e3  );
+#   endif
     return EnthalpyDown;
 }
+
+# if ( EOS == TM )
+double EnthalpyFunction( double EnthalpyDown, void* params )
+{
+    struct Parameters *pparams = (struct Parameters *) params;
+  
+    double EnthalpyUp = pparams -> EnthalpyUp; 
+    double PresUp     = pparams -> PresUp    ;
+    double DensUp     = pparams -> DensUp    ;
+    double PresDown   = pparams -> PresDown  ;
+    double TempDown   = Enthalpy2Temperature( EnthalpyDown );
+    double TempUp     = PresUp/DensUp;
+
+    double LeftSide   = EnthalpyUp*EnthalpyUp - EnthalpyDown*EnthalpyDown;
+    double RightSide  = ( TempUp - PresDown/DensUp )*EnthalpyUp + ( PresUp/PresDown - 1.0 )*EnthalpyDown*TempDown;
+    return LeftSide - RightSide;
+}
+# endif

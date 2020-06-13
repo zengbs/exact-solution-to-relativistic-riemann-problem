@@ -5,6 +5,7 @@
 #include "Prototypes.h"
 #include "Global.h"
 
+
 //double Gamma = 5.0/3.0;
 //double Gamma_1 = 0.666666666666666666666;
 double Gamma = 4.0/3.0;
@@ -13,12 +14,12 @@ double Gamma_1 = 0.333333333333333333333;
 
 int main()
 {
-  double DensLeft      =  1e-2;
-  double VelocityLeft  =  1.0;
-  double PresLeft      =  1.0;
+  double DensLeft      =  1.0;
+  double VelocityLeft  =  0.8;
+  double PresLeft      = 1e-3;
 
   double DensRight     =  1.0;
-  double VelocityRight = -1.0;
+  double VelocityRight = -0.8;
   double PresRight     =  1.0;
 //// RR
 //  double DensLeft      =  1.0;
@@ -59,8 +60,13 @@ int main()
 
 
   
+<<<<<<< HEAD
   double DT            = 0.5;
   double End_T         = 0.5;
+=======
+  double DT            = 0.6;
+  double End_T         = 0.6;
+>>>>>>> TMeos
   double X_Left        = 0.0;
   double X_Right       = 1.0;
   int NCell            = 4096;

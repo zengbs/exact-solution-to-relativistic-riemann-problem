@@ -58,7 +58,7 @@ int GetWavePattern( struct InitialCondition *IC )
   double A, B, C, EnthalpyRight, Root, Engy_Temp, EngyRight;
 
   EnthalpyRight = Flu_Enthalpy ( PresRight, DensRight );
-  EngyRight     = Flu_TotalEngy( PresRight, DensRight );
+  EngyRight     = Flu_TotalInternalEngy( PresRight, DensRight );
 
   A = 1.0 + ( Gamma_1 / Gamma ) * ( PresRight / PresLeft - 1.0 );
   B = - ( Gamma_1 / Gamma ) * ( PresRight / PresLeft - 1.0 );
@@ -140,13 +140,15 @@ double Velocity_LC ( double PresStar, double DensStarLeft, double PresLeft, doub
 
   if ( Shock == true )
   {
-     double EngyStarLeft, EngyLeft, EnthalpyStarLeft;
+     double EngyStarLeft, EngyLeft, EnthalpyStarLeft, TempStarLeft;
 
      EnthalpyStarLeft = TaubAdiabatic( PresLeft, DensLeft, PresStar );
 
-	 EngyStarLeft = PresStar * ( EnthalpyStarLeft / (EnthalpyStarLeft-1.0) ) * ( Gamma / Gamma_1 ) - PresStar;
+     TempStarLeft     = Enthalpy2Temperature( EnthalpyStarLeft );
 
-	 EngyLeft = Flu_TotalEngy( PresLeft, DensLeft );
+     EngyStarLeft     = Flu_TotalInternalEngy ( PresStar, PresStar/TempStarLeft );
+
+	 EngyLeft         = Flu_TotalInternalEngy( PresLeft, DensLeft );
 
 	 // 4-velocity
      Velocity_LC  = ( PresStar     - PresLeft ) * ( EngyStarLeft - EngyLeft );
@@ -154,7 +156,7 @@ double Velocity_LC ( double PresStar, double DensStarLeft, double PresLeft, doub
 
      if ( Velocity_LC < 0.0 )
 	 {
-	   printf("Velocity_LC = %e\n !!", Velocity_LC);
+	   printf("Velocity_LC = %e !!\n", Velocity_LC);
 	   exit(1);
 	 }
 
@@ -190,13 +192,15 @@ double Velocity_RC ( double PresStar, double DensStarRight, double PresRight, do
 
   if ( Shock == true )
   {
-     double EngyStarRight, EngyRight, EnthalpyStarRight;
+     double EngyStarRight, EngyRight, EnthalpyStarRight, TempStarRight;
 
      EnthalpyStarRight = TaubAdiabatic( PresRight, DensRight, PresStar );
 
-	 EngyStarRight = PresStar * ( EnthalpyStarRight / (EnthalpyStarRight-1.0) ) * ( Gamma / Gamma_1 ) - PresStar;
+     TempStarRight     = Enthalpy2Temperature( EnthalpyStarRight );
 
-	 EngyRight = Flu_TotalEngy( PresRight, DensRight );
+     EngyStarRight     = Flu_TotalInternalEngy( PresStar, PresStar/TempStarRight );
+
+	 EngyRight         = Flu_TotalInternalEngy( PresRight, DensRight );
 
 	 // 4-velocity
      Velocity_RC  = ( PresStar      - PresRight ) * ( EngyStarRight - EngyRight );

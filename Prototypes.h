@@ -3,7 +3,13 @@
 
 #include "Struct.h"
 
+#define TM    0
+#define GAMMA 1
+
+
 int GetWavePattern( struct InitialCondition *IC );
+
+double EnthalpyFunction( double EnthalpyDown, void* params );
 
 double Velocity_LC ( double PresStar, double DensStarLeft, double PresLeft, double DensLeft, bool Shock );
 
@@ -21,7 +27,9 @@ double Flu_SoundSpeed( double Temp );
 
 double Flu_Enthalpy( double Pres, double Dens );
 
-double Flu_TotalEngy ( double Pres, double Dens );
+double Flu_TotalInternalEngy ( double Pres, double Dens );
+
+double Enthalpy2Temperature( double Enthalpy );
 
 double RootFinder( double(*Function)(double X, void *params) , void *params, double AbsErr, double RelErr,
 			       double Guess, double LowerBound, double UpperBound );
