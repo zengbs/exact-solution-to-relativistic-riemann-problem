@@ -6,10 +6,10 @@
 #include "Global.h"
 
 
-//double Gamma = 5.0/3.0;
-//double Gamma_1 = 0.666666666666666666666;
-double Gamma = 4.0/3.0;
-double Gamma_1 = 0.333333333333333333333;
+double Gamma = 5.0/3.0;
+double Gamma_1 = 0.666666666666666666666;
+//double Gamma = 4.0/3.0;
+//double Gamma_1 = 0.333333333333333333333;
 
 
 int main()
