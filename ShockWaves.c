@@ -119,7 +119,7 @@ double TaubAdiabatic ( double PresUp, double DensUp, double PresDown )
     params.DensUp     = DensUp;
     params.PresDown   = PresDown;
 
-    EnthalpyDown = RootFinder( EnthalpyFunction, (void*)&params, 0.0, __DBL_EPSILON__, 5.0, 0.01, 10  );
+    EnthalpyDown = RootFinder( EnthalpyFunction, (void*)&params, 0.0, __DBL_EPSILON__, 5.0, 1e-3, 1e3  );
 #   endif
     return EnthalpyDown;
 }
