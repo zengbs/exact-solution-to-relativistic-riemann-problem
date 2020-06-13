@@ -5,6 +5,9 @@
 #include "Prototypes.h"
 #include "Global.h"
 
+//# define EOS GAMMA
+# define EOS TM
+
 //double Gamma = 5.0/3.0;
 //double Gamma_1 = 0.666666666666666666666;
 double Gamma = 4.0/3.0;

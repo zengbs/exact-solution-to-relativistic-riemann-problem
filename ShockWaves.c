@@ -91,7 +91,7 @@ double TaubAdiabatic ( double PresUp, double DensUp, double PresDown )
     double EnthalpyUp, EnthalpyDown, PresDiff;
 
 	EnthalpyUp = Flu_Enthalpy( PresUp, DensUp );
-
+#   if ( EOS == GAMMA )
     PresDiff = PresUp - PresDown;
 
     double A, B, C;
@@ -102,6 +102,36 @@ double TaubAdiabatic ( double PresUp, double DensUp, double PresDown )
  
 
     QuadraticSolver( A, B, C, &EnthalpyDown, NULL );
-
+#   elif ( EOS == TM )
+    EnthalpyDown = RootFinder();
+#   endif
     return EnthalpyDown;
+}
+
+# if ( EOS == TM )
+double EnthalpyFunction( double EnthalpyDown, (void*) params )
+{
+    double EnthalpyUp = params -> EnthalpyUp; 
+    double PresUp     = params -> PresUp    ;
+    double DensUp     = params -> DensUp    ;
+    double PresDown   = params -> PresDown  ;
+
+    double TempDown   = Enthalpy2Temperature( EnthalpyDown );
+    double TempUp     = PresUp/DensUp;
+
+    double LeftSide   = EnthalpyUp*EnthalpyUp - EnthalpyDown*EnthalpyDown;
+    double RightSide  = ( TempUp - PresDown/DensUp )*EnthalpyUp + ( PresUp/PresDown - 1.0 )*EnthalpyDown*TempDown;
+
+    return LeftSide - RightSide;
+}
+# endif
+
+double Enthalpy2Temperature( double Enthalpy )
+{
+  double Temp;
+# if ( EOS == TM )
+  Temp  = 2.0*Enthalpy*Enthalpy + 4.0*Enthalpy;
+  Temp /= 5.0*(Enthalpy+1.0) + sqrt( 9.0*Enthalpy*Enthalpy+18.0*Enthalpy+25.0 );
+# endif
+  return Temp
 }
