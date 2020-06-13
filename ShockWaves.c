@@ -103,7 +103,22 @@ double TaubAdiabatic ( double PresUp, double DensUp, double PresDown )
 
     QuadraticSolver( A, B, C, &EnthalpyDown, NULL );
 #   elif ( EOS == TM )
-    EnthalpyDown = RootFinder();
+    struct Parameters
+    {
+      double EnthalpyUp;
+      double PresUp    ;
+      double DensUp    ;
+      double PresDown  ;
+    };
+
+    struct Parameters params;
+
+    params.EnthalpyUp = EnthalpyUp;
+    params.PresUp     = PresUp;
+    params.DensUp     = DensUp;
+    params.PresDown   = PresDown;
+
+    EnthalpyDown = RootFinder( EnthalpyFunction, (void*)&params, 0.0, __DBL_EPSILON__, 5.0, 1e-5, 1e5  );
 #   endif
     return EnthalpyDown;
 }
@@ -125,13 +140,3 @@ double EnthalpyFunction( double EnthalpyDown, (void*) params )
     return LeftSide - RightSide;
 }
 # endif
-
-double Enthalpy2Temperature( double Enthalpy )
-{
-  double Temp;
-# if ( EOS == TM )
-  Temp  = 2.0*Enthalpy*Enthalpy + 4.0*Enthalpy;
-  Temp /= 5.0*(Enthalpy+1.0) + sqrt( 9.0*Enthalpy*Enthalpy+18.0*Enthalpy+25.0 );
-# endif
-  return Temp
-}

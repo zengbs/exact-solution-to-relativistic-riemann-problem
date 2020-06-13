@@ -44,16 +44,29 @@ double Flu_Enthalpy( double Pres, double Dens )
 }
 
 
-double Flu_TotalEngy ( double Pres, double Dens )
+
+// h = e/rho + p/rho
+// e = rho*h - p
+double Flu_TotalInternalEngy ( double Pres, double Dens )
 {
     double Enthalpy, Engy;
-#   if ( EOS == GAMMA )
+
 	Enthalpy = Flu_Enthalpy( Pres, Dens );
- 
-    Engy = Pres * ( Enthalpy / ( Enthalpy - 1.0 ) ) * ( Gamma / Gamma_1 ) - Pres;
-#   endif
+    Engy = Dens*Enthalpy - Pres; 
+
     return Engy;
 }
 
 
-
+double Enthalpy2Temperature( double Enthalpy )
+{
+  double Temp;
+# if ( EOS == GAMMA )
+  Temp  = (Gamma-1.0)/Gamma;
+  Temp *= Enthalpy - 1.0;
+# elif ( EOS == TM )
+  Temp  = 2.0*Enthalpy*Enthalpy + 4.0*Enthalpy;
+  Temp /= 5.0*(Enthalpy+1.0) + sqrt( 9.0*Enthalpy*Enthalpy+18.0*Enthalpy+25.0 );
+# endif
+  return Temp
+}

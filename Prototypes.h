@@ -21,7 +21,9 @@ double Flu_SoundSpeed( double Temp );
 
 double Flu_Enthalpy( double Pres, double Dens );
 
-double Flu_TotalEngy ( double Pres, double Dens );
+double Flu_TotalInternalEngy ( double Pres, double Dens );
+
+double Enthalpy2Temperature( double Enthalpy );
 
 double RootFinder( double(*Function)(double X, void *params) , void *params, double AbsErr, double RelErr,
 			       double Guess, double LowerBound, double UpperBound );
