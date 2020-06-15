@@ -202,11 +202,8 @@ double Isentropic_Dens2Temperature ( double Dens, double Init_Temp, double Init_
 {
   double Temperature, A;
 
-# if ( EOS == GAMMA )
-# elif ( EOS == TM )
   A = pow(Init_Dens, 2.0/3.0) * Isentropic_Constant(Init_Temp, Init_Dens);
   Temperature = A / sqrt( 3.0*A + 1.0 );
-# endif  
   
   return Temperature;
 }
@@ -225,6 +222,19 @@ double Isentropic_Pres2Temperature ( double Pres, double Init_Temp, double Init_
   Temperature = RootFinder( Isentropic_Temperature2Pres, (void*)Rarefaction, 0.0, __DBL_EPSILON__, 0.11, 1e-5, 1e2 );
 
   return Temperature;
+}
+
+double Isentropic_Pres2Dens ( double Pres, double Init_Temp, double Init_Dens )
+{
+  Temperature = RootFinder( Isentropic_Temperature2Pres, (void*)Rarefaction, 0.0, __DBL_EPSILON__, 0.11, 1e-5, 1e2 );
+
+  return Pres/Temperature;
+}
+
+double Isentropic_Dens2Velocity ( double Dens )
+{
+
+
 }
 
 double Isentropic_Pres2Dens ( double Pres )
