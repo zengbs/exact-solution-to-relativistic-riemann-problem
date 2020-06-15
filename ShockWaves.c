@@ -56,7 +56,7 @@ double GetDensDown( double PresUp, double DensUp, double PresDown  )
 {
   double EnthalpyDown, DensDown;
 
-  EnthalpyDown = TaubAdiabatic(PresUp, DensUp, PresDown);
+  EnthalpyDown = GetEnthalpyDown(PresUp, DensUp, PresDown);
   double TempDown;
   TempDown = Enthalpy2Temperature( EnthalpyDown );
   DensDown = PresDown/TempDown;
@@ -93,7 +93,7 @@ struct Parameters
   double PresDown  ;
 };
 
-double TaubAdiabatic ( double PresUp, double DensUp, double PresDown )
+double GetEnthalpyDown ( double PresUp, double DensUp, double PresDown )
 {
     double EnthalpyUp, EnthalpyDown, PresDiff;
 
@@ -118,13 +118,13 @@ double TaubAdiabatic ( double PresUp, double DensUp, double PresDown )
     params.DensUp     = DensUp;
     params.PresDown   = PresDown;
 
-    EnthalpyDown = RootFinder( EnthalpyFunction, (void*)&params, 0.0, __DBL_EPSILON__, 5.0, 1e-3, 1e3  );
+    EnthalpyDown = RootFinder( JumpConditionForEnthalpy, (void*)&params, 0.0, __DBL_EPSILON__, 5.0, 1e-3, 1e3  );
 #   endif
     return EnthalpyDown;
 }
 
 # if ( EOS == TM )
-double EnthalpyFunction( double EnthalpyDown, void* params )
+double JumpConditionForEnthalpy( double EnthalpyDown, void* params )
 {
     struct Parameters *pparams = (struct Parameters *) params;
   

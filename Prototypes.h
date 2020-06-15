@@ -9,7 +9,7 @@
 
 int GetWavePattern( struct InitialCondition *IC );
 
-double EnthalpyFunction( double EnthalpyDown, void* params );
+double JumpConditionForEnthalpy( double EnthalpyDown, void* params );
 
 double Velocity_LC ( double PresStar, double DensStarLeft, double PresLeft, double DensLeft, bool Shock );
 
@@ -19,7 +19,7 @@ double A_PlusFun ( double Temp );
 
 double A_MinusFun ( double Temp);
 
-double TaubAdiabatic ( double PresUp, double DensUp, double PresDown );
+double GetEnthalpyDown ( double PresUp, double DensUp, double PresDown );
 
 double PresFunction( double PresStar, void * );
 

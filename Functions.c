@@ -142,7 +142,7 @@ double Velocity_LC ( double PresStar, double DensStarLeft, double PresLeft, doub
   {
      double EngyStarLeft, EngyLeft, EnthalpyStarLeft, TempStarLeft;
 
-     EnthalpyStarLeft = TaubAdiabatic( PresLeft, DensLeft, PresStar );
+     EnthalpyStarLeft = GetEnthalpyDown( PresLeft, DensLeft, PresStar );
 
      TempStarLeft     = Enthalpy2Temperature( EnthalpyStarLeft );
 
@@ -191,7 +191,7 @@ double Velocity_RC ( double PresStar, double DensStarRight, double PresRight, do
   {
      double EngyStarRight, EngyRight, EnthalpyStarRight, TempStarRight;
 
-     EnthalpyStarRight = TaubAdiabatic( PresRight, DensRight, PresStar );
+     EnthalpyStarRight = GetEnthalpyDown( PresRight, DensRight, PresStar );
 
      TempStarRight     = Enthalpy2Temperature( EnthalpyStarRight );
 
