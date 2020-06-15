@@ -335,8 +335,6 @@ double PresFunction( double PresStar, void  *params )
 
 
 
-
-
 void QuadraticSolver( double A, double B, double C , double *PlusRoot, double *MinusRoot)
 {
   double Delta;

@@ -187,3 +187,81 @@ double TemperatureFunction ( double Temp, void *params )
 
 }
 
+double Isentropic_Constant ( double Init_Temp, double Init_Dens )
+{
+  double K;
+
+  K  = Init_Temp*( 1.5*Init_Temp + sqrt( 2.25*Init_Temp*Init_Temp + 1.0 ) );
+  
+  K /= pow(Init_Dens, 2.0/3.0);
+
+  return K;
+}
+
+double Isentropic_Dens2Temperature ( double Dens, double Init_Temp, double Init_Dens )
+{
+  double Temperature, A;
+
+# if ( EOS == GAMMA )
+# elif ( EOS == TM )
+  A = pow(Init_Dens, 2.0/3.0) * Isentropic_Constant(Init_Temp, Init_Dens);
+  Temperature = A / sqrt( 3.0*A + 1.0 );
+# endif  
+  
+  return Temperature;
+}
+
+double Isentropic_Temperature2Pres ( double Dens, double Init_Temp, double Init_Dens )
+{
+  double Pres;
+
+  Pres = Dens * Isentropic_Dens2Temperature( Dens, Init_Temp, Init_Dens );
+
+  return Pres;
+}
+
+double Isentropic_Pres2Temperature ( double Pres, double Init_Temp, double Init_Dens )
+{
+  Temperature = RootFinder( Isentropic_Temperature2Pres, (void*)Rarefaction, 0.0, __DBL_EPSILON__, 0.11, 1e-5, 1e2 );
+
+  return Temperature;
+}
+
+double Isentropic_Pres2Dens ( double Pres )
+{
+  double Temperature = Isentropic_Pres2Temperature( Pres, Init_Temp, Init_Dens );
+
+  return Pres / Temperature;
+}
+
+// dU/d rho = LorentzFactor * Cs / rho
+int RiemannInvariant ( double Dens, const double y[], double f[], void *params )
+{
+  double LorentzFactor = sqrt( 1.0 + Velocity*Velocity );
+
+  double Temperature = Isentropic_Dens2Temperature( Dens, Init_Temp, Init_Dens );
+
+  double Cs = Flu_SoundSpeed( Temperature );
+
+  f[0] = LorentzFactor*Cs/Dens;
+
+  return GSL_SUCCESS;
+}
+
+int
+jac (double t, const double y[], double *dfdy, double dfdt[], void *params)
+{
+  (void)(t); /* avoid unused parameter warning */
+  double mu = *(double *)params;
+  gsl_matrix_view dfdy_mat
+    = gsl_matrix_view_array (dfdy, 2, 2);
+  gsl_matrix * m = &dfdy_mat.matrix;
+  gsl_matrix_set (m, 0, 0, 0.0);
+  gsl_matrix_set (m, 0, 1, 1.0);
+  gsl_matrix_set (m, 1, 0, -2.0*mu*y[0]*y[1] - 1.0);
+  gsl_matrix_set (m, 1, 1, -mu*(y[0]*y[0] - 1.0));
+  dfdt[0] = 0.0;
+  dfdt[1] = 0.0;
+  return GSL_SUCCESS;
+}
+
