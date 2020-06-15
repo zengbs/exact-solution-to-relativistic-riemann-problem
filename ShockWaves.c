@@ -109,7 +109,7 @@ double GetEnthalpyDown ( double PresUp, double DensUp, double PresDown )
  
 
     QuadraticSolver( A, B, C, &EnthalpyDown, NULL );
-#   elif ( EOS == TM )
+#   else
 
     struct Parameters params;
 
@@ -123,7 +123,6 @@ double GetEnthalpyDown ( double PresUp, double DensUp, double PresDown )
     return EnthalpyDown;
 }
 
-# if ( EOS == TM )
 double JumpConditionForEnthalpy( double EnthalpyDown, void* params )
 {
     struct Parameters *pparams = (struct Parameters *) params;
@@ -139,4 +138,3 @@ double JumpConditionForEnthalpy( double EnthalpyDown, void* params )
     double RightSide  = ( TempUp - PresDown/DensUp )*EnthalpyUp + ( PresUp/PresDown - 1.0 )*EnthalpyDown*TempDown;
     return LeftSide - RightSide;
 }
-# endif
