@@ -161,9 +161,6 @@ double Velocity_LC ( double PresStar, double DensStarLeft, double PresLeft, doub
 	 }
 
 	 Velocity_LC  = sqrt( Velocity_LC );
-
-  
-     return Velocity_LC;
   }
   else
   {
@@ -181,9 +178,9 @@ double Velocity_LC ( double PresStar, double DensStarLeft, double PresLeft, doub
 	 A_PlusLeft  = A_PlusFun( PresLeft / DensLeft );
 
      Velocity_LC = ( A_PlusStar - A_PlusLeft )/sqrt( 4.0 * A_PlusStar * A_PlusLeft );
-
-     return Velocity_LC; 
   }
+
+  return Velocity_LC; 
 }
 
 double Velocity_RC ( double PresStar, double DensStarRight, double PresRight, double DensRight, bool Shock )
@@ -213,8 +210,6 @@ double Velocity_RC ( double PresStar, double DensStarRight, double PresRight, do
 	 }
 
 	 Velocity_RC  = -sqrt( Velocity_RC );
-
-     return Velocity_RC;
   }
   else
   {
@@ -232,9 +227,9 @@ double Velocity_RC ( double PresStar, double DensStarRight, double PresRight, do
 	 A_MinusRight  = A_MinusFun( PresRight / DensRight );
 
      Velocity_RC = ( A_MinusStar - A_MinusRight )/sqrt( 4.0 * A_MinusStar * A_MinusRight );
-  
-     return Velocity_RC; 
   }
+
+  return Velocity_RC; 
 }
 
 double A_PlusFun ( double Temp )
