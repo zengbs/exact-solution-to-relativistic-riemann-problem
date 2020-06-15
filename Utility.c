@@ -21,10 +21,6 @@ int GetAllInfomation( struct InitialCondition *IC, struct RiemannProblem *RP )
 
   Pattern = GetWavePattern( IC );
 
-# if ( EOS == TM )
-  Pattern = 1;
-# endif
-  
   double PresStar, VelocityStar;
 
   double up = 3;
