@@ -55,19 +55,14 @@ int GetWavePattern( struct InitialCondition *IC )
 
   //===============================================
   // shock-shock
-  double A, B, C, EnthalpyRight, Root, Engy_Temp, EngyRight;
+  double EnthalpyRight, Engy_Temp, EngyRight, Enthalpy_Hat, DensDown;
 
   EnthalpyRight = Flu_Enthalpy ( PresRight, DensRight );
   EngyRight     = Flu_TotalInternalEngy( PresRight, DensRight );
 
-  A = 1.0 + ( Gamma_1 / Gamma ) * ( PresRight / PresLeft - 1.0 );
-  B = - ( Gamma_1 / Gamma ) * ( PresRight / PresLeft - 1.0 );
-  C = EnthalpyRight * ( PresRight - PresLeft ) / DensRight - SQR(EnthalpyRight);
-
-
-  QuadraticSolver( A, B, C, &Root, NULL ); 
-
-  Engy_Temp = ( Gamma / Gamma_1 ) * ( Root / (Root-1.0) ) * PresLeft - PresLeft;// eq. (4.165)
+  Enthalpy_Hat  = GetEnthalpyDown( PresRight, DensRight, PresLeft );
+  DensDown      = GetDensDown(PresRight, DensRight, PresLeft);
+  Engy_Temp     = Flu_TotalInternalEngy( PresLeft, DensDown );          
 
   // 4-velocity
   SS = sqrt( ( Engy_Temp - EngyRight )*( PresLeft - PresRight )/( EngyRight + PresRight )/( Engy_Temp + PresLeft )  );
