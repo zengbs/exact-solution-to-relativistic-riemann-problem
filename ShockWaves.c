@@ -95,11 +95,11 @@ struct Parameters
 
 double GetEnthalpyDown ( double PresUp, double DensUp, double PresDown )
 {
-    double EnthalpyUp, EnthalpyDown, PresDiff;
+    double EnthalpyUp, EnthalpyDown;
 
 	EnthalpyUp = Flu_Enthalpy( PresUp, DensUp );
 #   if ( EOS == GAMMA )
-    PresDiff = PresUp - PresDown;
+    double PresDiff = PresUp - PresDown;
 
     double A, B, C;
 

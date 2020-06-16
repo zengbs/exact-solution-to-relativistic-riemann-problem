@@ -70,7 +70,6 @@ void Plot( int Pattern, struct RiemannProblem *RP, struct PlotParams plot )
   int j = 1;
 
   double X_Max, X_Min;
-  int Ng_1, Ng_2, Ng_3, Ng_4;
   double Cs, DensFan, PresFan, VelocityFan;
 
   time += DT;

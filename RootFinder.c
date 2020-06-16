@@ -47,7 +47,7 @@ double RootFinder( double(*Function)(double X, void *params) , void *params, dou
   }
   while (status == GSL_CONTINUE && iter < max_iter);
 
-  gsl_root_fsolver_free;
+  gsl_root_fsolver_free(s);
   
   return Root;
 }

@@ -23,12 +23,10 @@ int GetWavePattern( struct InitialCondition *IC )
   double PresRight     = IC -> PresRight    ;
 
   double SS, RS, RR;
-  double V_LC, V_RC;
-  bool Shock_Yes = true;
-  bool Shock_No  = false;
+  double V_LC;
   bool Swap_Yes = false;
 
-  double A_PlusLeft, A_MinusLeft, A_PlusRight, A_MinusRight;
+  double A_PlusLeft, A_PlusRight, A_MinusRight;
 
   // swap PresLeft and PresRight
   if ( PresLeft < PresRight )
@@ -55,17 +53,16 @@ int GetWavePattern( struct InitialCondition *IC )
 
   //===============================================
   // shock-shock
-  double EnthalpyRight, Engy_Temp, EngyRight, Enthalpy_Hat, DensDown;
+  double EngyDown, EngyRight,EnthalpyDown, DensDown;
 
-  EnthalpyRight = Flu_Enthalpy ( PresRight, DensRight );
   EngyRight     = Flu_TotalInternalEngy( PresRight, DensRight );
 
-  Enthalpy_Hat  = GetEnthalpyDown( PresRight, DensRight, PresLeft );
+  EnthalpyDown  = GetEnthalpyDown( PresRight, DensRight, PresLeft );
   DensDown      = GetDensDown(PresRight, DensRight, PresLeft);
-  Engy_Temp     = Flu_TotalInternalEngy( PresLeft, DensDown );          
+  EngyDown      = DensDown * EnthalpyDown - PresLeft;
 
   // 4-velocity
-  SS = sqrt( ( Engy_Temp - EngyRight )*( PresLeft - PresRight )/( EngyRight + PresRight )/( Engy_Temp + PresLeft )  );
+  SS = sqrt( ( EngyDown - EngyRight )*( PresLeft - PresRight )/( EngyRight + PresRight )/( EngyDown + PresLeft )  );
 
   //===============================================
   // rarefaction-shock

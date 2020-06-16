@@ -73,4 +73,20 @@ double TemperatureFunction ( double Temp, void *params );
 
 double U2V(double U);
 
+double Isentropic_Constant ( double Init_Temp, double Init_Dens );
+
+double Isentropic_Dens2Temperature ( double Dens, double Init_Temp, double Init_Dens );
+
+double Isentropic_Temperature2Dens ( double Temperature, double Init_Temp, double Init_Dens );
+
+double Isentropic_Pres2Temperature ( double Pres, struct Rarefaction *Rarefaction );
+
+double Isentropic_Temperature2Pres ( double Temperature, void *params  );
+
+double Isentropic_Pres2Dens ( double Pres, struct Rarefaction *Rarefaction );
+
+double Isentropic_Dens2Pres ( double Dens, double Init_Temp, double Init_Dens );
+
+
+
 #endif
