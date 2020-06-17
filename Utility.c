@@ -23,8 +23,8 @@ int GetAllInfomation( struct InitialCondition *IC, struct RiemannProblem *RP )
 
   double PresStar, VelocityStar;
 
-  double up = 3;
-  double lb = 2;
+  double up = 4.0;
+  double lb = 1e-17;
 
 
   double fun_lb = PresFunction(lb, IC);
@@ -32,7 +32,8 @@ int GetAllInfomation( struct InitialCondition *IC, struct RiemannProblem *RP )
 
   if ( fun_lb*fun_up > 0.0 )
   {
-    printf( "fun_lb=%e, fun_up=%e\n", fun_lb, fun_up );
+    printf( "Please choose an interval that cover PresStar!\n" );
+    printf("function:%s, line:%d\n", __FUNCTION__, __LINE__);
 	exit(1);
   }
 
@@ -119,7 +120,6 @@ int GetAllInfomation( struct InitialCondition *IC, struct RiemannProblem *RP )
          RP -> RS.Right.PresDownStream  = PresStar;
          RP -> RS.Right.DensDownStream  = DensDown_Right;
          RP -> RS.Right.VelyDownStream  = VelocityStar;
-		 printf("VelocityStar=%e\n", VelocityStar);
      break;
 
 	 case 3:

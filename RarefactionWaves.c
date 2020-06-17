@@ -9,6 +9,8 @@
 #include "Macro.h"
 
 
+static double Isentropic_TemperatureFunction ( double Temperature, void *params );
+
 void GetHeadTailVelocity( double PresUp, double DensUp, double VelocityUp,
 			              double PresDown, double DensDown, double VelocityDown,
                           double *HeadVelocity, double *TailVelocity, bool Right_Yes )
@@ -116,7 +118,7 @@ double GetSoundSpeedInFan ( struct Rarefaction *Rarefaction )
 {
   double Temp, Cs;
 
-  Temp = RootFinder( TemperatureFunction, (void*)Rarefaction, 0.0, __DBL_EPSILON__, 0.11, 1e-5, 1e2 );
+  Temp = RootFinder( TemperatureFunction, (void*)Rarefaction, 0.0, __DBL_EPSILON__, 0.11, 1e-50, 1e2 );
 
   Cs = Flu_SoundSpeed( Temp );
 
@@ -239,13 +241,42 @@ double Isentropic_Temperature2Dens ( double Temperature, double Init_Temp, doubl
 }
 
 //=========================================
-double Isentropic_Pres2Temperature ( double Pres, struct Rarefaction *Rarefaction )
+double Isentropic_Pres2Temperature ( struct Rarefaction *Rarefaction )
 {
   double Temperature;
 
-  Temperature = RootFinder( Isentropic_Temperature2Pres, (void*)Rarefaction, 0.0, __DBL_EPSILON__, 0.11, 1e-5, 1e2 );
+  Temperature = RootFinder( Isentropic_TemperatureFunction, (void*)Rarefaction, 0.0, __DBL_EPSILON__, 0.11, 1e-50, 1e3 );
 
   return Temperature;
+}
+
+
+//
+// Pres = Pres( Temp )
+//
+double Isentropic_TemperatureFunction ( double TempDown, void *params )
+{
+  struct Rarefaction *rarefaction = ( struct Rarefaction * ) params;
+
+  double PresUp    = rarefaction -> PresUpStream;
+  double DensUp    = rarefaction -> DensUpStream;
+  double PresDown  = rarefaction -> PresDownStream;
+  double TempUp    = PresUp / DensUp;
+  double K         = Isentropic_Constant(TempUp, DensUp);
+  double Expression;
+//  printf("K=%e\n", K);
+# if ( EOS == GAMMA )
+  Expression  = pow( TempDown, Gamma/Gamma_1 );
+  Expression *= pow( K, -1.0/Gamma_1 );
+  
+# elif ( EOS == TM )
+  Expression  = pow( TempDown, 5.0/3.0 )*( 1.5*TempDown + sqrt(2.25*TempDown*TempDown + 1.0) );
+
+  Expression /= K;
+  Expression *= pow( Expression, 1.5 );
+# endif
+
+  return Expression - PresDown;
 }
 
 double Isentropic_Temperature2Pres ( double Temperature, void *params  )
@@ -276,10 +307,10 @@ double Isentropic_Temperature2Pres ( double Temperature, void *params  )
 
 //=========================================
 
-double Isentropic_Pres2Dens ( double Pres, struct Rarefaction *Rarefaction )
+double Isentropic_Pres2Dens ( struct Rarefaction *Rarefaction )
 {
-  double Temperature = Isentropic_Pres2Temperature( Pres, Rarefaction );
-
+  double Temperature = Isentropic_Pres2Temperature( Rarefaction );
+  double Pres        = Rarefaction -> PresDownStream;
   return Pres / Temperature;
 }
 
@@ -302,152 +333,153 @@ int func ( double Dens, const double y[], double f[], void *params )
   struct Rarefaction *upstream = (struct Rarefaction *)params;
 
   bool Right_Yes = upstream->Right_Yes;
-
   double sign = ( Right_Yes ) ? +1.0 : -1.0;
 
+  double DensUp   = upstream->DensUpStream;
+  double PresUp   = upstream->PresUpStream;
+  double TempUp   = PresUp / DensUp;
+
+  double TempDown = Isentropic_Dens2Temperature( Dens, TempUp, DensUp );
+  double Cs       = Flu_SoundSpeed( TempDown );
+
   double LorentzFactor = sqrt( 1.0 + y[0]*y[0] );
-
-  double Init_Dens = upstream->DensUpStream;
-  double Init_Pres = upstream->PresUpStream;
-  double Init_Temp = Init_Pres / Init_Dens;
-
-  double Temperature = Isentropic_Dens2Temperature( Dens, Init_Temp, Init_Dens );
-
-  double Cs = Flu_SoundSpeed( Temperature );
-
   f[0] = sign * LorentzFactor*Cs/Dens;
 
   return GSL_SUCCESS;
 }
 
-int jac (double t, const double y[], double *dfdy, double dfdt[], void *params)
-{
-  struct Rarefaction *upstream = (struct Rarefaction *)params;
-
-  bool Right_Yes = upstream->    Right_Yes;
-  double  DensUp = upstream-> DensUpStream;
-  double  PresUp = upstream-> PresUpStream;
-  
-  gsl_matrix_view dfdy_mat = gsl_matrix_view_array (dfdy, 1, 1);
-
-  gsl_matrix * m = &dfdy_mat.matrix;
-
-  double sign;
-
-  sign = ( Right_Yes ) ? +1.0 : -1.0;
-
-  double LorentzFactor = sqrt(1.0 + y[0]*y[0]);
-
-  double Temperature = Isentropic_Dens2Temperature( t, PresUp/DensUp, DensUp );
-
-  double Cs = Flu_SoundSpeed( Temperature );
-
-//  ∂ ⎛Cₛ⋅γ⎞        Cₛ⋅U    
-//  ──⎜────⎟ = ─────────────
-//  ∂U⎝ ρ  ⎠        ________
-//                 ╱  2     
-//             ρ⋅╲╱  U  + 1 
-  double Jacobian = sign * ( y[0]/LorentzFactor ) * ( Cs / t );
-
-  gsl_matrix_set (m, 0, 0, Jacobian);
-
-  double K;
-  K    = Isentropic_Constant( PresUp/DensUp, DensUp );
-
-
-# if ( EOS == GAMMA )
-//                     __________________                                
-//                    ╱       Γ                                          
-//                   ╱   Γ⋅K⋅ρ ⋅(Γ - 1)   ⎛ 2            Γ              ⎞
-//             γ⋅   ╱   ──────────────── ⋅⎝Γ ⋅ρ - 2⋅Γ⋅K⋅ρ  - 4⋅Γ⋅ρ + 3⋅ρ⎠
-//                 ╱         Γ                                           
-//  ∂ ⎛Cₛ⋅γ⎞     ╲╱     Γ⋅K⋅ρ  + Γ⋅ρ - ρ                                 
-//  ──⎜────⎟ = ──────────────────────────────────────────────────────────
-//  ∂ρ⎝ ρ  ⎠                       2 ⎛     Γ          ⎞                  
-//                              2⋅ρ ⋅⎝Γ⋅K⋅ρ  + Γ⋅ρ - ρ⎠                  
-
-  dfdt[0]  = sqrt( Gamma * (Gamma - 1.0) * K * pow( t, Gamma ) );
-  dfdt[0] /= sqrt( Gamma * K * pow(t, Gamma) + Gamma*t - t );
-  dfdt[0] *= Gamma*Gamma*t - 2.0*Gamma*K*pow(t, Gamma) - 4.0*Gamma*t + 3.0*t;
-  dfdt[0] /= 2.0*t*t*( Gamma*K*pow(t, Gamma) + Gamma*t - t );
-# elif ( EOS == TM )
-  double  dCs_dT, dT_dA, dA_drho, sqrtTemp, A, Temp;
-  Temp = Isentropic_Dens2Temperature( t, PresUp/DensUp, DensUp );
-  sqrtTemp = sqrt( 2.25*Temp*Temp + 1.0 );
-  A        = pow(t, 2.0/3.0) * K;
-
-//                    _______________________________________                                               
-//                   ╱       ⎛             _____________⎞                                                   
-//                  ╱        ⎜            ╱       2     ⎟     ⎛                       _____________        ⎞
-//                 ╱       T⋅⎝4.5⋅T + 5⋅╲╱  2.25⋅T  + 1 ⎠     ⎜        2             ╱       2             ⎟
-//                ╱    ───────────────────────────────────── ⋅⎝70.875⋅T  + 60.75⋅T⋅╲╱  2.25⋅T  + 1  + 33.75⎠
-//               ╱                         _____________                                                    
-//              ╱            2            ╱       2                                                         
-//   d        ╲╱       18.0⋅T  + 12.0⋅T⋅╲╱  2.25⋅T  + 1  + 3                                                
-//   ──(Cₛ) = ──────────────────────────────────────────────────────────────────────────────────────────────
-//   dT           ⎛                        _____________                            _____________       ⎞   
-//                ⎜        4          3   ╱       2                 2              ╱       2            ⎟   
-//              T⋅⎝1458.0⋅T  + 972.0⋅T ⋅╲╱  2.25⋅T  + 1  + 799.875⋅T  + 330.75⋅T⋅╲╱  2.25⋅T  + 1  + 67.5⎠   
-
-  dCs_dT   = 70.875*Temp*Temp + 60.75*Temp*sqrtTemp + 33.75;
-  dCs_dT  *= sqrt(  4.5*Temp*Temp +  5.0*Temp*sqrtTemp );
-  dCs_dT  /= sqrt( 18.0*Temp*Temp + 12.0*Temp*sqrtTemp + 3.0);
-  dCs_dT  /= 1458.0*Temp*Temp*Temp*Temp + 972.0*Temp*Temp*Temp*sqrtTemp + 799.875*Temp*Temp + 330.75*Temp*sqrtTemp + 67.5;
-  dCs_dT  /= Temp;
-
-//   d          3⋅A + 2    
-//   ──(T) = ──────────────
-//   dA                 3/2
-//           2⋅(3⋅A + 1)   
-
-  dT_dA    = 3.0*A+2.0;
-  dT_dA   /= 2.0*pow(3.0*A + 1.0 , 1.5);
-
-//   d                            -0.333333333333333
-//   ──(A) = 0.666666666666667⋅K⋅ρ                  
-//   dρ                                             
-//   
-  dA_drho  = (2.0/3.0) * K * pow(t, -1.0/3.0);
-
-  dfdt[0]  = dCs_dT * dT_dA * dA_drho;
-
-# endif
-
-  dfdt[0] *= sign;
-  dfdt[0] *= LorentzFactor;
-
-  return GSL_SUCCESS;
-}
 
 
 double Isentropic_Dens2Velocity ( double DensDown, struct Rarefaction *upstream )
 {
   double VelyUp = upstream -> VelyUpStream;
+  double DensUp = upstream -> DensUpStream;
 
-  gsl_odeiv2_system sys = {func, jac, 1, &upstream};
+  double t0 = DensUp;
+  double t1 = DensDown;
 
-  gsl_odeiv2_driver * d =  gsl_odeiv2_driver_alloc_y_new (&sys, gsl_odeiv2_step_rk8pd, 1e-6, 1e-6, 0.0);
+  double ini_step = 1e-6;
+  double abserr   = 0.0;
+  double relerr   = 1e-16;
 
-  double t = 0.0, t1 = DensDown;
+  if ( t1 < t0 ) ini_step *= -1.0;
+
+  gsl_odeiv2_system sys = {func, NULL, 1, upstream};
+
+  gsl_odeiv2_driver * d =  gsl_odeiv2_driver_alloc_y_new (&sys, gsl_odeiv2_step_rk8pd, ini_step, abserr, relerr);
 
   double y[1] = { VelyUp };
 
-  int NumStep = 100;
+  int status = gsl_odeiv2_driver_apply (d, &t0, t1, y);
 
-  for (int i = 1; i <= NumStep; i++)
+  if (status != GSL_SUCCESS)
   {
-     double ti = i * t1 / (double)NumStep;
-
-     int status = gsl_odeiv2_driver_apply (d, &t, ti, y);
-
-     if (status != GSL_SUCCESS)
-     {
-         printf ("error, return value=%d\n", status);
-         break;
-     }
+      printf ("error, return value=%d\n", status);
+      exit(0);
   }
 
   gsl_odeiv2_driver_free (d);
 
   return y[0]; // return VelyDown;
 }
+
+
+
+//int jac (double t, const double y[], double *dfdy, double dfdt[], void *params)
+//{
+//  struct Rarefaction *upstream = (struct Rarefaction *)params;
+//
+//  bool Right_Yes = upstream->    Right_Yes;
+//  double  DensUp = upstream-> DensUpStream;
+//  double  PresUp = upstream-> PresUpStream;
+//  
+//  gsl_matrix_view dfdy_mat = gsl_matrix_view_array (dfdy, 1, 1);
+//
+//  gsl_matrix * m = &dfdy_mat.matrix;
+//
+//  double sign;
+//
+//  sign = ( Right_Yes ) ? +1.0 : -1.0;
+//
+//  double LorentzFactor = sqrt(1.0 + y[0]*y[0]);
+//
+//  double Temperature = Isentropic_Dens2Temperature( t, PresUp/DensUp, DensUp );
+//
+//  double Cs = Flu_SoundSpeed( Temperature );
+//
+////  ∂ ⎛Cₛ⋅γ⎞        Cₛ⋅U    
+////  ──⎜────⎟ = ─────────────
+////  ∂U⎝ ρ  ⎠        ________
+////                 ╱  2     
+////             ρ⋅╲╱  U  + 1 
+//  double Jacobian = sign * ( y[0]/LorentzFactor ) * ( Cs / t );
+//
+//  gsl_matrix_set (m, 0, 0, Jacobian);
+//
+//  double K;
+//  K    = Isentropic_Constant( PresUp/DensUp, DensUp );
+//
+//
+//# if ( EOS == GAMMA )
+////                     __________________                                
+////                    ╱       Γ                                          
+////                   ╱   Γ⋅K⋅ρ ⋅(Γ - 1)   ⎛ 2            Γ              ⎞
+////             γ⋅   ╱   ──────────────── ⋅⎝Γ ⋅ρ - 2⋅Γ⋅K⋅ρ  - 4⋅Γ⋅ρ + 3⋅ρ⎠
+////                 ╱         Γ                                           
+////  ∂ ⎛Cₛ⋅γ⎞     ╲╱     Γ⋅K⋅ρ  + Γ⋅ρ - ρ                                 
+////  ──⎜────⎟ = ──────────────────────────────────────────────────────────
+////  ∂ρ⎝ ρ  ⎠                       2 ⎛     Γ          ⎞                  
+////                              2⋅ρ ⋅⎝Γ⋅K⋅ρ  + Γ⋅ρ - ρ⎠                  
+//
+//  dfdt[0]  = sqrt( Gamma * (Gamma - 1.0) * K * pow( t, Gamma ) );
+//  dfdt[0] /= sqrt( Gamma * K * pow(t, Gamma) + Gamma*t - t );
+//  dfdt[0] *= Gamma*Gamma*t - 2.0*Gamma*K*pow(t, Gamma) - 4.0*Gamma*t + 3.0*t;
+//  dfdt[0] /= 2.0*t*t*( Gamma*K*pow(t, Gamma) + Gamma*t - t );
+//# elif ( EOS == TM )
+//  double  dCs_dT, dT_dA, dA_drho, sqrtTemp, A, Temp;
+//  Temp = Isentropic_Dens2Temperature( t, PresUp/DensUp, DensUp );
+//  sqrtTemp = sqrt( 2.25*Temp*Temp + 1.0 );
+//  A        = pow(t, 2.0/3.0) * K;
+//
+////                    _______________________________________                                               
+////                   ╱       ⎛             _____________⎞                                                   
+////                  ╱        ⎜            ╱       2     ⎟     ⎛                       _____________        ⎞
+////                 ╱       T⋅⎝4.5⋅T + 5⋅╲╱  2.25⋅T  + 1 ⎠     ⎜        2             ╱       2             ⎟
+////                ╱    ───────────────────────────────────── ⋅⎝70.875⋅T  + 60.75⋅T⋅╲╱  2.25⋅T  + 1  + 33.75⎠
+////               ╱                         _____________                                                    
+////              ╱            2            ╱       2                                                         
+////   d        ╲╱       18.0⋅T  + 12.0⋅T⋅╲╱  2.25⋅T  + 1  + 3                                                
+////   ──(Cₛ) = ──────────────────────────────────────────────────────────────────────────────────────────────
+////   dT           ⎛                        _____________                            _____________       ⎞   
+////                ⎜        4          3   ╱       2                 2              ╱       2            ⎟   
+////              T⋅⎝1458.0⋅T  + 972.0⋅T ⋅╲╱  2.25⋅T  + 1  + 799.875⋅T  + 330.75⋅T⋅╲╱  2.25⋅T  + 1  + 67.5⎠   
+//
+//  dCs_dT   = 70.875*Temp*Temp + 60.75*Temp*sqrtTemp + 33.75;
+//  dCs_dT  *= sqrt(  4.5*Temp*Temp +  5.0*Temp*sqrtTemp );
+//  dCs_dT  /= sqrt( 18.0*Temp*Temp + 12.0*Temp*sqrtTemp + 3.0);
+//  dCs_dT  /= 1458.0*Temp*Temp*Temp*Temp + 972.0*Temp*Temp*Temp*sqrtTemp + 799.875*Temp*Temp + 330.75*Temp*sqrtTemp + 67.5;
+//  dCs_dT  /= Temp;
+//
+////   d          3⋅A + 2    
+////   ──(T) = ──────────────
+////   dA                 3/2
+////           2⋅(3⋅A + 1)   
+//
+//  dT_dA    = 3.0*A+2.0;
+//  dT_dA   /= 2.0*pow(3.0*A + 1.0 , 1.5);
+//
+////   d                            -0.333333333333333
+////   ──(A) = 0.666666666666667⋅K⋅ρ                  
+////   dρ                                             
+////   
+//  dA_drho  = (2.0/3.0) * K * pow(t, -1.0/3.0);
+//
+//  dfdt[0]  = dCs_dT * dT_dA * dA_drho;
+//
+//# endif
+//
+//  dfdt[0] *= sign;
+//  dfdt[0] *= LorentzFactor;
+//
+//  return GSL_SUCCESS;
+//}

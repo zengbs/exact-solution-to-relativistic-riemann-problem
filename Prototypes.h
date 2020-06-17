@@ -79,14 +79,15 @@ double Isentropic_Dens2Temperature ( double Dens, double Init_Temp, double Init_
 
 double Isentropic_Temperature2Dens ( double Temperature, double Init_Temp, double Init_Dens );
 
-double Isentropic_Pres2Temperature ( double Pres, struct Rarefaction *Rarefaction );
+double Isentropic_Pres2Temperature ( struct Rarefaction *Rarefaction );
 
 double Isentropic_Temperature2Pres ( double Temperature, void *params  );
 
-double Isentropic_Pres2Dens ( double Pres, struct Rarefaction *Rarefaction );
+double Isentropic_Pres2Dens ( struct Rarefaction *Rarefaction );
 
 double Isentropic_Dens2Pres ( double Dens, double Init_Temp, double Init_Dens );
 
+void RelativeVelocity( double Ua, double Ub, double *LorentzFactor_ab, double *U_ab );
 
-
+double Isentropic_Dens2Velocity ( double DensDown, struct Rarefaction *upstream );
 #endif
