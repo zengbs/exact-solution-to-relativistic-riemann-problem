@@ -15,12 +15,12 @@ double Gamma_1 = 0.666666666666666666666;
 int main()
 {
   double DensLeft      =  1.0;
-  double VelocityLeft  = -0.2;
-  double PresLeft      =  1.0;
+  double VelocityLeft  =  +0.1;
+  double PresLeft      = 1.0;
 
   double DensRight     =  1.0;
-  double VelocityRight = +0.2;
-  double PresRight     =  1.0;
+  double VelocityRight = +0.0;
+  double PresRight     =  10.0;
 //// RR
 //  double DensLeft      =  1.0;
 //  double VelocityLeft  = -1.0;

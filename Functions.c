@@ -79,7 +79,6 @@ int GetWavePattern( struct InitialCondition *IC )
   double VelocityStar = Isentropic_Dens2Velocity( DensStarLeft, &RarefactionLeft );
   RelativeVelocity( VelocityLeft, VelocityStar, NULL, &V_LC );
   
-  // 4-velocity
   RS = V_LC;
 
   //===============================================
@@ -112,6 +111,8 @@ int GetWavePattern( struct InitialCondition *IC )
 
 
   RelativeVelocity( V_LC, V_RC, NULL, &RR );
+
+  //===============================================
 
   //relative velocity  
   double VelocityLeftRight;
@@ -151,7 +152,7 @@ int GetWavePattern( struct InitialCondition *IC )
 }
 
 
-double Velocity_LC ( double PresStar, double DensStarLeft, double PresLeft, double DensLeft, bool Shock )
+double Velocity_LC ( double PresStar, double DensStarLeft, double PresLeft, double DensLeft, double VelocityLeft, bool Shock )
 {
   double Velocity_LC;
 
@@ -189,18 +190,31 @@ double Velocity_LC ( double PresStar, double DensStarLeft, double PresLeft, doub
 
 
 	 // 4-velocity
-	 double A_PlusStar, A_PlusLeft;
+	 //double A_PlusStar, A_PlusLeft;
 
-	 A_PlusStar  = A_PlusFun( PresStar / DensStarLeft);
-	 A_PlusLeft  = A_PlusFun( PresLeft / DensLeft );
+	 //A_PlusStar  = A_PlusFun( PresStar / DensStarLeft);
+	 //A_PlusLeft  = A_PlusFun( PresLeft / DensLeft );
 
-     Velocity_LC = ( A_PlusStar - A_PlusLeft )/sqrt( 4.0 * A_PlusStar * A_PlusLeft );
+     //Velocity_LC = ( A_PlusStar - A_PlusLeft )/sqrt( 4.0 * A_PlusStar * A_PlusLeft );
+
+
+     double Velocity_C;
+     struct Rarefaction upstream;
+
+     upstream.Right_Yes    = false;
+     upstream.DensUpStream = DensLeft;
+     upstream.PresUpStream = PresLeft;
+     upstream.VelyUpStream = VelocityLeft;
+
+
+     Velocity_C  = Isentropic_Dens2Velocity( DensStarLeft, &upstream );
+     RelativeVelocity( VelocityLeft, Velocity_C, NULL, &Velocity_LC );
   }
 
   return Velocity_LC; 
 }
 
-double Velocity_RC ( double PresStar, double DensStarRight, double PresRight, double DensRight, bool Shock )
+double Velocity_RC ( double PresStar, double DensStarRight, double PresRight, double DensRight, double VelocityRight, bool Shock )
 {
   double Velocity_RC;
 
@@ -237,13 +251,25 @@ double Velocity_RC ( double PresStar, double DensStarRight, double PresRight, do
 	 }
 
 
-	 // 4-velocity
-	 double A_MinusStar, A_MinusRight;
+	 //// 4-velocity
+	 //double A_MinusStar, A_MinusRight;
 
-	 A_MinusStar  = A_MinusFun( PresStar / DensStarRight);
-	 A_MinusRight  = A_MinusFun( PresRight / DensRight );
+	 //A_MinusStar  = A_MinusFun( PresStar / DensStarRight);
+	 //A_MinusRight  = A_MinusFun( PresRight / DensRight );
 
-     Velocity_RC = ( A_MinusStar - A_MinusRight )/sqrt( 4.0 * A_MinusStar * A_MinusRight );
+     //Velocity_RC = ( A_MinusStar - A_MinusRight )/sqrt( 4.0 * A_MinusStar * A_MinusRight );
+
+     double Velocity_C;
+     struct Rarefaction upstream;
+
+     upstream.Right_Yes    = true;
+     upstream.DensUpStream = DensRight;
+     upstream.PresUpStream = PresRight;
+     upstream.VelyUpStream = VelocityRight;
+
+
+     Velocity_C  = Isentropic_Dens2Velocity( DensStarRight, &upstream );
+     RelativeVelocity( VelocityRight, Velocity_C, NULL, &Velocity_RC );
   }
 
   return Velocity_RC; 
@@ -299,8 +325,8 @@ double PresFunction( double PresStar, void  *params )
 
   if ( PresStar >= MAX(PresLeft, PresRight) )
   {
-    V_LC = Velocity_LC( PresStar, NAN, PresLeft,   DensLeft, Shock_Yes ); // left side of eq. (4.161)
-    V_RC = Velocity_RC( PresStar, NAN, PresRight, DensRight, Shock_Yes ); // right side of eq. (4.161)
+    V_LC = Velocity_LC( PresStar, NAN, PresLeft,   DensLeft, VelocityLeft, Shock_Yes ); // left side of eq. (4.161)
+    V_RC = Velocity_RC( PresStar, NAN, PresRight, DensRight, VelocityRight, Shock_Yes ); // right side of eq. (4.161)
 
 	V_LR = - V_RC * sqrt(1.0 + V_LC * V_LC) + sqrt(1.0 + V_RC * V_RC) * V_LC;
   }
@@ -308,8 +334,8 @@ double PresFunction( double PresStar, void  *params )
   {
     DensStarLeft = DensLeft*pow(  PresStar/PresLeft, 1.0/Gamma );
 
-    V_LC = Velocity_LC( PresStar, DensStarLeft, PresLeft,   DensLeft, Shock_No  ); // eq. (4.168)
-    V_RC = Velocity_RC( PresStar, NAN,         PresRight,  DensRight, Shock_Yes ); // right side of eq. (4.161) 
+    V_LC = Velocity_LC( PresStar, DensStarLeft, PresLeft,   DensLeft, VelocityLeft, Shock_No  ); // eq. (4.168)
+    V_RC = Velocity_RC( PresStar, NAN,         PresRight,  DensRight, VelocityRight,  Shock_Yes ); // right side of eq. (4.161) 
 
 	V_LR = - V_RC * sqrt(1.0 + V_LC * V_LC) + sqrt(1.0 + V_RC * V_RC) * V_LC;
   }
@@ -317,8 +343,8 @@ double PresFunction( double PresStar, void  *params )
   {
     DensStarRight = DensRight*pow(  PresStar/PresRight, 1.0/Gamma );
   
-    V_LC = Velocity_LC( PresStar, NAN,          PresLeft,  DensLeft, Shock_Yes );
-    V_RC = Velocity_RC( PresStar, DensStarRight, PresRight, DensRight, Shock_No  );
+    V_LC = Velocity_LC( PresStar, NAN,          PresLeft,  DensLeft, VelocityLeft, Shock_Yes );
+    V_RC = Velocity_RC( PresStar, DensStarRight, PresRight, DensRight, VelocityRight,  Shock_No  );
 
 	V_LR = - V_RC * sqrt(1.0 + V_LC * V_LC) + sqrt(1.0 + V_RC * V_RC) * V_LC;
   }

@@ -11,9 +11,9 @@ int GetWavePattern( struct InitialCondition *IC );
 
 double JumpConditionForEnthalpy( double EnthalpyDown, void* params );
 
-double Velocity_LC ( double PresStar, double DensStarLeft, double PresLeft, double DensLeft, bool Shock );
+double Velocity_LC ( double PresStar, double DensStarLeft, double PresLeft, double DensLeft, double VelocityLeft, bool Shock );
 
-double Velocity_RC ( double PresStar, double DensStarRight, double PresRight, double DensRight, bool Shock );
+double Velocity_RC ( double PresStar, double DensStarRight, double PresRight, double DensRight, double VelocityRight, bool Shock );
 
 double A_PlusFun ( double Temp );
 
