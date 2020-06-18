@@ -76,7 +76,7 @@ double GetSoundSpeedInFan ( struct Rarefaction *Rarefaction )
 {
   double Temp, Cs;
 
-  Temp = RootFinder( TemperatureFunction, (void*)Rarefaction, 0.0, __DBL_EPSILON__, 0.11, 1e-5, 10.0 );
+  Temp = RootFinder( TemperatureFunction, (void*)Rarefaction, 0.0, __DBL_EPSILON__, 0.11, 1e-5, 100.0 );
 
   Cs = Flu_SoundSpeed( Temp );
 
@@ -203,7 +203,7 @@ double Isentropic_Pres2Temperature ( struct Rarefaction *Rarefaction )
 {
   double Temperature;
 
-  Temperature = RootFinder( Isentropic_TemperatureFunction, (void*)Rarefaction, 0.0, __DBL_EPSILON__, 0.11, 1e-5, 10.0 );
+  Temperature = RootFinder( Isentropic_TemperatureFunction, (void*)Rarefaction, 0.0, __DBL_EPSILON__, 0.11, 1e-5, 100.0 );
   
   return Temperature;
 }
@@ -299,6 +299,7 @@ int func ( double Dens, const double y[], double f[], void *params )
 
   double TempDown = Isentropic_Dens2Temperature( Dens, TempUp, DensUp );
   double Cs       = Flu_SoundSpeed( TempDown );
+         Cs      /= sqrt( 1.0 + Cs*Cs ); // 4-sound speed -> 3-sound speed
 
   double LorentzFactor = sqrt( 1.0 + y[0]*y[0] );
   f[0] = sign * LorentzFactor*Cs/Dens;

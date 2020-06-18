@@ -7,6 +7,8 @@
 #include "Global.h"
 
 
+// 4-sound speed
+
 double Flu_SoundSpeed( double Temp )
 {
 	double CsSqr;
@@ -15,7 +17,7 @@ double Flu_SoundSpeed( double Temp )
 	{
 #      if ( EOS == GAMMA )
 	   CsSqr  = Gamma * Temp * Gamma_1;
-	   CsSqr /= Gamma * Temp + Gamma_1;
+       CsSqr /= Gamma * Temp * (2.0 - Gamma) + Gamma_1;
 #      elif ( EOS == TM )
        double h = Flu_Enthalpy(Temp, 1.0);
        CsSqr  = Temp / (3.0*h);
