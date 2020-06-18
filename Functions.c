@@ -174,7 +174,7 @@ double Velocity_LC ( double PresStar, double DensStarLeft, double PresLeft, doub
 
      if ( Velocity_LC < 0.0 )
 	 {
-	   printf("Velocity_LC = %e !!\n", Velocity_LC);
+	   printf("Velocity_LC = %20.16e !!\n", Velocity_LC);
 	   exit(1);
 	 }
 
@@ -236,7 +236,7 @@ double Velocity_RC ( double PresStar, double DensStarRight, double PresRight, do
 
      if ( Velocity_RC < 0.0 )
 	 {
-	   printf("Velocity_RC = %e\n !!", Velocity_RC);
+	   printf("Velocity_RC = %20.16e\n !!", Velocity_RC);
 	   exit(1);
 	 }
 
@@ -305,7 +305,7 @@ double PresFunction( double PresStar, void  *params )
 
   if ( PresStar <= 0.0 )
   {
-    printf("PresStar=%e !!\n", PresStar);
+    printf("PresStar=%20.16e !!\n", PresStar);
 	exit(1);
   }
 
@@ -361,7 +361,7 @@ double PresFunction( double PresStar, void  *params )
     A_PlusLeft   = A_PlusFun( PresLeft  / DensLeft     );
 
     A_MinusStar  = A_MinusFun( PresStar  / DensStarRight );
-    A_MinusRight = A_MinusFun( PresRight / DensRight    );
+    A_MinusRight = A_MinusFun( PresRight / DensRight     );
 
     V_LC  = A_PlusStar - A_PlusLeft;
     V_LC /= sqrt(4.0 * A_PlusStar * A_PlusLeft);
@@ -370,6 +370,32 @@ double PresFunction( double PresStar, void  *params )
     V_RC /= sqrt(4.0 * A_MinusStar * A_MinusRight);
 
 	V_LR = -sqrt(1.0+V_LC*V_LC)*V_RC + sqrt(1.0+V_RC*V_RC)*V_LC;
+printf("old: V_LC=%20.16e\n", V_LC);
+printf("old: V_RC=%20.16e\n", V_RC);
+
+    struct Rarefaction Left;
+    struct Rarefaction Right;
+
+    Left.Right_Yes       = true;
+    Left.PresUpStream    = PresLeft;
+    Left.DensUpStream    = DensLeft;
+    Left.VelyUpStream    = VelocityLeft;
+    Left.PresDownStream  = PresStar;
+
+    Right.Right_Yes      = false;
+    Right.PresUpStream   = PresRight;
+    Right.DensUpStream   = DensRight;
+    Right.VelyUpStream   = VelocityRight;
+    Right.PresDownStream = PresStar;
+
+    DensStarLeft         = Isentropic_Pres2Dens( &Left );
+    DensStarRight        = Isentropic_Pres2Dens( &Right );
+    V_LC = Isentropic_Dens2Velocity(DensStarLeft,   &Left);
+    V_RC = Isentropic_Dens2Velocity(DensStarRight, &Right);
+
+    RelativeVelocity( V_LC, V_RC, NULL, &V_LR );
+printf("new: V_LC=%20.16e\n", V_LC);
+printf("new: V_RC=%20.16e\n", V_RC);
   }
 
   double VelocityLeftRight;

@@ -24,7 +24,7 @@ int GetAllInfomation( struct InitialCondition *IC, struct RiemannProblem *RP )
   double PresStar, VelocityStar;
 
   double up = 4.0;
-  double lb = 1e-17;
+  double lb = 1e-3;
 
 
   double fun_lb = PresFunction(lb, IC);
