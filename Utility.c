@@ -10,6 +10,9 @@
 
 int GetAllInfomation( struct InitialCondition *IC, struct RiemannProblem *RP )
 {
+  struct Rarefaction Left;
+  struct Rarefaction Right;
+
   double DensLeft      = IC -> DensLeft     ;
   double VelocityLeft  = IC -> VelocityLeft ;
   double PresLeft      = IC -> PresLeft     ;
@@ -87,9 +90,17 @@ int GetAllInfomation( struct InitialCondition *IC, struct RiemannProblem *RP )
 	 break;
 
 	 case 2:
-         DensDown_Left = GetDensDownRarefaction( PresStar, PresLeft, DensLeft );
 
-		 VelocityStar = GetVelocityDownRarefaction( PresStar, DensDown_Left, PresLeft, DensLeft, VelocityLeft, false );
+         Left.Right_Yes      = false;
+         Left.PresUpStream   = PresLeft;
+         Left.DensUpStream   = DensLeft;
+         Left.VelyUpStream   = VelocityLeft;
+         Left.PresDownStream = PresStar;
+
+
+         DensDown_Left = Isentropic_Pres2Dens( &Left );
+
+         VelocityStar = Isentropic_Dens2Velocity( DensDown_Left, &Left );
 
 	     GetHeadTailVelocity( PresLeft, DensLeft, VelocityLeft, PresStar, DensDown_Left, VelocityStar,
 						      &HeadVelocity_Left, &TailVelocity_Left, false );
@@ -141,9 +152,15 @@ int GetAllInfomation( struct InitialCondition *IC, struct RiemannProblem *RP )
 
 
 
-         DensDown_Right = GetDensDownRarefaction( PresStar, PresRight, DensRight );
+         Right.Right_Yes      = true;
+         Right.PresUpStream   = PresRight;
+         Right.DensUpStream   = DensRight;
+         Right.VelyUpStream   = VelocityRight;
+         Right.PresDownStream = PresStar;
 
-		 VelocityStar = GetVelocityDownRarefaction( PresStar, DensDown_Right, PresRight, DensRight, VelocityRight, true );
+         DensDown_Right = Isentropic_Pres2Dens( &Right );
+
+         VelocityStar = Isentropic_Dens2Velocity( DensDown_Right, &Right );
 
 	     GetHeadTailVelocity( PresRight, DensRight, VelocityRight, PresStar, DensDown_Right, VelocityStar,
 						      &HeadVelocity_Right, &TailVelocity_Right, true );
@@ -160,9 +177,17 @@ int GetAllInfomation( struct InitialCondition *IC, struct RiemannProblem *RP )
      break;
 
 	 case 4:
-         DensDown_Left = GetDensDownRarefaction( PresStar, PresLeft, DensLeft );
 
-		 VelocityStar = GetVelocityDownRarefaction( PresStar, DensDown_Left, PresLeft, DensLeft, VelocityLeft, false );
+         Left.Right_Yes      = false;
+         Left.PresUpStream   = PresLeft;
+         Left.DensUpStream   = DensLeft;
+         Left.VelyUpStream   = VelocityLeft;
+         Left.PresDownStream = PresStar;
+
+
+         DensDown_Left = Isentropic_Pres2Dens( &Left );
+
+         VelocityStar = Isentropic_Dens2Velocity( DensDown_Left, &Left );
 
 	     GetHeadTailVelocity( PresLeft, DensLeft, VelocityLeft, PresStar, DensDown_Left, VelocityStar,
 						      &HeadVelocity_Left, &TailVelocity_Left, false );
@@ -178,9 +203,16 @@ int GetAllInfomation( struct InitialCondition *IC, struct RiemannProblem *RP )
          RP -> RR.Leftt.VelocityTail    = TailVelocity_Left;
 
 
-         DensDown_Right = GetDensDownRarefaction( PresStar, PresRight, DensRight );
 
-		 VelocityStar = GetVelocityDownRarefaction( PresStar, DensDown_Right, PresRight, DensRight, VelocityRight, true );
+         Right.Right_Yes      = true;
+         Right.PresUpStream   = PresRight;
+         Right.DensUpStream   = DensRight;
+         Right.VelyUpStream   = VelocityRight;
+         Right.PresDownStream = PresStar;
+
+         DensDown_Right = Isentropic_Pres2Dens( &Right );
+
+         VelocityStar = Isentropic_Dens2Velocity( DensDown_Right, &Right );
 
 	     GetHeadTailVelocity( PresRight, DensRight, VelocityRight, PresStar, DensDown_Right, VelocityStar,
 						      &HeadVelocity_Right, &TailVelocity_Right, true );

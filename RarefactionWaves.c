@@ -33,48 +33,6 @@ void GetHeadTailVelocity( double PresUp, double DensUp, double VelocityUp,
   }
 }
 
-double GetDensDownRarefaction( double PresDown, double PresUp, double DensUp )
-{
-  double DensDown;
-
-  DensDown = pow( DensUp, Gamma )*PresDown / PresUp;
-
-  DensDown = pow( DensDown, 1.0 / Gamma );
- 
-  return DensDown;
-}
-
-
-double GetVelocityDownRarefaction( double PresDown, double DensDown, double PresUp, double DensUp, double VelocityUp, bool Right_Yes )
-{
-  double Velocity;
-
-  if ( Right_Yes )
-  {
-	double A_Minus;
-
-	A_Minus  = A_MinusFun( PresUp / DensUp );
-	A_Minus /= A_MinusFun( PresDown / DensDown);
-
-    Velocity  = VelocityUp * ( A_Minus + 1.0 ) + sqrt( 1.0 + SQR(VelocityUp) ) * ( A_Minus - 1.0 );
-	Velocity /= sqrt( 4.0 * A_Minus );
-    Velocity *= SIGN( VelocityUp * ( A_Minus - 1.0 ) + sqrt( 1.0 + SQR(VelocityUp) ) * ( A_Minus + 1.0 ) );
-  }
-  else
-  {
-	double A_Plus;
-
-	A_Plus  = A_PlusFun( PresUp / DensUp );
-	A_Plus /= A_PlusFun( PresDown / DensDown);
-
-    Velocity  = VelocityUp * ( A_Plus + 1.0 ) + sqrt( 1.0 + SQR(VelocityUp) ) * ( A_Plus - 1.0 );
-	Velocity /= sqrt( 4.0 * A_Plus );
-    Velocity *= SIGN( VelocityUp * ( A_Plus - 1.0 ) + sqrt( 1.0 + SQR(VelocityUp) ) * ( A_Plus + 1.0 ) );
-  }
-
-  return Velocity;
-}
-
 double GetDensInFan( double Cs, double PresUp, double DensUp )
 {
   double k = PresUp * pow (DensUp, -Gamma);
