@@ -118,7 +118,7 @@ double GetSoundSpeedInFan ( struct Rarefaction *Rarefaction )
 {
   double Temp, Cs;
 
-  Temp = RootFinder( TemperatureFunction, (void*)Rarefaction, 0.0, __DBL_EPSILON__, 0.11, 1e-2, 1e2 );
+  Temp = RootFinder( TemperatureFunction, (void*)Rarefaction, 0.0, __DBL_EPSILON__, 0.11, 1e-3, 6.0 );
 
   Cs = Flu_SoundSpeed( Temp );
 
@@ -190,7 +190,7 @@ double TemperatureFunction ( double Temp, void *params )
   return Var1 - Var0;
 
 }
-
+// ============================================= OK
 double Isentropic_Constant ( double Init_Temp, double Init_Dens )
 {
   double K;
@@ -204,7 +204,7 @@ double Isentropic_Constant ( double Init_Temp, double Init_Dens )
   return K;
 }
 
-//=========================================
+//========================================= ??
 
 double Isentropic_Dens2Temperature ( double Dens, double Init_Temp, double Init_Dens )
 {
@@ -240,21 +240,21 @@ double Isentropic_Temperature2Dens ( double Temperature, double Init_Temp, doubl
   return Dens;
 }
 
-//=========================================
+//========================================= OK
 double Isentropic_Pres2Temperature ( struct Rarefaction *Rarefaction )
 {
   double Temperature;
 
-  Temperature = RootFinder( Isentropic_TemperatureFunction, (void*)Rarefaction, 0.0, __DBL_EPSILON__, 0.11, 1e-20, 1e3 );
-
+  Temperature = RootFinder( Isentropic_TemperatureFunction, (void*)Rarefaction, 0.0, __DBL_EPSILON__, 0.11, 1e-2, 10.0 );
+  
   return Temperature;
 }
 
 
 //
-// Pres = Pres( Temp )
+// Pres = Pres( Temp ) OK
 //
-double Isentropic_TemperatureFunction ( double TempDown, void *params )
+double Isentropic_TemperatureFunction ( double TempDown, void *params ) 
 {
   struct Rarefaction *rarefaction = ( struct Rarefaction * ) params;
 
@@ -305,7 +305,7 @@ double Isentropic_Temperature2Pres ( double Temperature, void *params  )
   return Pres;
 }
 
-//=========================================
+//========================================= OK
 
 double Isentropic_Pres2Dens ( struct Rarefaction *Rarefaction )
 {
@@ -358,7 +358,7 @@ double Isentropic_Dens2Velocity ( double DensDown, struct Rarefaction *upstream 
   double t0 = DensUp;
   double t1 = DensDown;
 
-  double ini_step = 1e-6;
+  double ini_step = 1e-10;
   double abserr   = 0.0;
   double relerr   = 1e-16;
 

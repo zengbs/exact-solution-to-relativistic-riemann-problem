@@ -26,7 +26,6 @@ int GetWavePattern( struct InitialCondition *IC )
   double V_LC;
   bool Swap_Yes = false;
 
-  double A_PlusLeft, A_PlusRight, A_MinusRight;
 
   // swap PresLeft and PresRight
   if ( PresLeft < PresRight )
@@ -83,7 +82,7 @@ int GetWavePattern( struct InitialCondition *IC )
 
   //===============================================
   // rarefaction-rarefaction
-  PresStar = 1e-30;
+  PresStar = 1e-5;
 
   RarefactionLeft.PresUpStream   = PresLeft;
   RarefactionLeft.DensUpStream   = DensLeft;
@@ -136,7 +135,8 @@ int GetWavePattern( struct InitialCondition *IC )
     Pattern = 3;
 	//printf("you have shock-rarefaction wave pattern !!\n");
   }
-  else if ( RR <= VelocityLeftRight && VelocityLeftRight < RS )
+  else if ( VelocityLeftRight < RS )
+  //else if ( RR <= VelocityLeftRight && VelocityLeftRight < RS )
   {
     Pattern = 4;
 	//printf("you have rarefaction-rarefaction wave pattern !!\n");
@@ -187,15 +187,6 @@ double Velocity_LC ( double PresStar, double DensStarLeft, double PresLeft, doub
 	   printf( "DensStarLeft should be provided!!\n" );
 	   exit(1);
 	 }
-
-
-	 // 4-velocity
-	 //double A_PlusStar, A_PlusLeft;
-
-	 //A_PlusStar  = A_PlusFun( PresStar / DensStarLeft);
-	 //A_PlusLeft  = A_PlusFun( PresLeft / DensLeft );
-
-     //Velocity_LC = ( A_PlusStar - A_PlusLeft )/sqrt( 4.0 * A_PlusStar * A_PlusLeft );
 
 
      double Velocity_C;
@@ -250,14 +241,6 @@ double Velocity_RC ( double PresStar, double DensStarRight, double PresRight, do
 	   exit(1);
 	 }
 
-
-	 //// 4-velocity
-	 //double A_MinusStar, A_MinusRight;
-
-	 //A_MinusStar  = A_MinusFun( PresStar / DensStarRight);
-	 //A_MinusRight  = A_MinusFun( PresRight / DensRight );
-
-     //Velocity_RC = ( A_MinusStar - A_MinusRight )/sqrt( 4.0 * A_MinusStar * A_MinusRight );
 
      double Velocity_C;
      struct Rarefaction upstream;
@@ -350,39 +333,16 @@ double PresFunction( double PresStar, void  *params )
   }
   else if ( PresStar < MIN(PresLeft, PresRight)  )
   {
-    DensStarLeft  = DensLeft *pow(  PresStar/PresLeft,  1.0/Gamma );
-    DensStarRight = DensRight*pow(  PresStar/PresRight, 1.0/Gamma );
-
-	double V_LC, V_RC;
-    double A_PlusStar, A_MinusStar;
-    double A_PlusLeft, A_MinusRight;
-
-    A_PlusStar   = A_PlusFun( PresStar  / DensStarLeft );
-    A_PlusLeft   = A_PlusFun( PresLeft  / DensLeft     );
-
-    A_MinusStar  = A_MinusFun( PresStar  / DensStarRight );
-    A_MinusRight = A_MinusFun( PresRight / DensRight     );
-
-    V_LC  = A_PlusStar - A_PlusLeft;
-    V_LC /= sqrt(4.0 * A_PlusStar * A_PlusLeft);
-
-    V_RC  = A_MinusStar - A_MinusRight;
-    V_RC /= sqrt(4.0 * A_MinusStar * A_MinusRight);
-
-	V_LR = -sqrt(1.0+V_LC*V_LC)*V_RC + sqrt(1.0+V_RC*V_RC)*V_LC;
-printf("old: V_LC=%20.16e\n", V_LC);
-printf("old: V_RC=%20.16e\n", V_RC);
-
     struct Rarefaction Left;
     struct Rarefaction Right;
 
-    Left.Right_Yes       = true;
+    Left.Right_Yes       = false;
     Left.PresUpStream    = PresLeft;
     Left.DensUpStream    = DensLeft;
     Left.VelyUpStream    = VelocityLeft;
     Left.PresDownStream  = PresStar;
 
-    Right.Right_Yes      = false;
+    Right.Right_Yes      = true;
     Right.PresUpStream   = PresRight;
     Right.DensUpStream   = DensRight;
     Right.VelyUpStream   = VelocityRight;
@@ -390,12 +350,10 @@ printf("old: V_RC=%20.16e\n", V_RC);
 
     DensStarLeft         = Isentropic_Pres2Dens( &Left );
     DensStarRight        = Isentropic_Pres2Dens( &Right );
-    V_LC = Isentropic_Dens2Velocity(DensStarLeft,   &Left);
-    V_RC = Isentropic_Dens2Velocity(DensStarRight, &Right);
 
+    V_LC = Velocity_LC( PresStar, DensStarLeft, PresLeft,   DensLeft, VelocityLeft, Shock_No  ); // eq. (4.168)
+    V_RC = Velocity_RC( PresStar, DensStarRight, PresRight, DensRight, VelocityRight,  Shock_No  );
     RelativeVelocity( V_LC, V_RC, NULL, &V_LR );
-printf("new: V_LC=%20.16e\n", V_LC);
-printf("new: V_RC=%20.16e\n", V_RC);
   }
 
   double VelocityLeftRight;
