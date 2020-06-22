@@ -10,7 +10,7 @@
 
 
 static double Isentropic_TemperatureFunction ( double Temperature, void *params );
-
+static double Isentropic_Dens2Temperature_Function ( double TempDown, void *rafaction );
 
 double FanFunction ( double Dens_at_Xi, void *params )
 {
@@ -126,19 +126,47 @@ double Isentropic_Constant ( double Init_Temp, double Init_Dens )
 
 //========================================= ??
 
-double Isentropic_Dens2Temperature ( double Dens, double Init_Temp, double Init_Dens )
+double Isentropic_Dens2Temperature ( double DensDown, double TempUp, double DensUp )
 {
-  double Temperature, K;
-  K = Isentropic_Constant(Init_Temp, Init_Dens);
+  double TempDown;
 
 # if ( EOS == GAMMA )
- Temperature = K*pow( Dens, Gamma_1 );
+  double K = Isentropic_Constant( TempUp, DensUp );
+  TempDown = K*pow( DensUp, Gamma_1 );
 # elif ( EOS == TM )
-  double A = K*pow(Init_Dens, 2.0/3.0);
-  Temperature = A / sqrt( 3.0*A + 1.0 );
+  struct Rarefaction rafaction;
+
+  rafaction.DensUpStream   = DensUp; 
+  rafaction.PresUpStream   = DensUp*TempUp; 
+  rafaction.DensDownStream = DensDown; 
+
+  TempDown = RootFinder( Isentropic_Dens2Temperature_Function, (void*)&rafaction, 0.0, __DBL_EPSILON__, 5.0, 1.0, 10.0  );
 # endif
 
-  return Temperature;
+  return TempDown;
+}
+
+double Isentropic_Dens2Temperature_Function ( double TempDown, void *params )
+{
+  struct Rarefaction *rarefaction = (struct Rarefaction *)params;
+
+  double Expr, K, TempUp, DensUp, PresUp, DensDown;
+  
+  DensUp    = rarefaction -> DensUpStream;
+  PresUp    = rarefaction -> PresUpStream;
+  DensDown  = rarefaction -> DensDownStream;
+
+  TempUp = PresUp/DensUp;
+
+  K = Isentropic_Constant(TempUp, DensUp);
+
+# if ( EOS == TM )
+  Expr  = 1.5*TempDown*TempDown + TempDown*sqrt(2.25*TempDown*TempDown + 1.0);
+  Expr /= K;
+  Expr  = pow( Expr, 1.5 );
+# endif
+
+  return Expr - DensDown;
 }
 
 double Isentropic_Temperature2Dens ( double Temperature, double Init_Temp, double Init_Dens )

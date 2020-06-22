@@ -30,14 +30,14 @@ int main()
 //  double VelocityRight = +2.0;
 //  double PresRight     =  1.0;
 //
-//// RS
-//  double DensLeft      =  1.0;
-//  double VelocityLeft  =  0.0;
-//  double PresLeft      =  1.0;
-//
-//  double DensRight     =  1.0;
-//  double VelocityRight =  0.0;
-//  double PresRight     =  0.1;
+// RS
+  double DensLeft      =  1.0;
+  double VelocityLeft  =  0.0;
+  double PresLeft      =  1.0;
+
+  double DensRight     =  1.0;
+  double VelocityRight =  0.0;
+  double PresRight     =  0.1;
 //
 //// SR
 //  double DensLeft      =  1.0;
@@ -48,14 +48,14 @@ int main()
 //  double VelocityRight =  0.0;
 //  double PresRight     =  1.0;
 //
-//SS
-  double DensLeft      = 10.0;
-  double VelocityLeft  = +1.0;
-  double PresLeft      =  5.0;
-
-  double DensRight     =  1.0;
-  double VelocityRight = -1.0;
-  double PresRight     = 10.0;
+////SS
+//  double DensLeft      = 10.0;
+//  double VelocityLeft  = +1.0;
+//  double PresLeft      =  5.0;
+//
+//  double DensRight     =  1.0;
+//  double VelocityRight = -1.0;
+//  double PresRight     = 10.0;
 
 
 
@@ -94,6 +94,21 @@ int main()
   
   printf("Pattern=%d\n", Pattern);
   Plot( Pattern, &RP, plot );
+
+//  double Dens_0 = 1.0;
+//  double Init_Temp, Init_Dens;
+//  double Dens_1, Temp;
+//
+//  Init_Temp = 0.1;
+//  Init_Dens = 2.0;
+//
+//  Temp = Isentropic_Dens2Temperature( Dens_0, Init_Temp, Init_Dens );
+//
+//  Dens_1 = Isentropic_Temperature2Dens( Temp, Init_Temp, Init_Dens );
+//
+//  printf("error=%20.16e\n", 1.0-Dens_1/Dens_0);
+  
+
 
   return 0;
 }
