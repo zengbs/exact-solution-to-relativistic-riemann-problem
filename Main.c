@@ -95,20 +95,6 @@ int main()
   printf("Pattern=%d\n", Pattern);
   Plot( Pattern, &RP, plot );
 
-//  double Dens_0 = 1.0;
-//  double Init_Temp, Init_Dens;
-//  double Dens_1, Temp;
-//
-//  Init_Temp = 0.1;
-//  Init_Dens = 2.0;
-//
-//  Temp = Isentropic_Dens2Temperature( Dens_0, Init_Temp, Init_Dens );
-//
-//  Dens_1 = Isentropic_Temperature2Dens( Temp, Init_Temp, Init_Dens );
-//
-//  printf("error=%20.16e\n", 1.0-Dens_1/Dens_0);
-  
-
 
   return 0;
 }

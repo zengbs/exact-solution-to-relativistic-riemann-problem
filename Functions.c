@@ -292,6 +292,12 @@ double PresFunction( double PresStar, void  *params )
   else if ( MIN(PresLeft, PresRight) <= PresStar && PresStar < MAX(PresLeft, PresRight) && PresLeft >= PresRight  )
   {
     DensStarLeft = DensLeft*pow(  PresStar/PresLeft, 1.0/Gamma );
+    //struct Rarefaction rarefation;
+    //rarefation.DensUpStream   = DensLeft;
+    //rarefation.PresUpStream   = PresLeft;
+    //rarefation.PresDownStream = PresStar;
+
+    //DensStarLeft = Isentropic_Pres2Dens( &rarefation );
 
     V_LC = Velocity_LC( PresStar, DensStarLeft, PresLeft,   DensLeft, VelocityLeft, Shock_No  ); // eq. (4.168)
     V_RC = Velocity_RC( PresStar, NAN,         PresRight,  DensRight, VelocityRight,  Shock_Yes ); // right side of eq. (4.161) 
@@ -301,6 +307,12 @@ double PresFunction( double PresStar, void  *params )
   else if ( MIN(PresLeft, PresRight) <= PresStar && PresStar < MAX(PresLeft, PresRight) && PresLeft <= PresRight )
   {
     DensStarRight = DensRight*pow(  PresStar/PresRight, 1.0/Gamma );
+    //struct Rarefaction rarefation;
+    //rarefation.DensUpStream   = DensRight;
+    //rarefation.PresUpStream   = PresRight;
+    //rarefation.PresDownStream = PresStar;
+
+    //DensStarRight = Isentropic_Pres2Dens( &rarefation );
   
     V_LC = Velocity_LC( PresStar, NAN,          PresLeft,  DensLeft, VelocityLeft, Shock_Yes );
     V_RC = Velocity_RC( PresStar, DensStarRight, PresRight, DensRight, VelocityRight,  Shock_No  );

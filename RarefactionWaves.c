@@ -9,8 +9,10 @@
 #include "Macro.h"
 
 
-static double Isentropic_TemperatureFunction ( double Temperature, void *params );
+static double Isentropic_Pres2Temperature_Function ( double Temperature, void *params );
+# if ( EOS == TM )
 static double Isentropic_Dens2Temperature_Function ( double TempDown, void *rafaction );
+# endif
 
 double FanFunction ( double Dens_at_Xi, void *params )
 {
@@ -146,6 +148,7 @@ double Isentropic_Dens2Temperature ( double DensDown, double TempUp, double Dens
   return TempDown;
 }
 
+# if ( EOS == TM )
 double Isentropic_Dens2Temperature_Function ( double TempDown, void *params )
 {
   struct Rarefaction *rarefaction = (struct Rarefaction *)params;
@@ -160,14 +163,13 @@ double Isentropic_Dens2Temperature_Function ( double TempDown, void *params )
 
   K = Isentropic_Constant(TempUp, DensUp);
 
-# if ( EOS == TM )
   Expr  = 1.5*TempDown*TempDown + TempDown*sqrt(2.25*TempDown*TempDown + 1.0);
   Expr /= K;
   Expr  = pow( Expr, 1.5 );
-# endif
 
   return Expr - DensDown;
 }
+# endif
 
 double Isentropic_Temperature2Dens ( double Temperature, double Init_Temp, double Init_Dens )
 {
@@ -193,7 +195,7 @@ double Isentropic_Pres2Temperature ( struct Rarefaction *Rarefaction )
 {
   double Temperature;
 
-  Temperature = RootFinder( Isentropic_TemperatureFunction, (void*)Rarefaction, 0.0, __DBL_EPSILON__, 5.0, 1.0, 10.0 );
+  Temperature = RootFinder( Isentropic_Pres2Temperature_Function, (void*)Rarefaction, 0.0, __DBL_EPSILON__, 5.0, 1.0, 10.0 );
   
   return Temperature;
 }
@@ -202,7 +204,7 @@ double Isentropic_Pres2Temperature ( struct Rarefaction *Rarefaction )
 //
 // Pres = Pres( Temp ) OK
 //
-double Isentropic_TemperatureFunction ( double TempDown, void *params ) 
+double Isentropic_Pres2Temperature_Function ( double TempDown, void *params ) 
 {
   struct Rarefaction *rarefaction = ( struct Rarefaction * ) params;
 
