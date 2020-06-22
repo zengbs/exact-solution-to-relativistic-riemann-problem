@@ -9,6 +9,20 @@
 double RootFinder( double(*Function)(double X, void *params) , void *params, double AbsErr, double RelErr,
 			       double Guess, double LowerBound, double UpperBound )
 {
+
+// Make sure the root is between LowerBound and UpperBound
+  while ( Function(LowerBound, params) *  Function(UpperBound, params) >= 0.0 )
+  {
+    if ( fabs(Function(LowerBound, params)) > fabs(Function(UpperBound, params)) )
+    {
+       UpperBound *= 10.0;
+    }
+    else
+    {
+       LowerBound /= 10.0;
+    }
+  }
+
   int status;
 
   int iter = 0, max_iter = 50;

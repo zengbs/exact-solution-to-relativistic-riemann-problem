@@ -118,7 +118,7 @@ double GetEnthalpyDown ( double PresUp, double DensUp, double PresDown )
     params.DensUp     = DensUp;
     params.PresDown   = PresDown;
 
-    EnthalpyDown = RootFinder( JumpConditionForEnthalpy, (void*)&params, 0.0, __DBL_EPSILON__, 5.0, 1e-3, 1e30  );
+    EnthalpyDown = RootFinder( JumpConditionForEnthalpy, (void*)&params, 0.0, __DBL_EPSILON__, 5.0, 1.0, 10.0  );
 #   endif
     return EnthalpyDown;
 }
