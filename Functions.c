@@ -123,23 +123,22 @@ int GetWavePattern( struct InitialCondition *IC )
   if ( VelocityLeftRight >= SS )
   {
     Pattern = 1;
-	//printf("you have shock-shock wave pattern !!\n");
+	printf("shock-shock wave pattern !!\n");
   }
   else if (  RS <= VelocityLeftRight && VelocityLeftRight < SS && Swap_Yes == false )
   {
     Pattern = 2;
-	//printf("you have rarefaction-shock wave pattern !!\n");
+	printf("rarefaction-shock wave pattern !!\n");
   }
   else if (  RS <= VelocityLeftRight && VelocityLeftRight < SS && Swap_Yes == true )
   {
     Pattern = 3;
-	//printf("you have shock-rarefaction wave pattern !!\n");
+	printf("shock-rarefaction wave pattern !!\n");
   }
   else if ( VelocityLeftRight < RS )
-  //else if ( RR <= VelocityLeftRight && VelocityLeftRight < RS )
   {
     Pattern = 4;
-	//printf("you have rarefaction-rarefaction wave pattern !!\n");
+	printf("rarefaction-rarefaction wave pattern !!\n");
   }
   else
   {
@@ -291,13 +290,12 @@ double PresFunction( double PresStar, void  *params )
   }
   else if ( MIN(PresLeft, PresRight) <= PresStar && PresStar < MAX(PresLeft, PresRight) && PresLeft >= PresRight  )
   {
-    DensStarLeft = DensLeft*pow(  PresStar/PresLeft, 1.0/Gamma );
-    //struct Rarefaction rarefation;
-    //rarefation.DensUpStream   = DensLeft;
-    //rarefation.PresUpStream   = PresLeft;
-    //rarefation.PresDownStream = PresStar;
+    struct Rarefaction rarefation;
+    rarefation.DensUpStream   = DensLeft;
+    rarefation.PresUpStream   = PresLeft;
+    rarefation.PresDownStream = PresStar;
 
-    //DensStarLeft = Isentropic_Pres2Dens( &rarefation );
+    DensStarLeft = Isentropic_Pres2Dens( &rarefation );
 
     V_LC = Velocity_LC( PresStar, DensStarLeft, PresLeft,   DensLeft, VelocityLeft, Shock_No  ); // eq. (4.168)
     V_RC = Velocity_RC( PresStar, NAN,         PresRight,  DensRight, VelocityRight,  Shock_Yes ); // right side of eq. (4.161) 
@@ -306,13 +304,12 @@ double PresFunction( double PresStar, void  *params )
   }
   else if ( MIN(PresLeft, PresRight) <= PresStar && PresStar < MAX(PresLeft, PresRight) && PresLeft <= PresRight )
   {
-    DensStarRight = DensRight*pow(  PresStar/PresRight, 1.0/Gamma );
-    //struct Rarefaction rarefation;
-    //rarefation.DensUpStream   = DensRight;
-    //rarefation.PresUpStream   = PresRight;
-    //rarefation.PresDownStream = PresStar;
+    struct Rarefaction rarefation;
+    rarefation.DensUpStream   = DensRight;
+    rarefation.PresUpStream   = PresRight;
+    rarefation.PresDownStream = PresStar;
 
-    //DensStarRight = Isentropic_Pres2Dens( &rarefation );
+    DensStarRight = Isentropic_Pres2Dens( &rarefation );
   
     V_LC = Velocity_LC( PresStar, NAN,          PresLeft,  DensLeft, VelocityLeft, Shock_Yes );
     V_RC = Velocity_RC( PresStar, DensStarRight, PresRight, DensRight, VelocityRight,  Shock_No  );

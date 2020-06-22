@@ -95,6 +95,43 @@ int main()
   printf("Pattern=%d\n", Pattern);
   Plot( Pattern, &RP, plot );
 
+  struct Rarefaction test;
+
+  test.PresUpStream = 2.0;
+  test.DensUpStream = 0.2;
+   
+  double Temp_0 = test.PresUpStream/test.DensUpStream; 
+ 
+  double PresDown = Isentropic_Temperature2Pres( Temp_0, &test );
+
+  test.PresDownStream = PresDown;
+
+  double Temp_1 = Isentropic_Pres2Temperature(&test);
+
+  printf("error=%20.16e\n", 1.0-Temp_1/Temp_0);
+//-----------------------------------------------------------
+
+
+   
+  double Dens_0 = 2.0; 
+ 
+  PresDown = Isentropic_Dens2Pres( Dens_0, test.PresUpStream/test.DensUpStream, test.DensUpStream );
+
+  test.PresDownStream = PresDown;
+
+  double Dens_1 = Isentropic_Pres2Dens(&test);
+  printf("error=%20.16e\n", 1.0-Dens_1/Dens_0);
+//-----------------------------------------------------------
+
+
+  Dens_0 = 2.0;
+
+  double TempDown = Isentropic_Dens2Temperature( Dens_0, test.PresUpStream/test.DensUpStream, test.DensUpStream );
+
+  Dens_1 = Isentropic_Temperature2Dens( TempDown, test.PresUpStream/test.DensUpStream, test.DensUpStream );
+
+  printf("error=%20.16e\n", 1.0-Dens_1/Dens_0);
+
 
   return 0;
 }
