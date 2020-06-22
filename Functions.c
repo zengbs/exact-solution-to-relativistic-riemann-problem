@@ -258,30 +258,6 @@ double Velocity_RC ( double PresStar, double DensStarRight, double PresRight, do
   return Velocity_RC; 
 }
 
-double A_PlusFun ( double Temp )
-{
-    double Sqrt_Gamma_1 = sqrt( Gamma_1 );
-    double A_Plus;
-
-    A_Plus  = SQR( sqrt( Gamma_1 + Gamma * Temp ) + sqrt( Gamma * Temp ) );
-	A_Plus /= Gamma_1;
-	A_Plus  = pow(A_Plus, +2.0/Sqrt_Gamma_1);
-
-	return A_Plus;
-}
-
-double A_MinusFun ( double Temp )
-{
-    double Sqrt_Gamma_1 = sqrt( Gamma_1 );
-    double A_Minus;
-
-    A_Minus  = SQR( sqrt( Gamma_1 + Gamma * Temp ) + sqrt( Gamma * Temp ) );
-	A_Minus /= Gamma_1;
-	A_Minus  = pow(A_Minus, -2.0/Sqrt_Gamma_1);
-
-	return A_Minus;
-}
-
 
 double PresFunction( double PresStar, void  *params )
 {

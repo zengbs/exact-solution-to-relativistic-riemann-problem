@@ -15,10 +15,6 @@ double Velocity_LC ( double PresStar, double DensStarLeft, double PresLeft, doub
 
 double Velocity_RC ( double PresStar, double DensStarRight, double PresRight, double DensRight, double VelocityRight, bool Shock );
 
-double A_PlusFun ( double Temp );
-
-double A_MinusFun ( double Temp);
-
 double GetEnthalpyDown ( double PresUp, double DensUp, double PresDown );
 
 double PresFunction( double PresStar, void * );

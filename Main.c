@@ -6,20 +6,20 @@
 #include "Global.h"
 
 
-double Gamma = 5.0/3.0;
-double Gamma_1 = 0.666666666666666666666;
-//double Gamma = 4.0/3.0;
-//double Gamma_1 = 0.333333333333333333333;
+//double Gamma = 5.0/3.0;
+//double Gamma_1 = 0.666666666666666666666;
+double Gamma = 4.0/3.0;
+double Gamma_1 = 0.333333333333333333333;
 
 
 int main()
 {
-  double DensLeft      =  1.0;
-  double VelocityLeft  =  0.0;
-  double PresLeft      =  3.0;
+  double DensLeft      =  1e-5;
+  double VelocityLeft  = +1e6;
+  double PresLeft      =  1.0;
 
-  double DensRight     =  1.0;
-  double VelocityRight = -0.2;
+  double DensRight     =  1e-5;
+  double VelocityRight = -1e6;
   double PresRight     =  1.0;
 //// RR
 //  double DensLeft      =  1.0;

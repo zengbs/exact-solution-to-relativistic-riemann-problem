@@ -165,7 +165,7 @@ double Isentropic_Pres2Temperature ( struct Rarefaction *Rarefaction )
 {
   double Temperature;
 
-  Temperature = RootFinder( Isentropic_TemperatureFunction, (void*)Rarefaction, 0.0, __DBL_EPSILON__, 0.11, 1e-5, 100.0 );
+  Temperature = RootFinder( Isentropic_TemperatureFunction, (void*)Rarefaction, 0.0, __DBL_EPSILON__, 0.11, 1e-5, 1e20 );
   
   return Temperature;
 }
