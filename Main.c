@@ -14,13 +14,13 @@ double Gamma_1 = 0.333333333333333333333;
 
 int main()
 {
-  double DensLeft      =  1e-5;
-  double VelocityLeft  = +1e6;
-  double PresLeft      =  1.0;
-
-  double DensRight     =  1e-5;
-  double VelocityRight = -1e6;
-  double PresRight     =  1.0;
+//  double DensLeft      =  1e-5;
+//  double VelocityLeft  = +1e6;
+//  double PresLeft      =  1.0;
+//
+//  double DensRight     =  1e-5;
+//  double VelocityRight = -1e6;
+//  double PresRight     =  1.0;
 //// RR
 //  double DensLeft      =  1.0;
 //  double VelocityLeft  = -1.0;
@@ -48,14 +48,14 @@ int main()
 //  double VelocityRight =  0.0;
 //  double PresRight     =  1.0;
 //
-////SS
-//  double DensLeft      =  5.0;
-//  double VelocityLeft  = +1.0;
-//  double PresLeft      = 10.0;
-//
-//  double DensRight     = 10.0;
-//  double VelocityRight = -1.0;
-//  double PresRight     =  1.0;
+//SS
+  double DensLeft      = 10.0;
+  double VelocityLeft  = +1.0;
+  double PresLeft      =  5.0;
+
+  double DensRight     =  1.0;
+  double VelocityRight = -1.0;
+  double PresRight     = 10.0;
 
 
 

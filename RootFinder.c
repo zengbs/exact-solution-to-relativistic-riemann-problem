@@ -25,7 +25,7 @@ double RootFinder( double(*Function)(double X, void *params) , void *params, dou
 
   int status;
 
-  int iter = 0, max_iter = 50;
+  int iter = 0, max_iter = 100;
 
   const gsl_root_fsolver_type *T;
 
