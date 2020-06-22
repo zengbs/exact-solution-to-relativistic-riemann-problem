@@ -48,8 +48,10 @@ double GetDensInFan( struct Rarefaction *Rarefaction )
  DensUp   = Rarefaction -> DensUpStream;
  DensDown = Rarefaction -> DensDownStream;
 
- Dens_at_Xi = RootFinder( FanFunction, (void*)Rarefaction, 0.0, __DBL_EPSILON__, 0.5*(DensUp+DensDown), DensDown, DensUp );
+ double DensMin = DensDown*0.9999;
+ double DensMax = DensUp*1.0001;
 
+ Dens_at_Xi = RootFinder( FanFunction, (void*)Rarefaction, 0.0, __DBL_EPSILON__, 0.5*(DensMax + DensMin), DensMin, DensMax );
 
  return Dens_at_Xi;
 }
@@ -182,7 +184,7 @@ double Isentropic_TemperatureFunction ( double TempDown, void *params )
   double TempUp    = PresUp / DensUp;
   double K         = Isentropic_Constant(TempUp, DensUp);
   double Expression;
-//  printf("K=%e\n", K);
+
 # if ( EOS == GAMMA )
   Expression  = pow( TempDown, Gamma/Gamma_1 );
   Expression *= pow( K, -1.0/Gamma_1 );
@@ -281,7 +283,7 @@ double Isentropic_Dens2Velocity ( double DensDown, struct Rarefaction *upstream 
 
   double ini_step = 1e-10;
   double abserr   = 0.0;
-  double relerr   = 1e-16;
+  double relerr   = __DBL_EPSILON__;
 
   if ( t1 < t0 ) ini_step *= -1.0;
 
