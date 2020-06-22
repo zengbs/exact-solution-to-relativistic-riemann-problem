@@ -16,10 +16,10 @@ int main()
 {
   double DensLeft      =  1.0;
   double VelocityLeft  =  0.0;
-  double PresLeft      =  10.0;
+  double PresLeft      =  3.0;
 
   double DensRight     =  1.0;
-  double VelocityRight = -1.0;
+  double VelocityRight = -0.2;
   double PresRight     =  1.0;
 //// RR
 //  double DensLeft      =  1.0;

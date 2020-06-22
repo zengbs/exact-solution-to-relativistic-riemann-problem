@@ -60,16 +60,13 @@ double GetDensDownRarefaction( double PresDown, double PresUp, double DensUp );
 
 double GetVelocityDownRarefaction( double PresDown, double DensDown, double PresUp, double DensUp, double VelocityUp, bool Right_Yes );
 
-double GetDensInFan( double Cs2, double PresHead, double DensHead );
+double FanFunction ( double Dens_at_Xi, void *params );
 
+double GetDensInFan( struct Rarefaction *Rarefaction );
 
-double GetPresInFan( double DensInFan, double PresHead, double DensHead );
+double GetPresInFan( double Dens_at_Xi, double PresUp, double DensUp );
 
-double GetVelocityInFan( double Cs2, double Xi, bool Right_Yes );
-
-double GetSoundSpeedInFan ( struct Rarefaction *Rarefaction );
-
-double TemperatureFunction ( double Temp, void *params );
+double GetVelocityInFan( double Xi,  double Dens_at_Xi, double Pres_at_Xi, bool Right_Yes );
 
 double U2V(double U);
 

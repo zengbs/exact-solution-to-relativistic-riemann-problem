@@ -70,7 +70,7 @@ void Plot( int Pattern, struct RiemannProblem *RP, struct PlotParams plot )
   int j = 1;
 
   double X_Max, X_Min;
-  double Cs, DensFan, PresFan, VelocityFan;
+  double DensFan, PresFan, VelocityFan;
 
   time += DT;
 
@@ -129,13 +129,15 @@ void Plot( int Pattern, struct RiemannProblem *RP, struct PlotParams plot )
 			  X_Max = U2V(RP->RS.Leftt.VelocityTail) * time + X0 - dX;
 
 			  RP->RS.Leftt.Xi = ( X_Min - X0 )/time;
-
               do
 			  {
-                Cs          = GetSoundSpeedInFan( &(RP->RS.Leftt) );
-                DensFan     = GetDensInFan(Cs, RP -> RS.Leftt.PresUpStream, RP -> RS.Leftt.DensUpStream );
-                PresFan     = GetPresInFan(DensFan, RP -> RS.Leftt.PresUpStream, RP -> RS.Leftt.DensUpStream );
-                VelocityFan = GetVelocityInFan(Cs, RP->RS.Leftt.Xi, false);
+                //Cs          = GetSoundSpeedInFan( &(RP->RS.Leftt) );
+                //DensFan     = GetDensInFan(Cs, RP -> RS.Leftt.PresUpStream, RP -> RS.Leftt.DensUpStream );
+                //PresFan     = GetPresInFan(DensFan, RP -> RS.Leftt.PresUpStream, RP -> RS.Leftt.DensUpStream );
+                //VelocityFan = GetVelocityInFan(Cs, RP->RS.Leftt.Xi, false);
+                DensFan     = GetDensInFan( &(RP->RS.Leftt) );
+                PresFan     = GetPresInFan( DensFan, RP -> RS.Leftt.PresUpStream, RP -> RS.Leftt.DensUpStream );
+                VelocityFan = GetVelocityInFan( RP->RS.Leftt.Xi, DensFan, PresFan, RP->RS.Leftt.Right_Yes );
 
                 fprintf (fptr[j], "%20.16e %20.16e %20.16e %20.16e\n", RP->RS.Leftt.Xi*time+X0, DensFan, VelocityFan, PresFan );
 
@@ -152,10 +154,12 @@ void Plot( int Pattern, struct RiemannProblem *RP, struct PlotParams plot )
 
               do
 			  {
-                Cs          = GetSoundSpeedInFan( &(RP->RR.Leftt) );
-                DensFan     = GetDensInFan(Cs, RP -> RR.Leftt.PresUpStream, RP -> RR.Leftt.DensUpStream );
-                PresFan     = GetPresInFan(DensFan, RP -> RR.Leftt.PresUpStream, RP -> RR.Leftt.DensUpStream );
-                VelocityFan = GetVelocityInFan(Cs, RP->RR.Leftt.Xi, false);
+                //DensFan     = GetDensInFan(Cs, RP -> RR.Leftt.PresUpStream, RP -> RR.Leftt.DensUpStream );
+                //PresFan     = GetPresInFan(DensFan, RP -> RR.Leftt.PresUpStream, RP -> RR.Leftt.DensUpStream );
+                //VelocityFan = GetVelocityInFan(Cs, RP->RR.Leftt.Xi, false);
+                DensFan     = GetDensInFan( &(RP->RR.Leftt) );
+                PresFan     = GetPresInFan( DensFan, RP -> RR.Leftt.PresUpStream, RP -> RR.Leftt.DensUpStream );
+                VelocityFan = GetVelocityInFan( RP->RR.Leftt.Xi, DensFan, PresFan, RP->RR.Leftt.Right_Yes );
 
                 fprintf (fptr[j], "%20.16e %20.16e %20.16e %20.16e\n", RP->RR.Leftt.Xi*time+X0, DensFan, VelocityFan, PresFan );
 
@@ -245,10 +249,13 @@ void Plot( int Pattern, struct RiemannProblem *RP, struct PlotParams plot )
 
               do
 			  {
-                Cs          = GetSoundSpeedInFan( &(RP->SR.Right) );
-                DensFan     = GetDensInFan(Cs, RP -> SR.Right.PresUpStream, RP -> SR.Right.DensUpStream );
-                PresFan     = GetPresInFan(DensFan, RP -> SR.Right.PresUpStream, RP -> SR.Right.DensUpStream );
-                VelocityFan = GetVelocityInFan(Cs, RP->SR.Right.Xi, true);
+                //Cs          = GetSoundSpeedInFan( &(RP->SR.Right) );
+                //DensFan     = GetDensInFan(Cs, RP -> SR.Right.PresUpStream, RP -> SR.Right.DensUpStream );
+                //PresFan     = GetPresInFan(DensFan, RP -> SR.Right.PresUpStream, RP -> SR.Right.DensUpStream );
+                //VelocityFan = GetVelocityInFan(Cs, RP->SR.Right.Xi, true);
+                DensFan     = GetDensInFan( &(RP->SR.Right) );
+                PresFan     = GetPresInFan( DensFan, RP -> SR.Right.PresUpStream, RP -> SR.Right.DensUpStream );
+                VelocityFan = GetVelocityInFan( RP->SR.Right.Xi, DensFan, PresFan, RP->SR.Right.Right_Yes );
 
                 fprintf (fptr[j], "%20.16e %20.16e %20.16e %20.16e %d\n", RP->SR.Right.Xi*time+X0, DensFan, VelocityFan, PresFan, 5 );
 
@@ -265,10 +272,13 @@ void Plot( int Pattern, struct RiemannProblem *RP, struct PlotParams plot )
 
               do
 			  {
-                Cs          = GetSoundSpeedInFan( &(RP->RR.Right) );
-                DensFan     = GetDensInFan(Cs, RP -> RR.Right.PresUpStream, RP -> RR.Right.DensUpStream );
-                PresFan     = GetPresInFan(DensFan, RP -> RR.Right.PresUpStream, RP -> RR.Right.DensUpStream );
-                VelocityFan = GetVelocityInFan(Cs, RP->RR.Right.Xi, true);
+                //Cs          = GetSoundSpeedInFan( &(RP->RR.Right) );
+                //DensFan     = GetDensInFan(Cs, RP -> RR.Right.PresUpStream, RP -> RR.Right.DensUpStream );
+                //PresFan     = GetPresInFan(DensFan, RP -> RR.Right.PresUpStream, RP -> RR.Right.DensUpStream );
+                //VelocityFan = GetVelocityInFan(Cs, RP->RR.Right.Xi, true);
+                DensFan     = GetDensInFan( &(RP->RR.Right) );
+                PresFan     = GetPresInFan( DensFan, RP -> RR.Right.PresUpStream, RP -> RR.Right.DensUpStream );
+                VelocityFan = GetVelocityInFan( RP->RR.Right.Xi, DensFan, PresFan, RP->RR.Right.Right_Yes );
 
                 fprintf (fptr[j], "%20.16e %20.16e %20.16e %20.16e %d\n", RP->RR.Right.Xi*time+X0, DensFan, VelocityFan, PresFan, 5 );
 

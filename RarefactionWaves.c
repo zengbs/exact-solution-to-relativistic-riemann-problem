@@ -11,6 +11,79 @@
 
 static double Isentropic_TemperatureFunction ( double Temperature, void *params );
 
+
+double FanFunction ( double Dens_at_Xi, void *params )
+{
+  struct Rarefaction *rarefaction = ( struct Rarefaction * ) params;
+  
+  double Xi        = rarefaction -> Xi;
+  double Right_Yes = rarefaction -> Right_Yes;
+  double sign = ( Right_Yes ) ? +1.0 : -1.0;
+
+  double Velocity_at_Xi_1, Velocity_at_Xi_2;
+  
+  /* Step 1 */
+  Velocity_at_Xi_1  = Isentropic_Dens2Velocity( Dens_at_Xi, params );
+
+  /* Step 2 */
+  double PresUp     = rarefaction -> PresUpStream;
+  double DensUp     = rarefaction -> DensUpStream;
+ 
+  double U_Xi       = Xi / sqrt( 1.0 - Xi*Xi );
+
+  double Temp_at_Xi = Isentropic_Dens2Temperature( Dens_at_Xi, PresUp/DensUp, DensUp );
+
+  double Cs         = Flu_SoundSpeed( Temp_at_Xi );
+
+  RelativeVelocity( U_Xi, sign*Cs, NULL, &Velocity_at_Xi_2 );
+
+  return Velocity_at_Xi_1 - Velocity_at_Xi_2;
+}
+
+
+double GetDensInFan( struct Rarefaction *Rarefaction )
+{
+ double Dens_at_Xi, DensUp, DensDown;
+
+ DensUp   = Rarefaction -> DensUpStream;
+ DensDown = Rarefaction -> DensDownStream;
+
+ Dens_at_Xi = RootFinder( FanFunction, (void*)Rarefaction, 0.0, __DBL_EPSILON__, 0.5*(DensUp+DensDown), DensDown, DensUp );
+
+
+ return Dens_at_Xi;
+}
+
+double GetPresInFan( double Dens_at_Xi, double PresUp, double DensUp )
+{
+  double Pres_at_Xi;
+
+  Pres_at_Xi = Isentropic_Dens2Pres( Dens_at_Xi, PresUp/DensUp, DensUp );
+
+  return Pres_at_Xi;
+}
+
+double GetVelocityInFan( double Xi,  double Dens_at_Xi, double Pres_at_Xi, bool Right_Yes )
+{
+  double gamma_Xi = 1.0 / sqrt( 1.0 - Xi*Xi );
+
+  double U_Xi = Xi * gamma_Xi;
+  
+  double Velocity;
+
+  double Tempertaure_at_Xi = Pres_at_Xi/Dens_at_Xi;
+
+  double Cs = Flu_SoundSpeed( Tempertaure_at_Xi );
+
+  if ( Right_Yes )
+      RelativeVelocity( U_Xi, +Cs, NULL, &Velocity );
+  else
+      RelativeVelocity( U_Xi, -Cs, NULL, &Velocity );
+
+  return Velocity;
+}
+
+
 void GetHeadTailVelocity( double PresUp, double DensUp, double VelocityUp,
 			              double PresDown, double DensDown, double VelocityDown,
                           double *HeadVelocity, double *TailVelocity, bool Right_Yes )
@@ -33,121 +106,8 @@ void GetHeadTailVelocity( double PresUp, double DensUp, double VelocityUp,
   }
 }
 
-double GetDensInFan( double Cs, double PresUp, double DensUp )
-{
-  double k = PresUp * pow (DensUp, -Gamma);
-  double tmp;
-
-  tmp  = Gamma_1 - Cs*Cs*(2.0-Gamma);
-  tmp /= Gamma_1 + Cs*Cs*Gamma_1;
-  tmp *= 1.0 + Cs*Cs;
-  tmp /= Cs*Cs;
-
-  double Dens = pow ( k * Gamma * tmp, -1.0 / Gamma_1 );
-
-  return Dens;
-}
-
-double GetPresInFan( double DensInFan, double PresUp, double DensUp )
-{
-  double Pres = PresUp * pow (DensInFan / DensUp, Gamma);
-
-  return Pres;
-}
-
-double GetVelocityInFan( double Cs, double Xi, bool Right_Yes )
-{
-  double gamma_Xi = 1.0 / sqrt( 1.0 - Xi*Xi );
-
-  double U_Xi = Xi * gamma_Xi;
-  
-  double Velocity;
-
-  if ( Right_Yes )
-	  Velocity = - Cs * gamma_Xi + sqrt(1.0+Cs*Cs) * U_Xi;
-  else
-	  Velocity = + Cs * gamma_Xi + sqrt(1.0+Cs*Cs) * U_Xi;
-
-  return Velocity;
-}
 
 
-double GetSoundSpeedInFan ( struct Rarefaction *Rarefaction )
-{
-  double Temp, Cs;
-
-  Temp = RootFinder( TemperatureFunction, (void*)Rarefaction, 0.0, __DBL_EPSILON__, 0.11, 1e-5, 100.0 );
-
-  Cs = Flu_SoundSpeed( Temp );
-
-  return Cs;
-}
-
-double TemperatureFunction ( double Temp, void *params )
-{
-  struct Rarefaction *Fan = ( struct Rarefaction * ) params;
-
-  bool   Right_Yes    = Fan -> Right_Yes   ;
-  double PresUp       = Fan -> PresUpStream;
-  double DensUp       = Fan -> DensUpStream;
-  double VelocityUp   = Fan -> VelyUpStream;
-  double Xi           = Fan -> Xi          ;
- 
-  double Velocity, Var0, Var1, Cs, TempUp;
-
-  double Sqrt_Gamma_1 = sqrt(Gamma_1);
-
-  TempUp = PresUp / DensUp;
-
-  Cs    = Flu_SoundSpeed( Temp );
-
-  double gamma_Xi = 1.0 / sqrt( 1.0 - Xi*Xi );
-
-  double U_Xi = Xi * gamma_Xi;
-
-  if ( Right_Yes )
-  {
-    Velocity = - Cs * gamma_Xi + sqrt(1.0 + Cs*Cs) * U_Xi;
-
-    double gamma_Velocity = sqrt( 1.0 + Velocity*Velocity );
-
-	Var0  = Sqrt_Gamma_1 / ( sqrt( Gamma_1 + Gamma * Temp ) + sqrt( Gamma * Temp ) );
-
-	Var0  = pow( Var0, 4.0 / Sqrt_Gamma_1 );
-
-	Var0 *= SQR( gamma_Velocity + Velocity );
-
-    double gamma_VelocityUp = sqrt( 1.0 + VelocityUp*VelocityUp );
-
-	Var1  = Sqrt_Gamma_1 / ( sqrt( Gamma_1 + Gamma * TempUp ) + sqrt( Gamma * TempUp ) );
-
-	Var1  = pow( Var1, 4.0 / Sqrt_Gamma_1 );
-
-	Var1 *= SQR( gamma_VelocityUp + VelocityUp );
-  }
-  else
-  {
-    Velocity = + Cs * gamma_Xi + sqrt(1.0 + Cs*Cs) * U_Xi;
-
-    double gamma_Velocity = sqrt( 1.0 + Velocity*Velocity );
-
-	Var0  = Sqrt_Gamma_1 / ( sqrt( Gamma_1 + Gamma * Temp ) + sqrt( Gamma * Temp ) );
-
-	Var0  = pow( Var0, -4.0 / Sqrt_Gamma_1 );
-
-	Var0 *= SQR( gamma_Velocity + Velocity );
-
-    double gamma_VelocityUp = sqrt( 1.0 + VelocityUp*VelocityUp );
-
-	Var1  = Sqrt_Gamma_1 / ( sqrt( Gamma_1 + Gamma * TempUp ) + sqrt( Gamma * TempUp ) );
-
-	Var1  = pow( Var1, -4.0 / Sqrt_Gamma_1 );
-
-	Var1 *= SQR( gamma_VelocityUp + VelocityUp );
-  }
-  return Var1 - Var0;
-
-}
 // ============================================= OK
 double Isentropic_Constant ( double Init_Temp, double Init_Dens )
 {
@@ -308,6 +268,8 @@ int func ( double Dens, const double y[], double f[], void *params )
 }
 
 
+
+// density to the 4-velocity of flow
 
 double Isentropic_Dens2Velocity ( double DensDown, struct Rarefaction *upstream )
 {
