@@ -60,8 +60,8 @@ int main()
 
 
   
-  double DT            = 0.1;
-  double End_T         = 0.6;
+  double DT            = 0.5;
+  double End_T         = 0.5;
   double X_Left        = 0.0;
   double X_Right       = 1.0;
   int NCell            = 4096;

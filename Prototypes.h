@@ -3,9 +3,6 @@
 
 #include "Struct.h"
 
-#define TM    0
-#define GAMMA 1
-
 
 int GetWavePattern( struct InitialCondition *IC );
 

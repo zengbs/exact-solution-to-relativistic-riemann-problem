@@ -25,7 +25,13 @@ void Plot( int Pattern, struct RiemannProblem *RP, struct PlotParams plot )
   double X0 = 0.5*( X_Left + X_Right );
 
   char fileName[100];
-  sprintf (fileName, "./000000.dat");
+
+# if ( EOS == TM )
+  sprintf (fileName, "./000000_TM.dat");
+# elif ( EOS == GAMMA )
+  sprintf (fileName, "./000000_GAMMA_%4.3f.dat", Gamma);
+# endif
+
   fptr[0] = fopen (fileName, "w");
 
   double time = 0.0;
@@ -76,7 +82,11 @@ void Plot( int Pattern, struct RiemannProblem *RP, struct PlotParams plot )
 
   while (time <= End_T)
   {
-    sprintf (fileName, "./%06d.dat", j);
+#   if ( EOS == TM )
+    sprintf (fileName, "./%06d_TM.dat", j);
+#   elif ( EOS == GAMMA )
+    sprintf (fileName, "./%06d_GAMMA_%4.3f.dat", j, Gamma);
+#   endif
     fptr[j] = fopen (fileName, "w");
     fprintf (fptr[j], "# time = %20.16e\n", time);
     fprintf (fptr[j], "# x=[1], d1=[2], v1=[3], p1=[4], D1=[5], M1=[6], E1=[7], Lorentz fac.=[8]\n");
@@ -159,6 +169,7 @@ void Plot( int Pattern, struct RiemannProblem *RP, struct PlotParams plot )
 			    RP->RR.Leftt.Xi += dX/time;
 			  }
 			  while( RP->RR.Leftt.Xi <= (X_Max-X0+dX)/time );
+
 			}
 		  break;
 
@@ -242,10 +253,6 @@ void Plot( int Pattern, struct RiemannProblem *RP, struct PlotParams plot )
 
               do
 			  {
-                //Cs          = GetSoundSpeedInFan( &(RP->SR.Right) );
-                //DensFan     = GetDensInFan(Cs, RP -> SR.Right.PresUpStream, RP -> SR.Right.DensUpStream );
-                //PresFan     = GetPresInFan(DensFan, RP -> SR.Right.PresUpStream, RP -> SR.Right.DensUpStream );
-                //VelocityFan = GetVelocityInFan(Cs, RP->SR.Right.Xi, true);
                 DensFan     = GetDensInFan( &(RP->SR.Right) );
                 PresFan     = GetPresInFan( DensFan, RP -> SR.Right.PresUpStream, RP -> SR.Right.DensUpStream );
                 VelocityFan = GetVelocityInFan( RP->SR.Right.Xi, DensFan, PresFan, RP->SR.Right.Right_Yes );
@@ -265,10 +272,6 @@ void Plot( int Pattern, struct RiemannProblem *RP, struct PlotParams plot )
 
               do
 			  {
-                //Cs          = GetSoundSpeedInFan( &(RP->RR.Right) );
-                //DensFan     = GetDensInFan(Cs, RP -> RR.Right.PresUpStream, RP -> RR.Right.DensUpStream );
-                //PresFan     = GetPresInFan(DensFan, RP -> RR.Right.PresUpStream, RP -> RR.Right.DensUpStream );
-                //VelocityFan = GetVelocityInFan(Cs, RP->RR.Right.Xi, true);
                 DensFan     = GetDensInFan( &(RP->RR.Right) );
                 PresFan     = GetPresInFan( DensFan, RP -> RR.Right.PresUpStream, RP -> RR.Right.DensUpStream );
                 VelocityFan = GetVelocityInFan( RP->RR.Right.Xi, DensFan, PresFan, RP->RR.Right.Right_Yes );
