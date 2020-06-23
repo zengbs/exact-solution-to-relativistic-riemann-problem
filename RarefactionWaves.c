@@ -49,8 +49,8 @@ double FanFunction ( double Dens_at_Xi, void *params )
 //
 //   U = U(ζ)⋅γₛ ∓ Uₛ⋅γ(ζ)
 //   
-//  upper sign: right travel wave 
-//  lower sign:  left travel wave 
+//  upper sign: right traveling wave 
+//  lower sign:  left traveling wave 
 
 
 double GetDensInFan( struct Rarefaction *Rarefaction )
@@ -291,6 +291,9 @@ double Isentropic_Dens2Pres ( double Dens, double Init_Temp, double Init_Dens )
 //   dU     Us⋅γ
 //   ── = ± ────
 //   dρ     γₛ⋅ρ
+//
+//  upper sign: right traveling wave 
+//  lower sign:  left traveling wave 
 
 int func ( double Dens, const double y[], double f[], void *params )
 {

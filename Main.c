@@ -21,23 +21,23 @@ int main()
 //  double DensRight     =  1.0;
 //  double VelocityRight =  0.0;
 //  double PresRight     =  1e5;
-//// RR
-//  double DensLeft      =  1.0;
-//  double VelocityLeft  = -1.0;
-//  double PresLeft      =  0.1;
-//
-//  double DensRight     =  1.0;
-//  double VelocityRight = +2.0;
-//  double PresRight     =  1.0;
-//
-// RS
+// RR
   double DensLeft      =  1.0;
-  double VelocityLeft  =  0.0;
-  double PresLeft      =  1.0;
+  double VelocityLeft  = -1.0;
+  double PresLeft      =  0.1;
 
   double DensRight     =  1.0;
-  double VelocityRight =  0.0;
-  double PresRight     =  0.1;
+  double VelocityRight = +2.0;
+  double PresRight     =  1.0;
+//
+//// RS
+//  double DensLeft      =  1.0;
+//  double VelocityLeft  =  0.0;
+//  double PresLeft      =  1.0;
+//
+//  double DensRight     =  1.0;
+//  double VelocityRight =  0.0;
+//  double PresRight     =  0.1;
 //
 //// SR
 //  double DensLeft      =  1.0;
