@@ -40,13 +40,28 @@ from sympy import *
 #pprint( expr, use_unicode=True )
 
 
-Gamma, UsSqr, Us, CsSqr, expr, A, h, T = symbols('Gamma UsSqr Us CsSqr expr A h T')
+#Gamma, UsSqr, Us, CsSqr, expr, A, h, T = symbols('Gamma UsSqr Us CsSqr expr A h T')
+#
+#h = 2.5*T+sqrt(2.25*T**2+1)
+#
+#CsSqr  = T*( 5*h-8*T )
+#CsSqr /= 3*h*( h-T )
+#
+#UsSqr = CsSqr/( 1-CsSqr )
+#
+#pprint( simplify(UsSqr), use_unicode=True )
 
-h = 2.5*T+sqrt(2.25*T**2+1)
+U_zeta, U, gamma_zeta, gamma, gamma_s, rho, U, U_s, C_s, h, T = symbols('U_zeta, U, gamma_zeta gamma gamma_s rho U U_s C_s h T')
 
-CsSqr  = T*( 5*h-8*T )
-CsSqr /= 3*h*( h-T )
 
-UsSqr = CsSqr/( 1-CsSqr )
+ODE = Derivative(U, rho)
 
-pprint( simplify(UsSqr), use_unicode=True )
+ODE = Eq(ODE, gamma*U_s/(gamma_s*rho))
+
+pprint( ODE, use_unicode=True )
+
+
+
+U = Eq( gamma_s*U_zeta-U_s*gamma_s )
+
+pprint( U, use_unicode=True )

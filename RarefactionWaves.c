@@ -40,6 +40,18 @@ double FanFunction ( double Dens_at_Xi, void *params )
   return Velocity_at_Xi_1 - Velocity_at_Xi_2;
 }
 
+//  Simultaneoulsy solve the following two equations:
+//   
+//   dU     Us⋅γ
+//   ── = ± ────  with (DensUp, VelocityUp)
+//   dρ     γₛ⋅ρ
+//
+//
+//   U = U(ζ)⋅γₛ ∓ Uₛ⋅γ(ζ)
+//   
+//  upper sign: right travel wave 
+//  lower sign:  left travel wave 
+
 
 double GetDensInFan( struct Rarefaction *Rarefaction )
 {
@@ -274,9 +286,12 @@ double Isentropic_Dens2Pres ( double Dens, double Init_Temp, double Init_Dens )
 }
 
 
-//============ Solve ODE =============================
+//============ Solve the Riemann invariant =============================
 
-// dU/d rho = LorentzFactor * Cs / rho
+//   dU     Us⋅γ
+//   ── = ± ────
+//   dρ     γₛ⋅ρ
+
 int func ( double Dens, const double y[], double f[], void *params )
 {
   struct Rarefaction *upstream = (struct Rarefaction *)params;
