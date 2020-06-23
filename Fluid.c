@@ -8,6 +8,16 @@
 
 
 // 4-sound speed
+// TM EoS:
+//          ⎛               _____________⎞ 
+//          ⎜              ╱       2     ⎟ 
+//        T⋅⎝4.5⋅T + 5.0⋅╲╱  2.25⋅T  + 1 ⎠ 
+//   ──────────────────────────────────────
+//                      _____________      
+//         2           ╱       2           
+//   13.5⋅T  + 7.0⋅T⋅╲╱  2.25⋅T  + 1  + 3.0
+
+
 
 double Flu_SoundSpeed( double Temp )
 {
@@ -19,10 +29,8 @@ double Flu_SoundSpeed( double Temp )
 	   CsSqr  = Gamma * Temp * Gamma_1;
        CsSqr /= Gamma * Temp * (2.0 - Gamma) + Gamma_1;
 #      elif ( EOS == TM )
-       double h = Flu_Enthalpy(Temp, 1.0);
-       CsSqr  = Temp / (3.0*h);
-       CsSqr *= 5.0*h - 8.0*Temp;
-       CsSqr /= h - Temp;
+       CsSqr  = Temp * ( 4.5*Temp + 5.0*sqrt( 2.25*Temp*Temp + 1.0 ) );
+       CsSqr /= 13.5*Temp*Temp + 7.0*Temp*sqrt( 2.25*Temp*Temp + 1.0 ) + 3.0;
 #      endif
 	}
 	else

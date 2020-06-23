@@ -311,7 +311,7 @@ double Isentropic_Dens2Velocity ( double DensDown, struct Rarefaction *upstream 
   double t1 = DensDown;
 
   double ini_step = 1e-10;
-  double abserr   = 1e-16;
+  double abserr   = 0.0;
   double relerr   = __DBL_EPSILON__;
 
   if ( t1 < t0 ) ini_step *= -1.0;

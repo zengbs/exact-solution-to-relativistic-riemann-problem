@@ -40,15 +40,13 @@ from sympy import *
 #pprint( expr, use_unicode=True )
 
 
-expr, A, h, T = symbols('expr A h T')
+Gamma, UsSqr, Us, CsSqr, expr, A, h, T = symbols('Gamma UsSqr Us CsSqr expr A h T')
 
 h = 2.5*T+sqrt(2.25*T**2+1)
 
-expr = T*(h-T)
-expr = expr**1.5
+CsSqr  = T*( 5*h-8*T )
+CsSqr /= 3*h*( h-T )
 
+UsSqr = CsSqr/( 1-CsSqr )
 
-Ans = solve( expr-A , T )
-
-
-pprint( Ans, use_unicode=True )
+pprint( simplify(UsSqr), use_unicode=True )
