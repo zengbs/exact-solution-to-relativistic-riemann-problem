@@ -10,7 +10,9 @@
 
 
 static double Isentropic_TemperatureFunction ( double Temperature, void *params );
+#if ( EOS == TM )
 static double Isentropic_Dens2Temperature_Function ( double TempDown, void *params );
+#endif
 
 double FanFunction ( double Dens_at_Xi, void *params )
 {
@@ -138,11 +140,11 @@ double Isentropic_Constant ( double Init_Temp, double Init_Dens )
 //========================================= OK
 double Isentropic_Dens2Temperature ( double DensDown, double TempUp, double DensUp )
 {
-  double TempDown, K;
-  K = Isentropic_Constant(TempUp, DensUp);
+  double TempDown;
 
 # if ( EOS == GAMMA )
- TempDown = K*pow( DensDown, Gamma_1 );
+  double K = Isentropic_Constant(TempUp, DensUp);
+  TempDown = K*pow( DensDown, Gamma_1 );
 # elif ( EOS == TM )
   struct Rarefaction rafaction;
 
@@ -156,7 +158,7 @@ double Isentropic_Dens2Temperature ( double DensDown, double TempUp, double Dens
 
   return TempDown;
 }
-
+#if ( EOS == TM )
 //========================================= OK
 double Isentropic_Dens2Temperature_Function ( double TempDown, void *params )
 {
@@ -178,7 +180,7 @@ double Isentropic_Dens2Temperature_Function ( double TempDown, void *params )
 
   return Expr - DensDown;
 }
-
+#endif
 // EOS == GAMMA: no used
 //========================================= OK
 double Isentropic_Temperature2Dens ( double Temperature, double Init_Temp, double Init_Dens )
@@ -329,7 +331,7 @@ double Isentropic_Dens2Velocity ( double DensDown, struct Rarefaction *upstream 
   double t1 = DensDown;
 
   double ini_step = 1e-10;
-  double abserr   = 0.0;
+  double abserr   = 1e-16;
   double relerr   = __DBL_EPSILON__;
 
   if ( t1 < t0 ) ini_step *= -1.0;

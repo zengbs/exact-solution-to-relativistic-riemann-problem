@@ -5,6 +5,7 @@
 #include "Struct.h"
 #include "Prototypes.h"
 #include "Global.h"
+#include "Macro.h"
 
 
 // 4-sound speed
@@ -59,10 +60,14 @@ double Flu_Enthalpy( double Pres, double Dens )
 // e = rho*h - p
 double Flu_TotalInternalEngy ( double Pres, double Dens )
 {
-    double Enthalpy, Engy;
+    double Engy;
+    double Temp = Pres/Dens;
 
-	Enthalpy = Flu_Enthalpy( Pres, Dens );
-    Engy = Dens*Enthalpy - Pres; 
+#   if ( EOS == GAMMA )
+    Engy = Dens * ( 1.0 + Temp/Gamma_1 );
+#   elif ( EOS == TM )
+    Engy = Dens * ( 1.5*Temp + sqrt( 2.25*Temp*Temp + 1.0 ) );
+#   endif
 
     return Engy;
 }
@@ -73,7 +78,7 @@ double Enthalpy2Temperature( double Enthalpy )
   double Temp;
   double H_Tilde = Enthalpy - 1.0;
 # if ( EOS == GAMMA )
-  Temp  = (Gamma-1.0)/Gamma;
+  Temp  = Gamma_1/Gamma;
   Temp *= H_Tilde;
 # elif ( EOS == TM )
   Temp  = 2.0*H_Tilde*H_Tilde + 4.0*H_Tilde;

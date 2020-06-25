@@ -1,6 +1,8 @@
 #include <stdio.h>
 #include "Struct.h"
 #include "Prototypes.h"
+#include "Global.h"
+#include "Macro.h"
 
 
 
