@@ -26,6 +26,8 @@ int GetWavePattern( struct InitialCondition *IC )
   double V_LC;
   bool Swap_Yes = false;
 
+  bool Shock_Yes = true;
+
 
   // swap PresLeft and PresRight
   if ( PresLeft < PresRight )
@@ -52,15 +54,10 @@ int GetWavePattern( struct InitialCondition *IC )
 
   //===============================================
   // shock-shock
-  double EngyDown, EngyRight,EnthalpyDown, DensDown;
-
-  EngyRight     = Flu_TotalInternalEngy( PresRight, DensRight );
-  EnthalpyDown  = GetEnthalpyDown( PresRight, DensRight, PresLeft );
-  DensDown      = GetDensDown(PresRight, DensRight, PresLeft);
-  EngyDown      = DensDown * EnthalpyDown - PresLeft;
-
-  // 4-velocity
-  SS = sqrt( ( EngyDown - EngyRight )*( PresLeft - PresRight )/( EngyRight + PresRight )/( EngyDown + PresLeft )  );
+  double DensStarRight = GetDensDown( PresRight,  DensRight,  PresLeft );
+  double V_RC = Velocity_RC (  PresLeft,  DensStarRight,  PresRight,  DensRight,  VelocityRight, Shock_Yes );
+  V_LC = 0.0;
+  RelativeVelocity( V_LC, V_RC, NULL, &SS );
 
   //===============================================
   // rarefaction-shock
@@ -77,6 +74,8 @@ int GetWavePattern( struct InitialCondition *IC )
   double DensStarLeft = Isentropic_Pres2Dens( &RarefactionLeft );
   double VelocityStar = Isentropic_Dens2Velocity( DensStarLeft, &RarefactionLeft );
   RelativeVelocity( VelocityLeft, VelocityStar, NULL, &V_LC );
+  V_RC = 0.0;
+  RelativeVelocity( V_LC, V_RC, NULL, &RS );
   
   RS = V_LC;
 
@@ -103,9 +102,8 @@ int GetWavePattern( struct InitialCondition *IC )
   RarefactionRight.PresDownStream = PresStar;
   RarefactionRight.Right_Yes      = true;
 
-  double DensStarRight = Isentropic_Pres2Dens( &RarefactionRight );
+  DensStarRight = Isentropic_Pres2Dens( &RarefactionRight );
   VelocityStar = Isentropic_Dens2Velocity( DensStarRight, &RarefactionRight );
-  double V_RC;
   RelativeVelocity( VelocityRight, VelocityStar, NULL, &V_RC );
 
 
