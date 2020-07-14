@@ -105,32 +105,32 @@ void Plot( int Pattern, struct RiemannProblem *RP, struct PlotParams plot )
               X_Min = 0.0;
               X_Max = U2V(RP->SS.Leftt.ShockVelocity) * time + X0 - dX;
 
-              fprintf (fptr[j], "%20.16e %20.16e %20.16e %20.16e\n", X_Min, RP->SS.Leftt.DensUpStream, RP->SS.Leftt.VelyUpStream, RP->SS.Leftt.PresUpStream );
-              fprintf (fptr[j], "%20.16e %20.16e %20.16e %20.16e\n", X_Max, RP->SS.Leftt.DensUpStream, RP->SS.Leftt.VelyUpStream, RP->SS.Leftt.PresUpStream );
+              fprintf (fptr[j], "%20.16e %20.16e %20.16e %20.16e %d\n", X_Min, RP->SS.Leftt.DensUpStream, RP->SS.Leftt.VelyUpStream, RP->SS.Leftt.PresUpStream, region );
+              fprintf (fptr[j], "%20.16e %20.16e %20.16e %20.16e %d\n", X_Max, RP->SS.Leftt.DensUpStream, RP->SS.Leftt.VelyUpStream, RP->SS.Leftt.PresUpStream, region );
 		    }
 		    else if ( Pattern == 2 )
 		    {
               X_Min = 0.0;
               X_Max = U2V(RP->RS.Leftt.VelocityHead) * time + X0 - dX;
 
-              fprintf (fptr[j], "%20.16e %20.16e %20.16e %20.16e\n", X_Min, RP->RS.Leftt.DensUpStream, RP->RS.Leftt.VelyUpStream, RP->RS.Leftt.PresUpStream );
-              fprintf (fptr[j], "%20.16e %20.16e %20.16e %20.16e\n", X_Max, RP->RS.Leftt.DensUpStream, RP->RS.Leftt.VelyUpStream, RP->RS.Leftt.PresUpStream );
+              fprintf (fptr[j], "%20.16e %20.16e %20.16e %20.16e %d\n", X_Min, RP->RS.Leftt.DensUpStream, RP->RS.Leftt.VelyUpStream, RP->RS.Leftt.PresUpStream, region );
+              fprintf (fptr[j], "%20.16e %20.16e %20.16e %20.16e %d\n", X_Max, RP->RS.Leftt.DensUpStream, RP->RS.Leftt.VelyUpStream, RP->RS.Leftt.PresUpStream, region );
 		    }
 		    else if ( Pattern == 3 )
 		    {
               X_Min = 0.0;
               X_Max = U2V(RP->SR.Leftt.ShockVelocity) * time + X0 - dX;
 
-              fprintf (fptr[j], "%20.16e %20.16e %20.16e %20.16e\n", X_Min, RP->SR.Leftt.DensUpStream, RP->SR.Leftt.VelyUpStream, RP->SR.Leftt.PresUpStream );
-              fprintf (fptr[j], "%20.16e %20.16e %20.16e %20.16e\n", X_Max, RP->SR.Leftt.DensUpStream, RP->SR.Leftt.VelyUpStream, RP->SR.Leftt.PresUpStream );
+              fprintf (fptr[j], "%20.16e %20.16e %20.16e %20.16e %d\n", X_Min, RP->SR.Leftt.DensUpStream, RP->SR.Leftt.VelyUpStream, RP->SR.Leftt.PresUpStream, region );
+              fprintf (fptr[j], "%20.16e %20.16e %20.16e %20.16e %d\n", X_Max, RP->SR.Leftt.DensUpStream, RP->SR.Leftt.VelyUpStream, RP->SR.Leftt.PresUpStream, region );
 		    }
 			else if ( Pattern == 4 )
 			{
               X_Min = 0.0;
               X_Max = U2V(RP->RR.Leftt.VelocityHead) * time + X0 - dX;
 
-              fprintf (fptr[j], "%20.16e %20.16e %20.16e %20.16e\n", X_Min, RP->RR.Leftt.DensUpStream, RP->RR.Leftt.VelyUpStream, RP->RR.Leftt.PresUpStream );
-              fprintf (fptr[j], "%20.16e %20.16e %20.16e %20.16e\n", X_Max, RP->RR.Leftt.DensUpStream, RP->RR.Leftt.VelyUpStream, RP->RR.Leftt.PresUpStream );
+              fprintf (fptr[j], "%20.16e %20.16e %20.16e %20.16e %d\n", X_Min, RP->RR.Leftt.DensUpStream, RP->RR.Leftt.VelyUpStream, RP->RR.Leftt.PresUpStream, region );
+              fprintf (fptr[j], "%20.16e %20.16e %20.16e %20.16e %d\n", X_Max, RP->RR.Leftt.DensUpStream, RP->RR.Leftt.VelyUpStream, RP->RR.Leftt.PresUpStream, region );
 			}
           break;
 
@@ -147,7 +147,8 @@ void Plot( int Pattern, struct RiemannProblem *RP, struct PlotParams plot )
                 PresFan     = GetPresInFan( DensFan, RP -> RS.Leftt.PresUpStream, RP -> RS.Leftt.DensUpStream );
                 VelocityFan = GetVelocityInFan( RP->RS.Leftt.Xi, DensFan, PresFan, RP->RS.Leftt.Right_Yes );
 
-                fprintf (fptr[j], "%20.16e %20.16e %20.16e %20.16e\n", RP->RS.Leftt.Xi*time+X0, DensFan, VelocityFan, PresFan );
+                fprintf (fptr[j], "%20.16e %20.16e %20.16e %20.16e %d\n", RP->RS.Leftt.Xi*time+X0, DensFan, VelocityFan, PresFan, region );
+
 
 			    RP->RS.Leftt.Xi += dX/time;
 			  }
@@ -166,7 +167,7 @@ void Plot( int Pattern, struct RiemannProblem *RP, struct PlotParams plot )
                 PresFan     = GetPresInFan( DensFan, RP -> RR.Leftt.PresUpStream, RP -> RR.Leftt.DensUpStream );
                 VelocityFan = GetVelocityInFan( RP->RR.Leftt.Xi, DensFan, PresFan, RP->RR.Leftt.Right_Yes );
 
-                fprintf (fptr[j], "%20.16e %20.16e %20.16e %20.16e\n", RP->RR.Leftt.Xi*time+X0, DensFan, VelocityFan, PresFan );
+                fprintf (fptr[j], "%20.16e %20.16e %20.16e %20.16e %d\n", RP->RR.Leftt.Xi*time+X0, DensFan, VelocityFan, PresFan, region );
 
 			    RP->RR.Leftt.Xi += dX/time;
 			  }
@@ -181,32 +182,32 @@ void Plot( int Pattern, struct RiemannProblem *RP, struct PlotParams plot )
               X_Min = U2V(RP->SS.Leftt.ShockVelocity)  * time + X0;
               X_Max = U2V(RP->SS.Leftt.VelyDownStream) * time + X0 - dX;
 
-              fprintf (fptr[j], "%20.16e %20.16e %20.16e %20.16e\n", X_Min, RP->SS.Leftt.DensDownStream, RP->SS.Leftt.VelyDownStream, RP->SS.Leftt.PresDownStream );
-              fprintf (fptr[j], "%20.16e %20.16e %20.16e %20.16e\n", X_Max, RP->SS.Leftt.DensDownStream, RP->SS.Leftt.VelyDownStream, RP->SS.Leftt.PresDownStream );
+              fprintf (fptr[j], "%20.16e %20.16e %20.16e %20.16e %d\n", X_Min, RP->SS.Leftt.DensDownStream, RP->SS.Leftt.VelyDownStream, RP->SS.Leftt.PresDownStream, region );
+              fprintf (fptr[j], "%20.16e %20.16e %20.16e %20.16e %d\n", X_Max, RP->SS.Leftt.DensDownStream, RP->SS.Leftt.VelyDownStream, RP->SS.Leftt.PresDownStream, region );
 		    }
 		    else if ( Pattern == 2 )
 		    {
               X_Min = U2V(RP->RS.Leftt.VelocityTail)   * time + X0;
               X_Max = U2V(RP->RS.Leftt.VelyDownStream) * time + X0 - dX;
 
-              fprintf (fptr[j], "%20.16e %20.16e %20.16e %20.16e\n", X_Min,  RP->RS.Leftt.DensDownStream, RP->RS.Leftt.VelyDownStream, RP->RS.Leftt.PresDownStream );
-              fprintf (fptr[j], "%20.16e %20.16e %20.16e %20.16e\n", X_Max,  RP->RS.Leftt.DensDownStream, RP->RS.Leftt.VelyDownStream, RP->RS.Leftt.PresDownStream );
+              fprintf (fptr[j], "%20.16e %20.16e %20.16e %20.16e %d\n", X_Min,  RP->RS.Leftt.DensDownStream, RP->RS.Leftt.VelyDownStream, RP->RS.Leftt.PresDownStream, region );
+              fprintf (fptr[j], "%20.16e %20.16e %20.16e %20.16e %d\n", X_Max,  RP->RS.Leftt.DensDownStream, RP->RS.Leftt.VelyDownStream, RP->RS.Leftt.PresDownStream, region );
 		    }
 		    else if ( Pattern == 3 )
 		    {
               X_Min = U2V(RP->SR.Leftt.ShockVelocity)  * time + X0;
               X_Max = U2V(RP->SR.Leftt.VelyDownStream) * time + X0 - dX;
 
-              fprintf (fptr[j], "%20.16e %20.16e %20.16e %20.16e %d\n", X_Min,  RP->SR.Leftt.DensDownStream, RP->SR.Leftt.VelyDownStream, RP->SR.Leftt.PresDownStream, 3 );
-              fprintf (fptr[j], "%20.16e %20.16e %20.16e %20.16e %d\n", X_Max,  RP->SR.Leftt.DensDownStream, RP->SR.Leftt.VelyDownStream, RP->SR.Leftt.PresDownStream, 3 );
+              fprintf (fptr[j], "%20.16e %20.16e %20.16e %20.16e %d\n", X_Min,  RP->SR.Leftt.DensDownStream, RP->SR.Leftt.VelyDownStream, RP->SR.Leftt.PresDownStream, region );
+              fprintf (fptr[j], "%20.16e %20.16e %20.16e %20.16e %d\n", X_Max,  RP->SR.Leftt.DensDownStream, RP->SR.Leftt.VelyDownStream, RP->SR.Leftt.PresDownStream, region );
 		    }
 		    else if ( Pattern == 4 )
 		    {
               X_Min = U2V(RP->RR.Leftt.VelocityTail)   * time + X0;
               X_Max = U2V(RP->RR.Leftt.VelyDownStream) * time + X0 - dX;
 
-              fprintf (fptr[j], "%20.16e %20.16e %20.16e %20.16e\n", X_Min,  RP->RR.Leftt.DensDownStream, RP->RR.Leftt.VelyDownStream, RP->RR.Leftt.PresDownStream );
-              fprintf (fptr[j], "%20.16e %20.16e %20.16e %20.16e\n", X_Max,  RP->RR.Leftt.DensDownStream, RP->RR.Leftt.VelyDownStream, RP->RR.Leftt.PresDownStream );
+              fprintf (fptr[j], "%20.16e %20.16e %20.16e %20.16e %d\n", X_Min,  RP->RR.Leftt.DensDownStream, RP->RR.Leftt.VelyDownStream, RP->RR.Leftt.PresDownStream, region );
+              fprintf (fptr[j], "%20.16e %20.16e %20.16e %20.16e %d\n", X_Max,  RP->RR.Leftt.DensDownStream, RP->RR.Leftt.VelyDownStream, RP->RR.Leftt.PresDownStream, region );
 		    }
           break;
 
@@ -216,32 +217,32 @@ void Plot( int Pattern, struct RiemannProblem *RP, struct PlotParams plot )
               X_Min = U2V(RP->SS.Right.VelyDownStream)* time + X0;
               X_Max = U2V(RP->SS.Right.ShockVelocity) * time + X0 - dX;
 
-              fprintf (fptr[j], "%20.16e %20.16e %20.16e %20.16e\n", X_Min, RP->SS.Right.DensDownStream, RP->SS.Right.VelyDownStream, RP->SS.Right.PresDownStream );
-              fprintf (fptr[j], "%20.16e %20.16e %20.16e %20.16e\n", X_Max, RP->SS.Right.DensDownStream, RP->SS.Right.VelyDownStream, RP->SS.Right.PresDownStream );
+              fprintf (fptr[j], "%20.16e %20.16e %20.16e %20.16e %d\n", X_Min, RP->SS.Right.DensDownStream, RP->SS.Right.VelyDownStream, RP->SS.Right.PresDownStream, region );
+              fprintf (fptr[j], "%20.16e %20.16e %20.16e %20.16e %d\n", X_Max, RP->SS.Right.DensDownStream, RP->SS.Right.VelyDownStream, RP->SS.Right.PresDownStream, region );
 		    }
 		    else if ( Pattern == 2 )
 		    {
               X_Min = U2V(RP->RS.Right.VelyDownStream)* time + X0;
               X_Max = U2V(RP->RS.Right.ShockVelocity) * time + X0 - dX;
 
-              fprintf (fptr[j], "%20.16e %20.16e %20.16e %20.16e\n", X_Min, RP->RS.Right.DensDownStream, RP->RS.Right.VelyDownStream, RP->RS.Right.PresDownStream );
-              fprintf (fptr[j], "%20.16e %20.16e %20.16e %20.16e\n", X_Max, RP->RS.Right.DensDownStream, RP->RS.Right.VelyDownStream, RP->RS.Right.PresDownStream );
+              fprintf (fptr[j], "%20.16e %20.16e %20.16e %20.16e %d\n", X_Min, RP->RS.Right.DensDownStream, RP->RS.Right.VelyDownStream, RP->RS.Right.PresDownStream, region );
+              fprintf (fptr[j], "%20.16e %20.16e %20.16e %20.16e %d\n", X_Max, RP->RS.Right.DensDownStream, RP->RS.Right.VelyDownStream, RP->RS.Right.PresDownStream, region );
 		    }
 		    else if ( Pattern == 3 )
 		    {
               X_Min = U2V(RP->SR.Leftt.VelyDownStream) * time + X0;
               X_Max = U2V(RP->SR.Right.VelocityTail)   * time + X0 - dX;
 
-              fprintf (fptr[j], "%20.16e %20.16e %20.16e %20.16e %d\n", X_Min, RP->SR.Right.DensDownStream, RP->SR.Right.VelyDownStream, RP->SR.Right.PresDownStream, 4 );
-              fprintf (fptr[j], "%20.16e %20.16e %20.16e %20.16e %d\n", X_Max, RP->SR.Right.DensDownStream, RP->SR.Right.VelyDownStream, RP->SR.Right.PresDownStream, 4 );
+              fprintf (fptr[j], "%20.16e %20.16e %20.16e %20.16e %d\n", X_Min, RP->SR.Right.DensDownStream, RP->SR.Right.VelyDownStream, RP->SR.Right.PresDownStream, region );
+              fprintf (fptr[j], "%20.16e %20.16e %20.16e %20.16e %d\n", X_Max, RP->SR.Right.DensDownStream, RP->SR.Right.VelyDownStream, RP->SR.Right.PresDownStream, region );
 		    }
 		    else if ( Pattern == 4 )
 		    {
               X_Min = U2V(RP->RR.Right.VelyDownStream) * time + X0;
               X_Max = U2V(RP->RR.Right.VelocityTail)   * time + X0 - dX;
 
-              fprintf (fptr[j], "%20.16e %20.16e %20.16e %20.16e\n", X_Min, RP->RR.Right.DensDownStream, RP->RR.Right.VelyDownStream, RP->RR.Right.PresDownStream );
-              fprintf (fptr[j], "%20.16e %20.16e %20.16e %20.16e\n", X_Max, RP->RR.Right.DensDownStream, RP->RR.Right.VelyDownStream, RP->RR.Right.PresDownStream );
+              fprintf (fptr[j], "%20.16e %20.16e %20.16e %20.16e %d\n", X_Min, RP->RR.Right.DensDownStream, RP->RR.Right.VelyDownStream, RP->RR.Right.PresDownStream, region );
+              fprintf (fptr[j], "%20.16e %20.16e %20.16e %20.16e %d\n", X_Max, RP->RR.Right.DensDownStream, RP->RR.Right.VelyDownStream, RP->RR.Right.PresDownStream, region );
 		    }
           break;
 
@@ -259,7 +260,7 @@ void Plot( int Pattern, struct RiemannProblem *RP, struct PlotParams plot )
                 PresFan     = GetPresInFan( DensFan, RP -> SR.Right.PresUpStream, RP -> SR.Right.DensUpStream );
                 VelocityFan = GetVelocityInFan( RP->SR.Right.Xi, DensFan, PresFan, RP->SR.Right.Right_Yes );
 
-                fprintf (fptr[j], "%20.16e %20.16e %20.16e %20.16e %d\n", RP->SR.Right.Xi*time+X0, DensFan, VelocityFan, PresFan, 5 );
+                fprintf (fptr[j], "%20.16e %20.16e %20.16e %20.16e %d\n", RP->SR.Right.Xi*time+X0, DensFan, VelocityFan, PresFan, region );
 
 			    RP->SR.Right.Xi += dX/time;
 			  }
@@ -278,7 +279,7 @@ void Plot( int Pattern, struct RiemannProblem *RP, struct PlotParams plot )
                 PresFan     = GetPresInFan( DensFan, RP -> RR.Right.PresUpStream, RP -> RR.Right.DensUpStream );
                 VelocityFan = GetVelocityInFan( RP->RR.Right.Xi, DensFan, PresFan, RP->RR.Right.Right_Yes );
 
-                fprintf (fptr[j], "%20.16e %20.16e %20.16e %20.16e %d\n", RP->RR.Right.Xi*time+X0, DensFan, VelocityFan, PresFan, 5 );
+                fprintf (fptr[j], "%20.16e %20.16e %20.16e %20.16e %d\n", RP->RR.Right.Xi*time+X0, DensFan, VelocityFan, PresFan, region );
 
 			    RP->RR.Right.Xi += dX/time;
 			  }
@@ -292,32 +293,32 @@ void Plot( int Pattern, struct RiemannProblem *RP, struct PlotParams plot )
               X_Min =  U2V(RP->SS.Right.ShockVelocity) * time + X0;
               X_Max =  X_Right;
 
-              fprintf (fptr[j], "%20.16e %20.16e %20.16e %20.16e\n", X_Min, RP->SS.Right.DensUpStream, RP->SS.Right.VelyUpStream, RP->SS.Right.PresUpStream );
-              fprintf (fptr[j], "%20.16e %20.16e %20.16e %20.16e\n", X_Max, RP->SS.Right.DensUpStream, RP->SS.Right.VelyUpStream, RP->SS.Right.PresUpStream);
+              fprintf (fptr[j], "%20.16e %20.16e %20.16e %20.16e %d\n", X_Min, RP->SS.Right.DensUpStream, RP->SS.Right.VelyUpStream, RP->SS.Right.PresUpStream, region );
+              fprintf (fptr[j], "%20.16e %20.16e %20.16e %20.16e %d\n", X_Max, RP->SS.Right.DensUpStream, RP->SS.Right.VelyUpStream, RP->SS.Right.PresUpStream, region );
 		    }
 		    else if ( Pattern == 2 )
 		    {
               X_Min =  U2V(RP->RS.Right.ShockVelocity) * time + X0;
               X_Max =  X_Right;
 
-              fprintf (fptr[j], "%20.16e %20.16e %20.16e %20.16e\n", X_Min, RP->RS.Right.DensUpStream, RP->RS.Right.VelyUpStream, RP->RS.Right.PresUpStream );
-              fprintf (fptr[j], "%20.16e %20.16e %20.16e %20.16e\n", X_Max, RP->RS.Right.DensUpStream, RP->RS.Right.VelyUpStream, RP->RS.Right.PresUpStream);
+              fprintf (fptr[j], "%20.16e %20.16e %20.16e %20.16e %d\n", X_Min, RP->RS.Right.DensUpStream, RP->RS.Right.VelyUpStream, RP->RS.Right.PresUpStream, region  );
+              fprintf (fptr[j], "%20.16e %20.16e %20.16e %20.16e %d\n", X_Max, RP->RS.Right.DensUpStream, RP->RS.Right.VelyUpStream, RP->RS.Right.PresUpStream, region );
 		    }
 		    else if ( Pattern == 3 )
 		    {
               X_Min = U2V(RP->SR.Right.VelocityHead) * time + X0;
               X_Max = X_Right;
 
-              fprintf (fptr[j], "%20.16e %20.16e %20.16e %20.16e\n", X_Min, RP->SR.Right.DensUpStream, RP->SR.Right.VelyUpStream, RP->SR.Right.PresUpStream );
-              fprintf (fptr[j], "%20.16e %20.16e %20.16e %20.16e\n", X_Max, RP->SR.Right.DensUpStream, RP->SR.Right.VelyUpStream, RP->SR.Right.PresUpStream );
+              fprintf (fptr[j], "%20.16e %20.16e %20.16e %20.16e %d\n", X_Min, RP->SR.Right.DensUpStream, RP->SR.Right.VelyUpStream, RP->SR.Right.PresUpStream, region  );
+              fprintf (fptr[j], "%20.16e %20.16e %20.16e %20.16e %d\n", X_Max, RP->SR.Right.DensUpStream, RP->SR.Right.VelyUpStream, RP->SR.Right.PresUpStream, region  );
 		    }
 			else if ( Pattern == 4 )
 			{
               X_Min = U2V(RP->RR.Right.VelocityHead) * time + X0;
               X_Max = X_Right;
 
-              fprintf (fptr[j], "%20.16e %20.16e %20.16e %20.16e\n", X_Min, RP->RR.Right.DensUpStream, RP->RR.Right.VelyUpStream, RP->RR.Right.PresUpStream );
-              fprintf (fptr[j], "%20.16e %20.16e %20.16e %20.16e\n", X_Max, RP->RR.Right.DensUpStream, RP->RR.Right.VelyUpStream, RP->RR.Right.PresUpStream );
+              fprintf (fptr[j], "%20.16e %20.16e %20.16e %20.16e %d\n", X_Min, RP->RR.Right.DensUpStream, RP->RR.Right.VelyUpStream, RP->RR.Right.PresUpStream, region );
+              fprintf (fptr[j], "%20.16e %20.16e %20.16e %20.16e %d\n", X_Max, RP->RR.Right.DensUpStream, RP->RR.Right.VelyUpStream, RP->RR.Right.PresUpStream, region );
 			}
           break;
         }

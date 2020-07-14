@@ -6,62 +6,32 @@
 #include "Global.h"
 
 
-//double Gamma = 5.0/3.0;
-//double Gamma_1 = 0.666666666666666666666;
-double Gamma = 4.0/3.0;
-double Gamma_1 = 0.333333333333333333333;
+double Gamma = GAmma;
+double Gamma_1 = GAmma_1;
 
 
 int main()
 {
-//  double DensLeft      =  1.0;
-//  double VelocityLeft  =  0.0;
-//  double PresLeft      =  1e4;
-//
-//  double DensRight     =  1.0;
-//  double VelocityRight =  0.0;
-//  double PresRight     =  1e5;
-// RR
-  double DensLeft      =  1.0;
-  double VelocityLeft  = -1.0;
-  double PresLeft      =  0.1;
+  double DensLeft       =  0.2;
+  double VelocityLeft   = +1.0;
+  double PresLeft       =  0.014;
 
-  double DensRight     =  1.0;
-  double VelocityRight = +2.0;
-  double PresRight     =  1.0;
-//
-//// RS
-//  double DensLeft      =  1.0;
-//  double VelocityLeft  =  0.0;
-//  double PresLeft      =  1.0;
-//
-//  double DensRight     =  1.0;
-//  double VelocityRight =  0.0;
-//  double PresRight     =  0.1;
-//
-//// SR
-//  double DensLeft      =  1.0;
-//  double VelocityLeft  =  0.0;
-//  double PresLeft      =  0.1;
-//
-//  double DensRight     =  1.0;
-//  double VelocityRight =  0.0;
-//  double PresRight     =  1.0;
-//
-////SS
-//  double DensLeft      = 10.0;
-//  double VelocityLeft  = +1.0;
-//  double PresLeft      =  5.0;
-//
-//  double DensRight     =  1.0;
-//  double VelocityRight = -1.0;
-//  double PresRight     = 10.0;
+  double DensRight      =  2.0;
+  double VelocityRight  = -0.1;
+  double PresRight      =  1.0;
 
 
+//  double DensLeft       =  0.2;
+//  double VelocityLeft   = +0.8;
+//  double PresLeft       =  0.014;
+//
+//  double DensRight      =  2.0;
+//  double VelocityRight  = -0.1;
+//  double PresRight      =  2.0;
 
   
-  double DT            = 0.5;
-  double End_T         = 0.5;
+  double DT            = 0.7;
+  double End_T         = 0.7;
   double X_Left        = 0.0;
   double X_Right       = 1.0;
   int NCell            = 4096;
