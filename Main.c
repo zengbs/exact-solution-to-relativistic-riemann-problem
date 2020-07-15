@@ -12,26 +12,26 @@ double Gamma_1 = GAmma_1;
 
 int main()
 {
-  double DensLeft       =  0.2;
-  double VelocityLeft   = +1.0;
-  double PresLeft       =  0.014;
-
-  double DensRight      =  2.0;
-  double VelocityRight  = -0.1;
-  double PresRight      =  1.0;
-
-
 //  double DensLeft       =  0.2;
-//  double VelocityLeft   = +0.8;
+//  double VelocityLeft   = +1.0;
 //  double PresLeft       =  0.014;
 //
 //  double DensRight      =  2.0;
 //  double VelocityRight  = -0.1;
-//  double PresRight      =  2.0;
+//  double PresRight      =  1.0;
+
+
+  double DensLeft       = 1e6;
+  double VelocityLeft   = 0.0;
+  double PresLeft       = 1.0;
+
+  double DensRight      = 1.0;
+  double VelocityRight  = 0.0;
+  double PresRight      = 1e6;
 
   
-  double DT            = 0.7;
-  double End_T         = 0.7;
+  double DT            = 0.6;
+  double End_T         = 0.6;
   double X_Left        = 0.0;
   double X_Right       = 1.0;
   int NCell            = 4096;

@@ -7,9 +7,8 @@
 #include "Prototypes.h"
 
 double RootFinder( double(*Function)(double X, void *params) , void *params, double AbsErr, double RelErr,
-			       double Guess, double LowerBound, double UpperBound )
+			       double Guess, double LowerBound, double UpperBound, const char FunctionName[] )
 {
-
 // Make sure the root is between LowerBound and UpperBound
   while ( Function(LowerBound, params) *  Function(UpperBound, params) >= 0.0 )
   {
@@ -21,8 +20,16 @@ double RootFinder( double(*Function)(double X, void *params) , void *params, dou
     {
        LowerBound /= 10.0;
     }
-  }
 
+    if ( Function(LowerBound, params) == Function(UpperBound, params) )
+    {
+       UpperBound *= 10.0;
+       LowerBound *= 10.0;
+    }
+    //printf("LowerBound=%e, UpperBound=%e, f(LowerBound)=%e, f=(UpperBound)=%e: %s\n", 
+    //LowerBound, UpperBound, Function(LowerBound, params), Function(UpperBound, params), FunctionName );
+  }
+//printf("hi\n");
   int status;
 
   int iter = 0, max_iter = 100;

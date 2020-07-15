@@ -65,7 +65,7 @@ double GetDensInFan( struct Rarefaction *Rarefaction )
  double DensMin = DensDown*0.9999;
  double DensMax = DensUp*1.0001;
 
- Dens_at_Xi = RootFinder( FanFunction, (void*)Rarefaction, 0.0, __DBL_EPSILON__, 0.5*(DensMax + DensMin), DensMin, DensMax );
+ Dens_at_Xi = RootFinder( FanFunction, (void*)Rarefaction, 0.0, __DBL_EPSILON__, 0.5*(DensMax + DensMin), DensMin, DensMax, __FUNCTION__ );
 
  return Dens_at_Xi;
 }
@@ -152,7 +152,7 @@ double Isentropic_Dens2Temperature ( double DensDown, double TempUp, double Dens
   rafaction.PresUpStream   = DensUp*TempUp; 
   rafaction.DensDownStream = DensDown; 
 
-  TempDown = RootFinder( Isentropic_Dens2Temperature_Function, (void*)&rafaction, 0.0, __DBL_EPSILON__, 5.0, 1.0, 10.0  );
+  TempDown = RootFinder( Isentropic_Dens2Temperature_Function, (void*)&rafaction, 0.0, __DBL_EPSILON__, 5.0, 1.0, 10.0, __FUNCTION__  );
 
 # endif
 
@@ -207,7 +207,7 @@ double Isentropic_Pres2Temperature ( struct Rarefaction *Rarefaction )
 {
   double Temperature;
 
-  Temperature = RootFinder( Isentropic_TemperatureFunction, (void*)Rarefaction, 0.0, __DBL_EPSILON__, 5.0, 1.0, 10.0 );
+  Temperature = RootFinder( Isentropic_TemperatureFunction, (void*)Rarefaction, 0.0, __DBL_EPSILON__, 0.5, 0.1, 10.0, __FUNCTION__ );
   
   return Temperature;
 }

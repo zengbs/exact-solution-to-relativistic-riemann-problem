@@ -25,7 +25,7 @@ double Flu_TotalInternalEngy ( double Pres, double Dens );
 double Enthalpy2Temperature( double Enthalpy );
 
 double RootFinder( double(*Function)(double X, void *params) , void *params, double AbsErr, double RelErr,
-			       double Guess, double LowerBound, double UpperBound );
+			       double Guess, double LowerBound, double UpperBound, const char s[] );
 
 
 double MassCurrent( double PresUp, double DensUp, double PresDown, double DensDown );
