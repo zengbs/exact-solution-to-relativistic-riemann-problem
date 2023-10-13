@@ -39,7 +39,7 @@ double GetVelocityDown( double PresUp,   double DensUp, double ShockFrontVelocit
 
 double GetDensDown( double PresUp, double DensUp, double PresDown  );
 
-void GetShockVelocity( double PresUp,   double DensUp,   double V_Up, 
+void GetShockVelocity( double PresUp,   double DensUp,   double V_Up,
 				    double PresDown, double DensDown,
 			        double *Vs_Left, double *Vs_Right );
 

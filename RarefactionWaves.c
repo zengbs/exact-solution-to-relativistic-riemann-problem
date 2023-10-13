@@ -17,20 +17,20 @@ static double Isentropic_Dens2Temperature_Function ( double TempDown, void *para
 double FanFunction ( double Dens_at_Xi, void *params )
 {
   struct Rarefaction *rarefaction = ( struct Rarefaction * ) params;
-  
+
   double Xi        = rarefaction -> Xi;
   double Right_Yes = rarefaction -> Right_Yes;
   double sign = ( Right_Yes ) ? +1.0 : -1.0;
 
   double Velocity_at_Xi_1, Velocity_at_Xi_2;
-  
+
   /* Step 1 */
   Velocity_at_Xi_1  = Isentropic_Dens2Velocity( Dens_at_Xi, params );
 
   /* Step 2 */
   double PresUp     = rarefaction -> PresUpStream;
   double DensUp     = rarefaction -> DensUpStream;
- 
+
   double U_Xi       = Xi / sqrt( 1.0 - Xi*Xi );
 
   double Temp_at_Xi = Isentropic_Dens2Temperature( Dens_at_Xi, PresUp/DensUp, DensUp );
@@ -43,16 +43,16 @@ double FanFunction ( double Dens_at_Xi, void *params )
 }
 
 //  Simultaneoulsy solve the following two equations:
-//   
+//
 //   dU     Us⋅γ
 //   ── = ± ────  with (DensUp, VelocityUp)
 //   dρ     γₛ⋅ρ
 //
 //
 //   U = U(ζ)⋅γₛ ∓ Uₛ⋅γ(ζ)
-//   
-//  upper sign: right traveling wave 
-//  lower sign:  left traveling wave 
+//
+//  upper sign: right traveling wave
+//  lower sign:  left traveling wave
 
 
 double GetDensInFan( struct Rarefaction *Rarefaction )
@@ -84,7 +84,7 @@ double GetVelocityInFan( double Xi,  double Dens_at_Xi, double Pres_at_Xi, bool 
   double gamma_Xi = 1.0 / sqrt( 1.0 - Xi*Xi );
 
   double U_Xi = Xi * gamma_Xi;
-  
+
   double Velocity;
 
   double Tempertaure_at_Xi = Pres_at_Xi/Dens_at_Xi;
@@ -106,8 +106,8 @@ void GetHeadTailVelocity( double PresUp, double DensUp, double VelocityUp,
 {
   double Cs_Up, Cs_Down;
 
-  Cs_Up   = Flu_SoundSpeed( PresUp / DensUp   ); 
-  Cs_Down = Flu_SoundSpeed( PresDown / DensDown ); 
+  Cs_Up   = Flu_SoundSpeed( PresUp / DensUp   );
+  Cs_Down = Flu_SoundSpeed( PresDown / DensDown );
 
 
   if ( Right_Yes )
@@ -131,7 +131,7 @@ double Isentropic_Constant ( double Init_Temp, double Init_Dens )
   K = Init_Temp / pow( Init_Dens, Gamma_1 );
 # elif ( EOS == TM )
   K  = Init_Temp*( 1.5*Init_Temp + sqrt( 2.25*Init_Temp*Init_Temp + 1.0 ) );
-  
+
   K /= pow(Init_Dens, 2.0/3.0);
 # endif
   return K;
@@ -148,9 +148,9 @@ double Isentropic_Dens2Temperature ( double DensDown, double TempUp, double Dens
 # elif ( EOS == TM )
   struct Rarefaction rafaction;
 
-  rafaction.DensUpStream   = DensUp; 
-  rafaction.PresUpStream   = DensUp*TempUp; 
-  rafaction.DensDownStream = DensDown; 
+  rafaction.DensUpStream   = DensUp;
+  rafaction.PresUpStream   = DensUp*TempUp;
+  rafaction.DensDownStream = DensDown;
 
   TempDown = RootFinder( Isentropic_Dens2Temperature_Function, (void*)&rafaction, 0.0, __DBL_EPSILON__, 5.0, 1.0, 10.0, __FUNCTION__  );
 
@@ -165,7 +165,7 @@ double Isentropic_Dens2Temperature_Function ( double TempDown, void *params )
   struct Rarefaction *rarefaction = (struct Rarefaction *)params;
 
   double Expr, K, TempUp, DensUp, PresUp, DensDown;
-  
+
   DensUp    = rarefaction -> DensUpStream;
   PresUp    = rarefaction -> PresUpStream;
   DensDown  = rarefaction -> DensDownStream;
@@ -208,7 +208,7 @@ double Isentropic_Pres2Temperature ( struct Rarefaction *Rarefaction )
   double Temperature;
 
   Temperature = RootFinder( Isentropic_TemperatureFunction, (void*)Rarefaction, 0.0, __DBL_EPSILON__, 0.5, 0.1, 10.0, __FUNCTION__ );
-  
+
   return Temperature;
 }
 
@@ -217,7 +217,7 @@ double Isentropic_Pres2Temperature ( struct Rarefaction *Rarefaction )
 // Pres = Pres( Temp ) OK
 //
 //========================================= OK
-double Isentropic_TemperatureFunction ( double TempDown, void *params ) 
+double Isentropic_TemperatureFunction ( double TempDown, void *params )
 {
   struct Rarefaction *rarefaction = ( struct Rarefaction * ) params;
 
@@ -231,7 +231,7 @@ double Isentropic_TemperatureFunction ( double TempDown, void *params )
 # if ( EOS == GAMMA )
   Expression  = pow( TempDown, Gamma/Gamma_1 );
   Expression *= pow( K, -1.0/Gamma_1 );
-  
+
 # elif ( EOS == TM )
   Expression  = pow( TempDown, 5.0/3.0 )*( 1.5*TempDown + sqrt(2.25*TempDown*TempDown + 1.0) );
 
@@ -258,7 +258,7 @@ double Isentropic_Temperature2Pres ( double Temperature, void *params  )
 # if ( EOS == GAMMA )
   Pres = pow( Temperature, Gamma )/K;
   Pres = pow( Pres, 1.0/Gamma_1 );
-  
+
 # elif ( EOS == TM )
   Pres  = pow( Temperature, 5.0/3.0 )*( 1.5*Temperature + sqrt(2.25*Temperature*Temperature + 1.0) );
 
@@ -294,8 +294,8 @@ double Isentropic_Dens2Pres ( double Dens, double Init_Temp, double Init_Dens )
 //   ── = ± ────
 //   dρ     γₛ⋅ρ
 //
-//  upper sign: right traveling wave 
-//  lower sign:  left traveling wave 
+//  upper sign: right traveling wave
+//  lower sign:  left traveling wave
 
 int func ( double Dens, const double y[], double f[], void *params )
 {
