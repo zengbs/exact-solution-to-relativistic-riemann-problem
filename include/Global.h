@@ -4,4 +4,4 @@
 extern double Gamma;
 extern double Gamma_1;
 
-#endif
+#endif // #ifndef __GLOBAL_H__

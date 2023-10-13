@@ -78,7 +78,7 @@ struct PlotParams
   double End_T;
   double X_Left;
   double X_Right;
-  int NCell;
+  int    NCell;
 };
 
-#endif
+#endif // #ifndef __STRUCT_H__
