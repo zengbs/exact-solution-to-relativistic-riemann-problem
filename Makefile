@@ -20,7 +20,7 @@ CFLAGS =  -g
 DLIB = /software/gsl/default/lib/
 DINC = /software/gsl/default/include/
 
-EXECUTABLE = a.out
+EXECUTABLE = SR_Riemann_solver
 
 SRC = $(ALL_OBJ:.o=.c)
 
