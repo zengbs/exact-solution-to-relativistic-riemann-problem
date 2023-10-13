@@ -1,8 +1,7 @@
 .*.swp
-a.out
+SR_Riemann_solver
 *.dat
 *.dat*
 *.o
-*.gch
 log
 Xline*
