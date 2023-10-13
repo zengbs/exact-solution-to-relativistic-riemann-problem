@@ -21,7 +21,7 @@ EXECUTABLE := SR_Riemann_solver
 
 # paths
 SRC_DIR := ./src
-OBJ_DIR := obj
+OBJ_DIR := ./obj
 INC_DIR := ./include
 GSL_DIR := /software/gsl/default
 
