@@ -20,17 +20,20 @@ CFLAGS =  -g
 EXECUTABLE := SR_Riemann_solver
 
 # paths
-SRC_DIR := ./
-OBJ_DIR := ./obj
+SRC_DIR := ./src
+OBJ_DIR := obj
 INC_DIR := ./include
 GSL_DIR := /software/gsl/default
+
 
 
 
 #====================================================================================================
 # Preliminary definitions
 #====================================================================================================
-SRC_FILES := $(shell find $(SRC_DIR) -name "*.c")
+#SRC_FILES := $(shell find $(SRC_DIR) -name "*.c")
+#OBJ_FILES := $(addprefix $(OBJ_DIR)/,$(notdir $(SRC_FILES:.c=.o)))
+SRC_FILES := $(wildcard $(SRC_DIR)/*.c)
 OBJ_FILES := $(addprefix $(OBJ_DIR)/,$(notdir $(SRC_FILES:.c=.o)))
 
 
@@ -42,17 +45,17 @@ OBJ_FILES := $(addprefix $(OBJ_DIR)/,$(notdir $(SRC_FILES:.c=.o)))
 
 all: compile
 
-compile: ${EXECUTABLE}
+compile: $(EXECUTABLE)
 
 # link objects into executable
-${EXECUTABLE}: ${OBJ_FILES}
+$(EXECUTABLE): $(OBJ_FILES)
 	@printf "========================================\n"
 	@printf "Linking to %s ... " $@
-	@${CC}  -o ${EXECUTABLE} ${SOL_OPTIONS} ${OBJ_FILES} -I${INC_DIR} -lgsl -lgslcblas -lm -L${GSL_DIR}/lib -I${GSL_DIR}/include
+	@${CC} ${CFLAGS} -o ${EXECUTABLE} ${SOL_OPTIONS} ${OBJ_FILES} -I${INC_DIR} -lgsl -lgslcblas -lm -L${GSL_DIR}/lib -I${GSL_DIR}/include
 	@printf "Successful!\n"
 
 # create objects
-${OBJ_DIR}/%.o:%.c
+$(OBJ_DIR)/%.o:$(SRC_DIR)/%.c
 	@${CC} ${CFLAGS} ${SOL_OPTIONS} -I${INC_DIR} -I${GSL_DIR}/include -c $< -o $@
 	@printf "Compiling %s\n" $<
 
