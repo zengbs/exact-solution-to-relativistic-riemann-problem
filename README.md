@@ -4,7 +4,7 @@ This is a tool of solving the exact solution of special relativistic Riemann pro
 Author: [Po-Hsun Tseng](https://github.com/zengbs)
 
 
-# Usage
+## Usage
 1. If necessary, please change the `GSL_DIR` in `Makefile` to match your machine setup.
    ```makefile
    # paths
