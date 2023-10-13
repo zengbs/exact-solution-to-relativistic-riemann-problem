@@ -3,5 +3,6 @@ a.out
 *.dat
 *.dat*
 *.o
+*.gch
 log
 Xline*
