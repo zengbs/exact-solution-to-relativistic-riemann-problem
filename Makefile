@@ -17,13 +17,13 @@ SOL_OPTIONS += -DGAmma_1=0.66666666666
 CC     = gcc
 CFLAGS =  -g
 
-EXECUTABLE = SR_Riemann_solver
+EXECUTABLE := SR_Riemann_solver
 
 # paths
-SRC_DIR = ./
-OBJ_DIR = ./obj
-INC_DIR = ./include
-GSL_DIR = /software/gsl/default
+SRC_DIR := ./
+OBJ_DIR := ./obj
+INC_DIR := ./include
+GSL_DIR := /software/gsl/default
 
 
 
