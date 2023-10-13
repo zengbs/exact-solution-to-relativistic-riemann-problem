@@ -1,4 +1,4 @@
-rm *.dat
+rm -f *.dat
 
 #EOS=GAMMA
 GAmma=1.66666666666
@@ -20,4 +20,4 @@ gcc Main.o Fluid.o Functions.o RootFinder.o RarefactionWaves.c ShockWaves.c Util
 ./a.out
 
 
-rm *.o
+rm -f *.o
