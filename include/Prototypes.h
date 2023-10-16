@@ -4,6 +4,8 @@
 #include "Struct.h"
 
 
+void Load_Parameter();
+
 int GetWavePattern( struct InitialCondition *IC );
 
 double JumpConditionForEnthalpy( double EnthalpyDown, void* params );

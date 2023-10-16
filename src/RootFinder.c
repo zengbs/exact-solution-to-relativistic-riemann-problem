@@ -8,7 +8,7 @@
 
 
 
-double RootFinder( double(*Function)(double X, void *params) , void *params, double AbsErr, double RelErr
+double RootFinder( double(*Function)(double X, void *params) , void *params, double AbsErr, double RelErr,
                    double Guess, double LowerBound, double UpperBound, const char FunctionName[] )
 {
 // Make sure the root is between LowerBound and UpperBound
