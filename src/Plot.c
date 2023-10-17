@@ -6,12 +6,6 @@
 
 
 
-
-//    1    2           3            4   5     6
-// Left  Fan ContactLeft ContactRight Fan Right
-
-
-
 void Plot( int Pattern, struct RiemannProblem *RP, struct PlotParams plot )
 {
    FILE *fptr[999999];
@@ -92,11 +86,11 @@ void Plot( int Pattern, struct RiemannProblem *RP, struct PlotParams plot )
 
       int region;
 
-      for (region=1; region<=6; region++)
+      for (region=1; region<=N_REGIONS; region++)
       {
          switch (region)
          {
-            case 1:
+            case L_ORIGINAL:
                if ( Pattern == 1 )
                {
                   X_Min = 0.0;
@@ -131,7 +125,7 @@ void Plot( int Pattern, struct RiemannProblem *RP, struct PlotParams plot )
                }
                break;
 
-            case 2:
+            case L_FAN:
                if ( Pattern == 2 )
                {
                   X_Min = U2V(RP->RS.Leftt.VelocityHead) * time + X0;
@@ -170,7 +164,7 @@ void Plot( int Pattern, struct RiemannProblem *RP, struct PlotParams plot )
                 }
                 break;
 
-            case 3:
+            case L_CONTACT:
                if ( Pattern == 1 )
                {
                   X_Min = U2V(RP->SS.Leftt.ShockVelocity)  * time + X0;
@@ -205,7 +199,7 @@ void Plot( int Pattern, struct RiemannProblem *RP, struct PlotParams plot )
                }
                break;
 
-            case 4:
+            case R_CONTACT:
                if ( Pattern == 1 )
                {
                   X_Min = U2V(RP->SS.Right.VelyDownStream)* time + X0;
@@ -240,7 +234,7 @@ void Plot( int Pattern, struct RiemannProblem *RP, struct PlotParams plot )
                }
                break;
 
-            case 5:
+            case R_FAN:
                if ( Pattern == 3 )
                {
                   X_Min = U2V(RP->SR.Right.VelocityTail) * time + X0;
@@ -279,7 +273,7 @@ void Plot( int Pattern, struct RiemannProblem *RP, struct PlotParams plot )
                }
                break;
 
-            case 6:
+            case R_ORIGINAL:
                if ( Pattern == 1 )
                {
                   X_Min = U2V(RP->SS.Right.ShockVelocity) * time + X0;
