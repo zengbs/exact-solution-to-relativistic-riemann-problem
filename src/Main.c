@@ -5,18 +5,20 @@
 #include "Prototypes.h"
 #include "Global.h"
 
-
+// the value is given in Makefile
 double Gamma = GAmma;
 double Gamma_1 = GAmma_1;
 
+// input parameters
 double L_X, L_DENS, L_VELX, L_PRES;
 double R_X, R_DENS, R_VELX, R_PRES;
 double DT, END_T;
 int    N_CELL;
 
+
+
 int main()
 {
-
    Load_Parameter();
 
    printf( "===========================================================\n");
@@ -46,7 +48,7 @@ int main()
 
    Pattern = GetAllInfomation( &IC, &RP );
 
-   printf("Pattern=%d\n", Pattern);
    Plot( Pattern, &RP, plot );
+
    return 0;
-}
+} // FUNCTION : main

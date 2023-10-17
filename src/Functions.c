@@ -120,19 +120,19 @@ int GetWavePattern( struct InitialCondition *IC )
    if ( VelocityLeftRight >= SS )
    {
       Pattern = 1;
-      printf("SS pattern !!\n");
+      printf("Shock-Shock pattern !!\n");
    } else if ( RS <= VelocityLeftRight  &&  VelocityLeftRight < SS  &&  Swap_Yes == false )
    {
       Pattern = 2;
-      printf("RS pattern !!\n");
+      printf("Rarefaction-Shock pattern !!\n");
    } else if ( RS <= VelocityLeftRight  &&  VelocityLeftRight < SS  &&  Swap_Yes == true )
    {
       Pattern = 3;
-      printf("SR pattern !!\n");
+      printf("Shock-Rarefaction pattern !!\n");
    } else if ( VelocityLeftRight < RS )
    {
       Pattern = 4;
-      printf("RR pattern !!\n");
+      printf("Rarefacation-Rarefaction pattern !!\n");
    } else
    {
       printf("wave pattern was not found!!\n");

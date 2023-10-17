@@ -19,10 +19,15 @@ void Plot( int Pattern, struct RiemannProblem *RP, struct PlotParams plot )
    double dX = (X_Right-X_Left)/(double)NCell;
    double X0 = 0.5*( X_Left + X_Right );
 
-   int DumpID = 0;
+   int    DumpID = 0;
+   double time   = 0.0;
+
+   double X_Max, X_Min;
+   double DensFan, PresFan, VelocityFan;
 
    char fileName[100];
 
+   printf("Plotting data %06d (t=%24.16e) ... ", DumpID, time);
 #  if ( EOS == TM )
    sprintf( fileName, "./000000_TM.dat" );
 #  elif ( EOS == GAMMA )
@@ -31,7 +36,6 @@ void Plot( int Pattern, struct RiemannProblem *RP, struct PlotParams plot )
 
    fptr[DumpID] = fopen( fileName, "w" );
 
-   double time = 0.0;
    fprintf( fptr[DumpID], "# time = %20.16e\n", time);
    fprintf( fptr[DumpID], "# x[1]       d1[2]       v1[3]       p1[4]\n");
 
@@ -68,15 +72,17 @@ void Plot( int Pattern, struct RiemannProblem *RP, struct PlotParams plot )
       fprintf( fptr[DumpID], "%20.16e %20.16e %20.16e %20.16e\n", X_Right, RP->RR.Right.DensUpStream, RP->RR.Right.VelyUpStream, RP->RR.Right.PresUpStream );
    } // if ( Pattern == 1 ) ...  else if ...
 
+   fclose( fptr[DumpID] );
    DumpID++;
-
-   double X_Max, X_Min;
-   double DensFan, PresFan, VelocityFan;
-
    time += DT;
+
+   printf("Done\n"); // printf("Plotting data %06d (t=%24.16) ... ", DumpID, time);
+
 
    while (time <= End_T)
    {
+      printf("Plotting data %06d (t=%24.16e) ... ", DumpID, time);
+
 #     if ( EOS == TM )
       sprintf( fileName, "./%06d_TM.dat", DumpID );
 #     elif ( EOS == GAMMA )
@@ -314,10 +320,10 @@ void Plot( int Pattern, struct RiemannProblem *RP, struct PlotParams plot )
       } // for (region=1; region<=6; region++)
 
       fclose( fptr[DumpID] );
-
       DumpID++;
-
       time = DumpID * DT;
+
+      printf("Done\n"); // printf("Plotting data %06d (t=%24.16e) ... ", DumpID, time);
    } // while (time <= End_T)
 
 } // FUNCTION : Plot
