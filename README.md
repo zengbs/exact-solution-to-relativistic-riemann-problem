@@ -57,8 +57,9 @@ Author: [Po-Hsun Tseng](https://github.com/zengbs)
    END_T               =   1.0000000000000000e+00
    N_CELL              = 4096
    ===========================================================
-   SS pattern !!
+   Shock-Shock pattern !!
    PresStar=5.3333333333797783e+12
-   Pattern=1
+   Plotting data 000000 (t=  0.0000000000000000e+00) ... Done
+   ...
    ```
 1. The current directory should have `*.dat` after executing. To plot the solution, you may use the simple script under `scripts/plot_dat.py`.
