@@ -1,1 +1,1 @@
-rm -rf SR_Riemann_solver *.dat
+rm -rf *.dat
