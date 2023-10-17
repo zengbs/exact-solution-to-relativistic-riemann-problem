@@ -184,24 +184,24 @@ void Plot( int Pattern, struct RiemannProblem *RP, struct PlotParams plot )
                   X_Min = U2V(RP->RS.Leftt.VelocityTail)   * time + X0;
                   X_Max = U2V(RP->RS.Leftt.VelyDownStream) * time + X0 - dX;
 
-                  fprintf( fptr[j], "%20.16e %20.16e %20.16e %20.16e %d\n", X_Min,  RP->RS.Leftt.DensDownStream, RP->RS.Leftt.VelyDownStream, RP->RS.Leftt.PresDownStream, region );
-                  fprintf( fptr[j], "%20.16e %20.16e %20.16e %20.16e %d\n", X_Max,  RP->RS.Leftt.DensDownStream, RP->RS.Leftt.VelyDownStream, RP->RS.Leftt.PresDownStream, region );
+                  fprintf( fptr[j], "%20.16e %20.16e %20.16e %20.16e %d\n", X_Min, RP->RS.Leftt.DensDownStream, RP->RS.Leftt.VelyDownStream, RP->RS.Leftt.PresDownStream, region );
+                  fprintf( fptr[j], "%20.16e %20.16e %20.16e %20.16e %d\n", X_Max, RP->RS.Leftt.DensDownStream, RP->RS.Leftt.VelyDownStream, RP->RS.Leftt.PresDownStream, region );
                }
                else if ( Pattern == 3 )
                {
                   X_Min = U2V(RP->SR.Leftt.ShockVelocity)  * time + X0;
                   X_Max = U2V(RP->SR.Leftt.VelyDownStream) * time + X0 - dX;
 
-                  fprintf( fptr[j], "%20.16e %20.16e %20.16e %20.16e %d\n", X_Min,  RP->SR.Leftt.DensDownStream, RP->SR.Leftt.VelyDownStream, RP->SR.Leftt.PresDownStream, region );
-                  fprintf( fptr[j], "%20.16e %20.16e %20.16e %20.16e %d\n", X_Max,  RP->SR.Leftt.DensDownStream, RP->SR.Leftt.VelyDownStream, RP->SR.Leftt.PresDownStream, region );
+                  fprintf( fptr[j], "%20.16e %20.16e %20.16e %20.16e %d\n", X_Min, RP->SR.Leftt.DensDownStream, RP->SR.Leftt.VelyDownStream, RP->SR.Leftt.PresDownStream, region );
+                  fprintf( fptr[j], "%20.16e %20.16e %20.16e %20.16e %d\n", X_Max, RP->SR.Leftt.DensDownStream, RP->SR.Leftt.VelyDownStream, RP->SR.Leftt.PresDownStream, region );
                }
                else if ( Pattern == 4 )
                {
                   X_Min = U2V(RP->RR.Leftt.VelocityTail)   * time + X0;
                   X_Max = U2V(RP->RR.Leftt.VelyDownStream) * time + X0 - dX;
 
-                  fprintf( fptr[j], "%20.16e %20.16e %20.16e %20.16e %d\n", X_Min,  RP->RR.Leftt.DensDownStream, RP->RR.Leftt.VelyDownStream, RP->RR.Leftt.PresDownStream, region );
-                  fprintf( fptr[j], "%20.16e %20.16e %20.16e %20.16e %d\n", X_Max,  RP->RR.Leftt.DensDownStream, RP->RR.Leftt.VelyDownStream, RP->RR.Leftt.PresDownStream, region );
+                  fprintf( fptr[j], "%20.16e %20.16e %20.16e %20.16e %d\n", X_Min, RP->RR.Leftt.DensDownStream, RP->RR.Leftt.VelyDownStream, RP->RR.Leftt.PresDownStream, region );
+                  fprintf( fptr[j], "%20.16e %20.16e %20.16e %20.16e %d\n", X_Max, RP->RR.Leftt.DensDownStream, RP->RR.Leftt.VelyDownStream, RP->RR.Leftt.PresDownStream, region );
                }
                break;
 
