@@ -26,7 +26,7 @@ GNU Scientific Library
 7. `python plot__profiles.py`
 8. `eog fig__profiles.png`
 
-## Example
+## Output Result
 <img src="https://github.com/zengbs/exact-solution-to-relativistic-riemann-problem/blob/master/plot/fig__profiles.png" width="480">
 
 ## Reference
