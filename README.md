@@ -17,4 +17,4 @@ GNU Scientific Library
 <img src="https://github.com/zengbs/exact-solution-to-relativistic-riemann-problem/blob/master/plot/fig__profiles.png" width="480">
 
 ## Reference
-https://github.com/zengbs/published-papers/blob/main/2021-An_adaptive_mesh_GPU-accelerated_and_error_minimized_special_relativistic_hydrodynamics_code.pdf
+Please refer to Appendix C in the [code paper](https://github.com/zengbs/published-papers/blob/main/2021-An_adaptive_mesh_GPU-accelerated_and_error_minimized_special_relativistic_hydrodynamics_code.pdf).
