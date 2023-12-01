@@ -33,8 +33,8 @@ HEADER      = $(patsubst %,$(INC_PATH)/%,$(HEADER_FILE))
 CC_ALL_FLAG   = $(CC_DEBUG_FLAG)  $(INC) $(CC_FLAGS) $(MACRO)
 
 # Compiling
-$(OBJ_PATH)/%.o : $(SRC_PATH)/%.c $(HEADER)
-	$(CC) -o $@ -c $<  $(CC_ALL_FLAG)
+$(OBJ_PATH)/%.o:$(SRC_PATH)/%.c $(HEADER)
+	$(CC) $(CC_ALL_FLAG) -o $@ -c $<
 
 
 # Linking
@@ -44,5 +44,5 @@ $(EXECUTABLE): $(CC_OBJ)
 
 .PHONY:
 clean:
-	@rm -rf ${OBJ_PATH}/*.o rm ${EXECUTABLE}
+	@rm -rf ${OBJ_PATH}/*.o rm bin/${EXECUTABLE}
 
