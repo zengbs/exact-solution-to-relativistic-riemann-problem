@@ -21,13 +21,13 @@ int main()
 //  double PresRight      =  1.0;
 
 
-  double DensLeft       = 1e6;
+  double DensLeft       = 10.0;
   double VelocityLeft   = 0.0;
   double PresLeft       = 1.0;
 
   double DensRight      = 1.0;
   double VelocityRight  = 0.0;
-  double PresRight      = 1e6;
+  double PresRight      = 10.0;
 
 
   double DT            = 0.6;
