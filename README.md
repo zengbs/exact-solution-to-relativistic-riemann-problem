@@ -1,13 +1,13 @@
 # Exact Solution to 1D Relativistic Riemann Problem
 
-Support Equation of State (EoS):
+Avalibility of Equation of State (EoS):
 * Constant- $\Gamma$:
 
 $$
 \frac{h_{\Gamma}}{c^2}=1+\frac{\Gamma}{\Gamma-1}\left(\frac{k_{B}T}{mc^2}\right)
 $$
 
-* Taub-Mathews
+* Taub-Mathews:
 
 $$
 \frac{h_{\text{TM}}}{c^2}=2.5\left(\frac{k_{B}T}{mc^2}\right)+\sqrt{2.25\left(\frac{k_{B}T}{mc^2}\right)^2+1}
