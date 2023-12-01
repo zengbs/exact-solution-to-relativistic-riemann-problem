@@ -1,7 +1,7 @@
 # Exact Solution to 1D Relativistic Riemann Problem
 
 Support Equation of State (EoS):
-* Constant$\text{-}\Gamma$:
+* Constant$\text{-}$$\Gamma$:
 * Taub-Mathews
 
 ## Prerequisite Library
