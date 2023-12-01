@@ -91,7 +91,7 @@ void Plot( int Pattern, struct RiemannProblem *RP, struct PlotParams plot )
 #   endif
     fptr[j] = fopen (fileName, "w");
     fprintf (fptr[j], "# time = %20.16e\n", time);
-    fprintf (fptr[j], "# x=[1], d1=[2], v1=[3], p1=[4], D1=[5], M1=[6], E1=[7], Lorentz fac.=[8]\n");
+    fprintf (fptr[j], "# x[1]       d1[2]       v1[3]       p1[4]\n");
 
     int region;
 

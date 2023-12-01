@@ -46,8 +46,7 @@ int GetAllInfomation( struct InitialCondition *IC, struct RiemannProblem *RP )
          GetShockVelocity( PresLeft, DensLeft, VelocityLeft, PresStar, DensDown_Left,
 			               &ShockVelocity_Left, NULL );
 
-
-		 DensDown_Right = GetDensDown( PresRight, DensRight, PresStar );
+         DensDown_Right = GetDensDown( PresRight, DensRight, PresStar );
 
          GetShockVelocity( PresRight, DensRight, VelocityRight, PresStar, DensDown_Right,
 		                   NULL, &ShockVelocity_Right );
@@ -219,7 +218,7 @@ int GetAllInfomation( struct InitialCondition *IC, struct RiemannProblem *RP )
 	 break;
 
      default:
-		 printf("wave pattern was not found!!\n");
+		 printf("Wave pattern was not found!!\n");
   }
 
 

@@ -14,18 +14,18 @@ LIB := -L/home/rocky/softwares/gsl/lib64
 EXECUTABLE := a.out
 
 
-## source files
+## Source files
 CC_FILE = fluid.c functions.c main.c plot.c rarefaction_waves.c root_finder.c shock_waves.c utilities.c
 SRC_PATH = src
 CC_SRC = $(patsubst %,$(SRC_PATH)/%,$(CC_FILE))
 
-## object files
+## Object files
 CC_OBJ_FILE = $(CC_FILE:.c=.o)
 OBJ_PATH    = objective
 CC_OBJ      = $(patsubst %,$(OBJ_PATH)/%,$(CC_OBJ_FILE))
 
 
-# header files
+# Header files
 HEADER_FILE = macro.h prototypes.h global.h struct.h
 INC_PATH    = includes
 HEADER      = $(patsubst %,$(INC_PATH)/%,$(HEADER_FILE))
