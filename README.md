@@ -4,10 +4,14 @@ Support Equation of State (EoS):
 * Constant- $\Gamma$:
 
 $$
-h_{\Gamma}=1+\frac{\Gamma}{\Gamma-1}\left(\frac{k_{B}T}{mc^2}\right)
+\frac{h_{\Gamma}}{c^2}=1+\frac{\Gamma}{\Gamma-1}\left(\frac{k_{B}T}{mc^2}\right)
 $$
 
 * Taub-Mathews
+
+$$
+\frac{h_{\text{TM}}}{c^2}=2.5\left(\frac{k_{B}T}{mc^2}\right)+\sqrt{2.25\left(\frac{k_{B}T}{mc^2}\right)^2+1}
+$$
 
 ## Prerequisite Library
 GNU Scientific Library
