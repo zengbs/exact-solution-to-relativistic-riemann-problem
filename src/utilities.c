@@ -2,10 +2,10 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <math.h>
-#include "Struct.h"
-#include "Prototypes.h"
-#include "Global.h"
-#include "Macro.h"
+#include "../includes/struct.h"
+#include "../includes/prototypes.h"
+#include "../includes/global.h"
+#include "../includes/macro.h"
 
 
 int GetAllInfomation( struct InitialCondition *IC, struct RiemannProblem *RP )
@@ -62,7 +62,7 @@ int GetAllInfomation( struct InitialCondition *IC, struct RiemannProblem *RP )
          RP -> SS.Leftt.PresUpStream    = PresLeft;
          RP -> SS.Leftt.DensUpStream    = DensLeft;
          RP -> SS.Leftt.VelyUpStream    = VelocityLeft;
-         RP -> SS.Leftt.PresDownStream  = PresStar; 
+         RP -> SS.Leftt.PresDownStream  = PresStar;
          RP -> SS.Leftt.DensDownStream  = DensDown_Left;
          RP -> SS.Leftt.VelyDownStream  = VelocityStar;
 
@@ -71,7 +71,7 @@ int GetAllInfomation( struct InitialCondition *IC, struct RiemannProblem *RP )
 
          RP -> SS.Right.Right_Yes       = true;
          RP -> SS.Right.ShockVelocity   = ShockVelocity_Right;
-         RP -> SS.Right.PresUpStream    = PresRight; 
+         RP -> SS.Right.PresUpStream    = PresRight;
          RP -> SS.Right.DensUpStream    = DensRight;
          RP -> SS.Right.VelyUpStream    = VelocityRight;
          RP -> SS.Right.PresDownStream  = PresStar;

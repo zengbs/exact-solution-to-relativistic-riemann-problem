@@ -2,20 +2,20 @@
 #include <stdlib.h>
 #include <math.h>
 #include <stdbool.h>
-#include "Struct.h"
-#include "Prototypes.h"
-#include "Global.h"
-#include "Macro.h"
+#include "../includes/struct.h"
+#include "../includes/prototypes.h"
+#include "../includes/global.h"
+#include "../includes/macro.h"
 
 
 // 4-sound speed
 // TM EoS:
-//          ⎛               _____________⎞ 
-//          ⎜              ╱       2     ⎟ 
-//        T⋅⎝4.5⋅T + 5.0⋅╲╱  2.25⋅T  + 1 ⎠ 
+//          ⎛               _____________⎞
+//          ⎜              ╱       2     ⎟
+//        T⋅⎝4.5⋅T + 5.0⋅╲╱  2.25⋅T  + 1 ⎠
 //   ──────────────────────────────────────
-//                      _____________      
-//         2           ╱       2           
+//                      _____________
+//         2           ╱       2
 //   13.5⋅T  + 7.0⋅T⋅╲╱  2.25⋅T  + 1  + 3.0
 
 
@@ -24,7 +24,7 @@ double Flu_SoundSpeed( double Temp )
 {
 	double CsSqr;
 
-	if( Temp > 0.0 )  
+	if( Temp > 0.0 )
 	{
 #      if ( EOS == GAMMA )
 	   CsSqr  = Gamma * Temp * Gamma_1;

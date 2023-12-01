@@ -3,8 +3,8 @@
 #include <gsl/gsl_errno.h>
 #include <gsl/gsl_math.h>
 #include <gsl/gsl_roots.h>
-#include "Struct.h"
-#include "Prototypes.h"
+#include "../includes/struct.h"
+#include "../includes/prototypes.h"
 
 double RootFinder( double(*Function)(double X, void *params) , void *params, double AbsErr, double RelErr,
 			       double Guess, double LowerBound, double UpperBound, const char FunctionName[] )
@@ -26,7 +26,7 @@ double RootFinder( double(*Function)(double X, void *params) , void *params, dou
        UpperBound *= 10.0;
        LowerBound *= 10.0;
     }
-    //printf("LowerBound=%e, UpperBound=%e, f(LowerBound)=%e, f=(UpperBound)=%e: %s\n", 
+    //printf("LowerBound=%e, UpperBound=%e, f(LowerBound)=%e, f=(UpperBound)=%e: %s\n",
     //LowerBound, UpperBound, Function(LowerBound, params), Function(UpperBound, params), FunctionName );
   }
 //printf("hi\n");
@@ -48,7 +48,7 @@ double RootFinder( double(*Function)(double X, void *params) , void *params, dou
 
   T = gsl_root_fsolver_brent;
 
-  s = gsl_root_fsolver_alloc (T); 
+  s = gsl_root_fsolver_alloc (T);
 
   gsl_root_fsolver_set (s, &F, LowerBound, UpperBound );
 
@@ -69,6 +69,6 @@ double RootFinder( double(*Function)(double X, void *params) , void *params, dou
   while (status == GSL_CONTINUE && iter < max_iter);
 
   gsl_root_fsolver_free(s);
-  
+
   return Root;
 }

@@ -1,9 +1,9 @@
 #include <stdio.h>
 #include <stdbool.h>
 #include <math.h>
-#include "Struct.h"
-#include "Prototypes.h"
-#include "Global.h"
+#include "../includes/struct.h"
+#include "../includes/prototypes.h"
+#include "../includes/global.h"
 
 
 double Gamma = GAmma;
@@ -29,24 +29,24 @@ int main()
   double VelocityRight  = 0.0;
   double PresRight      = 1e6;
 
-  
+
   double DT            = 0.6;
   double End_T         = 0.6;
   double X_Left        = 0.0;
   double X_Right       = 1.0;
   int NCell            = 4096;
- 
 
-  struct InitialCondition IC = 
+
+  struct InitialCondition IC =
   {
      DensLeft,
      VelocityLeft,
      PresLeft,
-     DensRight,    
+     DensRight,
      VelocityRight,
      PresRight,
   };
-  
+
 
   struct RiemannProblem RP;
 
@@ -61,7 +61,7 @@ int main()
   int Pattern;
 
   Pattern = GetAllInfomation( &IC, &RP );
-  
+
   printf("Pattern=%d\n", Pattern);
   Plot( Pattern, &RP, plot );
 
@@ -71,9 +71,9 @@ int main()
 //
 //  test.PresUpStream = 2.0;
 //  test.DensUpStream = 0.2;
-//   
-//  double Temp_0 = test.PresUpStream/test.DensUpStream; 
-// 
+//
+//  double Temp_0 = test.PresUpStream/test.DensUpStream;
+//
 //  double PresDown = Isentropic_Temperature2Pres( Temp_0, &test );
 //
 //  test.PresDownStream = PresDown;
@@ -84,9 +84,9 @@ int main()
 ////-----------------------------------------------------------
 //
 //
-//   
-//  double Dens_0 = 2.0; 
-// 
+//
+//  double Dens_0 = 2.0;
+//
 //  PresDown = Isentropic_Dens2Pres( Dens_0, test.PresUpStream/test.DensUpStream, test.DensUpStream );
 //
 //  test.PresDownStream = PresDown;

@@ -2,17 +2,17 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <math.h>
-#include "Struct.h"
-#include "Prototypes.h"
-#include "Global.h"
-#include "Macro.h"
+#include "../includes/struct.h"
+#include "../includes/prototypes.h"
+#include "../includes/global.h"
+#include "../includes/macro.h"
 
-void GetShockVelocity( double PresUp,   double DensUp,   double V_Up, 
+void GetShockVelocity( double PresUp,   double DensUp,   double V_Up,
 		     		   double PresDown, double DensDown,
 			           double *Vs_Left, double *Vs_Right )
 {
   double J;
-  
+
   J = MassCurrent( PresUp, DensUp, PresDown, DensDown );
 
   if ( Vs_Right != NULL )
@@ -81,7 +81,7 @@ double MassCurrent( double PresUp, double DensUp, double PresDown, double DensDo
   }
 
   MassCurrent = sqrt( MassCurrent );
-  
+
   return MassCurrent;
 }
 
@@ -106,7 +106,7 @@ double GetEnthalpyDown ( double PresUp, double DensUp, double PresDown )
 	A = 1.0 + Gamma_1 * PresUp / PresDown;
 	B = - Gamma_1 * PresDiff / PresDown;
 	C = - Gamma_1 * PresDiff * EnthalpyUp / PresUp - ( 1.0 + Gamma_1 * PresDown / PresUp )*SQR(EnthalpyUp);
- 
+
 
     QuadraticSolver( A, B, C, &EnthalpyDown, NULL );
 #   else
@@ -126,8 +126,8 @@ double GetEnthalpyDown ( double PresUp, double DensUp, double PresDown )
 double JumpConditionForEnthalpy( double EnthalpyDown, void* params )
 {
     struct Parameters *pparams = (struct Parameters *) params;
-  
-    double EnthalpyUp = pparams -> EnthalpyUp; 
+
+    double EnthalpyUp = pparams -> EnthalpyUp;
     double PresUp     = pparams -> PresUp    ;
     double DensUp     = pparams -> DensUp    ;
     double PresDown   = pparams -> PresDown  ;

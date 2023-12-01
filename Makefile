@@ -1,36 +1,48 @@
-# object files-------------------------------------------------------
-
-CORE_OBJ = Fluid.o Functions.o Main.o RootFinder.o Utility.o ShockWaves.o
-
-ALL_OBJ = ${CORE_OBJ}
-
-# macro ddefinitions------------------------------------------------
-CC = gcc
-
-CFLAGS =  -g
+MACRO :=  -DGAmma=1.66666666666 -DGAmma_1=0.66666666666 -DEOS=TM
 
 
-DLIB = /opt/math/gsl/default/lib/
-DINC = /opt/math/gsl/default/include/
+CC   := g++
 
-BIN = a.out
-
-SRC = $(ALL_OBJ:.o=.c)
+CC_FLAGS      = -lm --std=c++1z -O3 -lgsl -lgslcblas
+CC_DEBUG_FLAG = -g -Wall
 
 
-# implicit rules-----------------------------------------------------
-%.o:%.c
-	${CC}  ${CFLAGS} -I${DINC} -c $<
+INC := -I/home/rocky/softwares/gsl/include
+LIB := -L/home/rocky/softwares/gsl/lib64
 
-# targets------------------------------------------------------------
 
-.PHONY: clean all compile
+EXECUTABLE := a.out
 
-all: compile
 
-compile: ${BIN}
+## source files
+CC_FILE = fluid.c functions.c main.c plot.c rarefaction_waves.c root_finder.c shock_waves.c utilities.c
+SRC_PATH = src
+CC_SRC = $(patsubst %,$(SRC_PATH)/%,$(CC_FILE))
 
-${BIN}: ${ALL_OBJ}
-	${CC}  -o ${EXEDIR}a.out ${ALL_OBJ} -lm ${DLIB}libgslcblas.so.0.0.0 ${DLIB}libgsl.so.23.1.0    # shared library
+## object files
+CC_OBJ_FILE = $(CC_FILE:.c=.o)
+OBJ_PATH    = objective
+CC_OBJ      = $(patsubst %,$(OBJ_PATH)/%,$(CC_OBJ_FILE))
+
+
+# header files
+HEADER_FILE = macro.h prototypes.h global.h struct.h
+INC_PATH    = includes
+HEADER      = $(patsubst %,$(INC_PATH)/%,$(HEADER_FILE))
+
+CC_ALL_FLAG   = $(CC_DEBUG_FLAG)  $(INC) $(CC_FLAGS) $(MACRO)
+
+# Compiling
+$(OBJ_PATH)/%.o : $(SRC_PATH)/%.c $(HEADER)
+	$(CC) -o $@ -c $<  $(CC_ALL_FLAG)
+
+
+# Linking
+$(EXECUTABLE): $(CC_OBJ)
+	g++ -o $@ $^  $(LIB)  -lm -lgsl -lgslcblas
+	mv $(EXECUTABLE) bin/
+
+.PHONY:
 clean:
-	rm -f *.o Makedepend $(BIN)
+	@rm -rf ${OBJ_PATH}/*.o rm ${EXECUTABLE}
+
