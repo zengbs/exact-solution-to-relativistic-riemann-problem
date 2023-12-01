@@ -1,7 +1,12 @@
 # Exact Solution to 1D Relativistic Riemann Problem
 
 Support Equation of State (EoS):
-* Constant$\text{-}$$\Gamma$:
+* Constant- $\Gamma$:
+
+$$
+h_{\Gamma}=1+\frac{\Gamma}{\Gamma-1}\left(\frac{k_{B}T}{mc^2}\right)
+$$
+
 * Taub-Mathews
 
 ## Prerequisite Library
