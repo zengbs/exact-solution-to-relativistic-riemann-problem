@@ -19,12 +19,12 @@ $$
 $$
 
 ## Prerequisite Library
-GNU Scientific Library(GSL)
+GNU Scientific Library (GSL)
 
 ## Quick Start
 1. `git clone git@github.com:zengbs/exact-solution-to-relativistic-riemann-problem.git`
 2. `cd exact-solution-to-relativistic-riemann-problem`
-3. Please change the `GSL_DIR` in `Makefile` to match the path of GSL package
+3. Edit the `GSL_DIR` in `Makefile` to match the path of GSL package
 4. Edit `Input__Parameter` to set up initial conditions.
 5. `make clean`
 6. `make`
