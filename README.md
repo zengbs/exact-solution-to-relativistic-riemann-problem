@@ -34,7 +34,7 @@ GNU Scientific Library (GSL)
 10. `eog fig__profiles.png`
 
 ## Output Result
-<img src="https://github.com/zengbs/exact-solution-to-relativistic-riemann-problem/blob/master/plot/fig__profiles.png" width="480">
+<img src="https://github.com/zengbs/exact-solution-to-relativistic-riemann-problem/blob/master/plot_script/fig__profiles.png" width="480">
 
 ## Reference
 Please refer to Appendix C in the [Tseng et al. 2021, MNRAS, 504, 3298](https://github.com/zengbs/published-papers/blob/main/2021-An_adaptive_mesh_GPU-accelerated_and_error_minimized_special_relativistic_hydrodynamics_code.pdf).
