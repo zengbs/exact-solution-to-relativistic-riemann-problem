@@ -28,7 +28,7 @@ GNU Scientific Library (GSL)
 4. Edit `Input__Parameter` to set up initial conditions.
 5. `make clean`
 6. `make`
-7. `./bin/a.out`
+7. `./bin/RelativisticRiemannSolver`
 8. `cd plot_script`
 9. `python plot__profiles.py`
 10. `eog fig__profiles.png`
