@@ -10,5 +10,5 @@ R_VELX    0.0      # velocity on the right state
 R_PRES    12.0     # pressure on the right state
 
 DT        0.5      # physical output time increment
-END_T     1.0      # physical end time
+END_T     0.5      # physical end time
 N_CELL    4096
