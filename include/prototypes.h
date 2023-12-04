@@ -3,82 +3,94 @@
 
 #include "struct.h"
 
-
 void Load_Parameter();
 
-int GetWavePattern( struct InitialCondition *IC );
+int GetWavePattern(struct InitialCondition *IC);
 
-double JumpConditionForEnthalpy( double EnthalpyDown, void* params );
+double JumpConditionForEnthalpy(double EnthalpyDown, void *params);
 
-double Velocity_LC ( double PresStar, double DensStarLeft, double PresLeft, double DensLeft, double VelocityLeft, bool Shock );
+double Velocity_LC(double PresStar, double DensStarLeft, double PresLeft,
+                   double DensLeft, double VelocityLeft, bool Shock);
 
-double Velocity_RC ( double PresStar, double DensStarRight, double PresRight, double DensRight, double VelocityRight, bool Shock );
+double Velocity_RC(double PresStar, double DensStarRight, double PresRight,
+                   double DensRight, double VelocityRight, bool Shock);
 
-double GetEnthalpyDown ( double PresUp, double DensUp, double PresDown );
+double GetEnthalpyDown(double PresUp, double DensUp, double PresDown);
 
-double PresFunction( double PresStar, void * );
+double PresFunction(double PresStar, void *);
 
-double Flu_SoundSpeed( double Temp );
+double Flu_SoundSpeed(double Temp);
 
-double Flu_Enthalpy( double Pres, double Dens );
+double Flu_Enthalpy(double Pres, double Dens);
 
-double Flu_TotalInternalEngy ( double Pres, double Dens );
+double Flu_TotalInternalEngy(double Pres, double Dens);
 
-double Enthalpy2Temperature( double Enthalpy );
+double Enthalpy2Temperature(double Enthalpy);
 
-double RootFinder( double(*Function)(double X, void *params) , void *params, double AbsErr, double RelErr,
-                   double Guess, double LowerBound, double UpperBound, const char s[] );
+double RootFinder(double (*Function)(double X, void *params), void *params,
+                  double AbsErr, double RelErr, double Guess, double LowerBound,
+                  double UpperBound, const char s[]);
 
+double MassCurrent(double PresUp, double DensUp, double PresDown,
+                   double DensDown);
 
-double MassCurrent( double PresUp, double DensUp, double PresDown, double DensDown );
+int GetAllInfomation(struct InitialCondition *, struct RiemannProblem *);
 
-int GetAllInfomation( struct InitialCondition *, struct RiemannProblem * );
+void Plot(int Pattern, struct RiemannProblem *, struct PlotParams);
 
-void Plot( int Pattern, struct RiemannProblem *, struct PlotParams );
+double GetVelocityDown(double PresUp, double DensUp, double ShockFrontVelocity,
+                       double PresDown, double DensDown);
 
-double GetVelocityDown( double PresUp,   double DensUp, double ShockFrontVelocity,
-                        double PresDown, double DensDown );
+double GetDensDown(double PresUp, double DensUp, double PresDown);
 
+void GetShockVelocity(double PresUp, double DensUp, double V_Up,
+                      double PresDown, double DensDown, double *Vs_Left,
+                      double *Vs_Right);
 
-double GetDensDown( double PresUp, double DensUp, double PresDown );
+void QuadraticSolver(double A, double B, double C, double *PlusRoot,
+                     double *MinusRoot);
 
-void GetShockVelocity( double PresUp, double DensUp, double V_Up, double PresDown, double DensDown, double *Vs_Left, double *Vs_Right );
+void GetHeadTailVelocity(double PresHead, double DensHead, double VelocityHead,
+                         double PresTail, double DensTail, double VelocityTail,
+                         double *HeadVelocity, double *TailVelocity,
+                         bool Right_Yes);
 
-void QuadraticSolver( double A, double B, double C , double *PlusRoot, double *MinusRoot );
+double GetDensDownRarefaction(double PresDown, double PresUp, double DensUp);
 
-void GetHeadTailVelocity( double PresHead, double DensHead, double VelocityHead, double PresTail, double DensTail, double VelocityTail,
-                          double *HeadVelocity, double *TailVelocity, bool Right_Yes );
+double GetVelocityDownRarefaction(double PresDown, double DensDown,
+                                  double PresUp, double DensUp,
+                                  double VelocityUp, bool Right_Yes);
 
-double GetDensDownRarefaction( double PresDown, double PresUp, double DensUp );
+double FanFunction(double Dens_at_Xi, void *params);
 
-double GetVelocityDownRarefaction( double PresDown, double DensDown, double PresUp, double DensUp, double VelocityUp, bool Right_Yes );
+double GetDensInFan(struct Rarefaction *Rarefaction);
 
-double FanFunction ( double Dens_at_Xi, void *params );
+double GetPresInFan(double Dens_at_Xi, double PresUp, double DensUp);
 
-double GetDensInFan( struct Rarefaction *Rarefaction );
+double GetVelocityInFan(double Xi, double Dens_at_Xi, double Pres_at_Xi,
+                        bool Right_Yes);
 
-double GetPresInFan( double Dens_at_Xi, double PresUp, double DensUp );
+double U2V(double U);
 
-double GetVelocityInFan( double Xi,  double Dens_at_Xi, double Pres_at_Xi, bool Right_Yes );
+double Isentropic_Constant(double Init_Temp, double Init_Dens);
 
-double U2V( double U );
+double Isentropic_Dens2Temperature(double Dens, double Init_Temp,
+                                   double Init_Dens);
 
-double Isentropic_Constant ( double Init_Temp, double Init_Dens );
+double Isentropic_Temperature2Dens(double Temperature, double Init_Temp,
+                                   double Init_Dens);
 
-double Isentropic_Dens2Temperature ( double Dens, double Init_Temp, double Init_Dens );
+double Isentropic_Pres2Temperature(struct Rarefaction *Rarefaction);
 
-double Isentropic_Temperature2Dens ( double Temperature, double Init_Temp, double Init_Dens );
+double Isentropic_Temperature2Pres(double Temperature, void *params);
 
-double Isentropic_Pres2Temperature ( struct Rarefaction *Rarefaction );
+double Isentropic_Pres2Dens(struct Rarefaction *Rarefaction);
 
-double Isentropic_Temperature2Pres ( double Temperature, void *params );
+double Isentropic_Dens2Pres(double Dens, double Init_Temp, double Init_Dens);
 
-double Isentropic_Pres2Dens ( struct Rarefaction *Rarefaction );
+void RelativeVelocity(double Ua, double Ub, double *LorentzFactor_ab,
+                      double *U_ab);
 
-double Isentropic_Dens2Pres ( double Dens, double Init_Temp, double Init_Dens );
+double Isentropic_Dens2Velocity(double DensDown, struct Rarefaction *upstream);
 
-void RelativeVelocity( double Ua, double Ub, double *LorentzFactor_ab, double *U_ab );
-
-double Isentropic_Dens2Velocity ( double DensDown, struct Rarefaction *upstream );
-
-#endif // #ifndef __PROTOTYPE_H__
+#endif  // #ifndef __PROTOTYPE_H__

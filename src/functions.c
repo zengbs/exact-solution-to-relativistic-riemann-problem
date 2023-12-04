@@ -1,365 +1,344 @@
-#include <stdbool.h>
-#include <stdlib.h>
-#include <stdio.h>
 #include <math.h>
-#include "../include/struct.h"
-#include "../include/prototypes.h"
+#include <stdbool.h>
+#include <stdio.h>
+#include <stdlib.h>
+
 #include "../include/global.h"
 #include "../include/macro.h"
+#include "../include/prototypes.h"
+#include "../include/struct.h"
 
 // Pattern 1: shock-shock
 //         2: rarefaction-shock
 //         3: shock-rarefaction
 //         4: rarefaction-rarefaction
 
+int GetWavePattern(struct InitialCondition *IC) {
+  double DensLeft = IC->DensLeft;
+  double VelocityLeft = IC->VelocityLeft;
+  double PresLeft = IC->PresLeft;
+  double DensRight = IC->DensRight;
+  double VelocityRight = IC->VelocityRight;
+  double PresRight = IC->PresRight;
 
-int GetWavePattern( struct InitialCondition *IC )
-{
-   double DensLeft      = IC -> DensLeft     ;
-   double VelocityLeft  = IC -> VelocityLeft ;
-   double PresLeft      = IC -> PresLeft     ;
-   double DensRight     = IC -> DensRight    ;
-   double VelocityRight = IC -> VelocityRight;
-   double PresRight     = IC -> PresRight    ;
+  double SS, RS, RR;
+  double V_LC;
 
-   double SS, RS, RR;
-   double V_LC;
+  bool Swap_Yes = false;
+  bool Shock_Yes = true;
 
-   bool Swap_Yes = false;
-   bool Shock_Yes = true;
+  // swap PresLeft and PresRight
+  if (PresLeft < PresRight) {
+    PresLeft = PresLeft * PresRight;
+    PresRight = PresLeft / PresRight;
+    PresLeft = PresLeft / PresRight;
 
+    DensLeft = DensLeft * DensRight;
+    DensRight = DensLeft / DensRight;
+    DensLeft = DensLeft / DensRight;
 
-   // swap PresLeft and PresRight
-   if ( PresLeft < PresRight )
-   {
-      PresLeft  = PresLeft * PresRight;
-      PresRight = PresLeft / PresRight;
-      PresLeft  = PresLeft / PresRight;
+    double temp1, temp2;
 
-      DensLeft  = DensLeft * DensRight;
-      DensRight = DensLeft / DensRight;
-      DensLeft  = DensLeft / DensRight;
+    temp1 = -VelocityLeft;
+    temp2 = -VelocityRight;
 
-      double temp1, temp2;
+    VelocityLeft = temp2;
+    VelocityRight = temp1;
 
-      temp1 = -VelocityLeft;
-      temp2 = -VelocityRight;
+    Swap_Yes = true;
+  }  // if ( PresLeft < PresRight )
 
-      VelocityLeft  = temp2;
-      VelocityRight = temp1;
+  //===============================================
+  // shock-shock
+  double DensStarRight = GetDensDown(PresRight, DensRight, PresLeft);
+  double V_RC = Velocity_RC(PresLeft, DensStarRight, PresRight, DensRight,
+                            VelocityRight, Shock_Yes);
+  V_LC = 0.0;
+  RelativeVelocity(V_LC, V_RC, NULL, &SS);
 
-      Swap_Yes = true;
-   } // if ( PresLeft < PresRight )
+  //===============================================
+  // rarefaction-shock
+  double PresStar = PresRight;
 
+  struct Rarefaction RarefactionLeft;
 
-   //===============================================
-   // shock-shock
-   double DensStarRight = GetDensDown( PresRight, DensRight, PresLeft );
-   double V_RC = Velocity_RC( PresLeft, DensStarRight, PresRight, DensRight, VelocityRight, Shock_Yes );
-   V_LC = 0.0;
-   RelativeVelocity( V_LC, V_RC, NULL, &SS );
+  RarefactionLeft.PresUpStream = PresLeft;
+  RarefactionLeft.DensUpStream = DensLeft;
+  RarefactionLeft.VelyUpStream = VelocityLeft;
+  RarefactionLeft.PresDownStream = PresStar;
+  RarefactionLeft.Right_Yes = false;
 
-   //===============================================
-   // rarefaction-shock
-   double PresStar = PresRight;
+  double DensStarLeft = Isentropic_Pres2Dens(&RarefactionLeft);
+  double VelocityStar =
+      Isentropic_Dens2Velocity(DensStarLeft, &RarefactionLeft);
+  RelativeVelocity(VelocityLeft, VelocityStar, NULL, &V_LC);
+  V_RC = 0.0;
+  RelativeVelocity(V_LC, V_RC, NULL, &RS);
 
-   struct Rarefaction RarefactionLeft;
+  RS = V_LC;
 
-   RarefactionLeft.PresUpStream   = PresLeft;
-   RarefactionLeft.DensUpStream   = DensLeft;
-   RarefactionLeft.VelyUpStream   = VelocityLeft;
-   RarefactionLeft.PresDownStream = PresStar;
-   RarefactionLeft.Right_Yes      = false;
+  //===============================================
+  // rarefaction-rarefaction
+  PresStar = 1e-5;
 
-   double DensStarLeft = Isentropic_Pres2Dens( &RarefactionLeft );
-   double VelocityStar = Isentropic_Dens2Velocity( DensStarLeft, &RarefactionLeft );
-   RelativeVelocity( VelocityLeft, VelocityStar, NULL, &V_LC );
-   V_RC = 0.0;
-   RelativeVelocity( V_LC, V_RC, NULL, &RS );
+  RarefactionLeft.PresUpStream = PresLeft;
+  RarefactionLeft.DensUpStream = DensLeft;
+  RarefactionLeft.VelyUpStream = VelocityLeft;
+  RarefactionLeft.PresDownStream = PresStar;
+  RarefactionLeft.Right_Yes = false;
 
-   RS = V_LC;
+  DensStarLeft = Isentropic_Pres2Dens(&RarefactionLeft);
+  VelocityStar = Isentropic_Dens2Velocity(DensStarLeft, &RarefactionLeft);
+  RelativeVelocity(VelocityLeft, VelocityStar, NULL, &V_LC);
 
-   //===============================================
-   // rarefaction-rarefaction
-   PresStar = 1e-5;
+  struct Rarefaction RarefactionRight;
 
-   RarefactionLeft.PresUpStream   = PresLeft;
-   RarefactionLeft.DensUpStream   = DensLeft;
-   RarefactionLeft.VelyUpStream   = VelocityLeft;
-   RarefactionLeft.PresDownStream = PresStar;
-   RarefactionLeft.Right_Yes      = false;
+  RarefactionRight.PresUpStream = PresRight;
+  RarefactionRight.DensUpStream = DensRight;
+  RarefactionRight.VelyUpStream = VelocityRight;
+  RarefactionRight.PresDownStream = PresStar;
+  RarefactionRight.Right_Yes = true;
 
-   DensStarLeft = Isentropic_Pres2Dens( &RarefactionLeft );
-   VelocityStar = Isentropic_Dens2Velocity( DensStarLeft, &RarefactionLeft );
-   RelativeVelocity( VelocityLeft, VelocityStar, NULL, &V_LC );
+  DensStarRight = Isentropic_Pres2Dens(&RarefactionRight);
+  VelocityStar = Isentropic_Dens2Velocity(DensStarRight, &RarefactionRight);
+  RelativeVelocity(VelocityRight, VelocityStar, NULL, &V_RC);
 
+  RelativeVelocity(V_LC, V_RC, NULL, &RR);
 
-   struct Rarefaction RarefactionRight;
+  //===============================================
 
-   RarefactionRight.PresUpStream   = PresRight;
-   RarefactionRight.DensUpStream   = DensRight;
-   RarefactionRight.VelyUpStream   = VelocityRight;
-   RarefactionRight.PresDownStream = PresStar;
-   RarefactionRight.Right_Yes      = true;
+  // relative velocity
+  double VelocityLeftRight;
+  int Pattern;
 
-   DensStarRight = Isentropic_Pres2Dens( &RarefactionRight );
-   VelocityStar  = Isentropic_Dens2Velocity( DensStarRight, &RarefactionRight );
-   RelativeVelocity( VelocityRight, VelocityStar, NULL, &V_RC );
+  RelativeVelocity(VelocityLeft, VelocityRight, NULL, &VelocityLeftRight);
 
-   RelativeVelocity( V_LC, V_RC, NULL, &RR );
+  if (VelocityLeftRight >= SS) {
+    Pattern = 1;
+    printf("Shock-Shock pattern !!\n");
+  } else if (RS <= VelocityLeftRight && VelocityLeftRight < SS &&
+             Swap_Yes == false) {
+    Pattern = 2;
+    printf("Rarefaction-Shock pattern !!\n");
+  } else if (RS <= VelocityLeftRight && VelocityLeftRight < SS &&
+             Swap_Yes == true) {
+    Pattern = 3;
+    printf("Shock-Rarefaction pattern !!\n");
+  } else if (VelocityLeftRight < RS) {
+    Pattern = 4;
+    printf("Rarefacation-Rarefaction pattern !!\n");
+  } else {
+    printf("wave pattern was not found!!\n");
+    exit(1);
+  }
 
-   //===============================================
+  return Pattern;
+}  // FUNCTION : GetWavePattern
 
-   //relative velocity
-   double VelocityLeftRight;
-   int Pattern;
+double Velocity_LC(double PresStar, double DensStarLeft, double PresLeft,
+                   double DensLeft, double VelocityLeft, bool Shock) {
+  double Velocity_LC;
 
-   RelativeVelocity( VelocityLeft, VelocityRight, NULL, &VelocityLeftRight );
+  if (Shock == true) {
+    double EngyStarLeft, EngyLeft, EnthalpyStarLeft, TempStarLeft;
 
+    EnthalpyStarLeft = GetEnthalpyDown(PresLeft, DensLeft, PresStar);
+    TempStarLeft = Enthalpy2Temperature(EnthalpyStarLeft);
+    EngyStarLeft = Flu_TotalInternalEngy(PresStar, PresStar / TempStarLeft);
+    EngyLeft = Flu_TotalInternalEngy(PresLeft, DensLeft);
 
-   if ( VelocityLeftRight >= SS )
-   {
-      Pattern = 1;
-      printf("Shock-Shock pattern !!\n");
-   } else if ( RS <= VelocityLeftRight  &&  VelocityLeftRight < SS  &&  Swap_Yes == false )
-   {
-      Pattern = 2;
-      printf("Rarefaction-Shock pattern !!\n");
-   } else if ( RS <= VelocityLeftRight  &&  VelocityLeftRight < SS  &&  Swap_Yes == true )
-   {
-      Pattern = 3;
-      printf("Shock-Rarefaction pattern !!\n");
-   } else if ( VelocityLeftRight < RS )
-   {
-      Pattern = 4;
-      printf("Rarefacation-Rarefaction pattern !!\n");
-   } else
-   {
-      printf("wave pattern was not found!!\n");
+    // 4-velocity
+    Velocity_LC = (PresStar - PresLeft) * (EngyStarLeft - EngyLeft);
+    Velocity_LC /= (EngyStarLeft + PresStar) * (EngyLeft + PresLeft);
+
+    if (Velocity_LC < 0.0) {
+      printf("Velocity_LC = %20.16e !!\n", Velocity_LC);
       exit(1);
-   }
+    }
 
-   return Pattern;
-} // FUNCTION : GetWavePattern
-
-
-
-double Velocity_LC( double PresStar, double DensStarLeft, double PresLeft, double DensLeft, double VelocityLeft, bool Shock )
-{
-   double Velocity_LC;
-
-   if ( Shock == true )
-   {
-      double EngyStarLeft, EngyLeft, EnthalpyStarLeft, TempStarLeft;
-
-      EnthalpyStarLeft = GetEnthalpyDown( PresLeft, DensLeft, PresStar );
-      TempStarLeft     = Enthalpy2Temperature( EnthalpyStarLeft );
-      EngyStarLeft     = Flu_TotalInternalEngy( PresStar, PresStar/TempStarLeft );
-      EngyLeft         = Flu_TotalInternalEngy( PresLeft, DensLeft );
-
-      // 4-velocity
-      Velocity_LC  = ( PresStar     - PresLeft ) * ( EngyStarLeft - EngyLeft );
-      Velocity_LC /= ( EngyStarLeft + PresStar ) * ( EngyLeft     + PresLeft );
-
-      if ( Velocity_LC < 0.0 )
-      {
-         printf("Velocity_LC = %20.16e !!\n", Velocity_LC);
-         exit(1);
-      }
-
-      Velocity_LC = sqrt( Velocity_LC );
-   } else // if ( Shock == true )
-   {
-      if ( DensStarLeft != DensStarLeft )
-      {
-         printf( "DensStarLeft should be provided!!\n" );
-         exit(1);
-      }
-
-      double Velocity_C;
-      struct Rarefaction upstream;
-
-      upstream.Right_Yes    = false;
-      upstream.DensUpStream = DensLeft;
-      upstream.PresUpStream = PresLeft;
-      upstream.VelyUpStream = VelocityLeft;
-
-      Velocity_C  = Isentropic_Dens2Velocity( DensStarLeft, &upstream );
-      RelativeVelocity( VelocityLeft, Velocity_C, NULL, &Velocity_LC );
-   } // if ( Shock == true ) ... else ...
-
-   return Velocity_LC;
-} // FUNCTION : Velocity_LC
-
-
-
-double Velocity_RC ( double PresStar, double DensStarRight, double PresRight, double DensRight, double VelocityRight, bool Shock )
-{
-   double Velocity_RC;
-
-   if ( Shock == true )
-   {
-      double EngyStarRight, EngyRight, EnthalpyStarRight, TempStarRight;
-
-      EnthalpyStarRight = GetEnthalpyDown( PresRight, DensRight, PresStar );
-      TempStarRight     = Enthalpy2Temperature( EnthalpyStarRight );
-      EngyStarRight     = Flu_TotalInternalEngy( PresStar, PresStar/TempStarRight );
-      EngyRight         = Flu_TotalInternalEngy( PresRight, DensRight );
-
-      // 4-velocity
-      Velocity_RC  = ( PresStar      - PresRight ) * ( EngyStarRight - EngyRight );
-      Velocity_RC /= ( EngyStarRight + PresStar  ) * ( EngyRight     + PresRight );
-
-      if ( Velocity_RC < 0.0 )
-      {
-         printf("Velocity_RC = %20.16e\n !!", Velocity_RC);
-         exit(1);
-      }
-
-      Velocity_RC  = -sqrt( Velocity_RC );
-   } else // if ( Shock == true )
-   {
-      if ( DensStarRight != DensStarRight )
-      {
-         printf( "DensStarRight should be provided!!\n" );
-         exit(1);
-      }
-
-      double Velocity_C;
-      struct Rarefaction upstream;
-
-      upstream.Right_Yes    = true;
-      upstream.DensUpStream = DensRight;
-      upstream.PresUpStream = PresRight;
-      upstream.VelyUpStream = VelocityRight;
-
-      Velocity_C  = Isentropic_Dens2Velocity( DensStarRight, &upstream );
-      RelativeVelocity( VelocityRight, Velocity_C, NULL, &Velocity_RC );
-   } // if ( Shock == true ) ... else ...
-
-   return Velocity_RC;
-} // FUNCTION : Velocity_RC
-
-
-
-double PresFunction( double PresStar, void  *params )
-{
-   if ( PresStar <= 0.0 )
-   {
-     printf("PresStar=%20.16e !!\n", PresStar);
-     exit(1);
-   }
-
-   struct InitialCondition *IC = ( struct InitialCondition * ) params;
-
-   double DensLeft      = IC -> DensLeft     ;
-   double VelocityLeft  = IC -> VelocityLeft ;
-   double PresLeft      = IC -> PresLeft     ;
-   double DensRight     = IC -> DensRight    ;
-   double VelocityRight = IC -> VelocityRight;
-   double PresRight     = IC -> PresRight    ;
-
-   bool   Shock_Yes = true;
-   bool   Shock_No  = false;
-   double V_LC, V_RC, V_LR;
-   double DensStarLeft, DensStarRight;
-
-
-   if ( PresStar >= MAX(PresLeft, PresRight) )
-   {
-      V_LC = Velocity_LC( PresStar, NAN, PresLeft,  DensLeft,  VelocityLeft,  Shock_Yes ); // left side of eq. (4.161)
-      V_RC = Velocity_RC( PresStar, NAN, PresRight, DensRight, VelocityRight, Shock_Yes ); // right side of eq. (4.161)
-
-      V_LR = - V_RC * sqrt(1.0 + V_LC * V_LC) + sqrt(1.0 + V_RC * V_RC) * V_LC;
-   } else if ( MIN(PresLeft, PresRight) <= PresStar  &&  PresStar < MAX(PresLeft, PresRight)  &&  PresLeft >= PresRight )
-   {
-      struct Rarefaction rarefation;
-      rarefation.DensUpStream   = DensLeft;
-      rarefation.PresUpStream   = PresLeft;
-      rarefation.PresDownStream = PresStar;
-
-      DensStarLeft = Isentropic_Pres2Dens( &rarefation );
-
-      V_LC = Velocity_LC( PresStar, DensStarLeft, PresLeft,  DensLeft,  VelocityLeft,  Shock_No  ); // eq. (4.168)
-      V_RC = Velocity_RC( PresStar, NAN,          PresRight, DensRight, VelocityRight, Shock_Yes ); // right side of eq. (4.161)
-
-      V_LR = - V_RC * sqrt(1.0 + V_LC * V_LC) + sqrt(1.0 + V_RC * V_RC) * V_LC;
-   } else if ( MIN(PresLeft, PresRight) <= PresStar  &&  PresStar < MAX(PresLeft, PresRight)  &&  PresLeft <= PresRight )
-   {
-      struct Rarefaction rarefation;
-      rarefation.DensUpStream   = DensRight;
-      rarefation.PresUpStream   = PresRight;
-      rarefation.PresDownStream = PresStar;
-
-      DensStarRight = Isentropic_Pres2Dens( &rarefation );
-
-      V_LC = Velocity_LC( PresStar, NAN,           PresLeft,  DensLeft,  VelocityLeft,  Shock_Yes );
-      V_RC = Velocity_RC( PresStar, DensStarRight, PresRight, DensRight, VelocityRight, Shock_No  );
-
-      V_LR = - V_RC * sqrt(1.0 + V_LC * V_LC) + sqrt(1.0 + V_RC * V_RC) * V_LC;
-   } else if ( PresStar < MIN(PresLeft, PresRight) )
-   {
-      struct Rarefaction Left;
-      struct Rarefaction Right;
-
-      Left.Right_Yes       = false;
-      Left.PresUpStream    = PresLeft;
-      Left.DensUpStream    = DensLeft;
-      Left.VelyUpStream    = VelocityLeft;
-      Left.PresDownStream  = PresStar;
-
-      Right.Right_Yes      = true;
-      Right.PresUpStream   = PresRight;
-      Right.DensUpStream   = DensRight;
-      Right.VelyUpStream   = VelocityRight;
-      Right.PresDownStream = PresStar;
-
-      DensStarLeft         = Isentropic_Pres2Dens( &Left );
-      DensStarRight        = Isentropic_Pres2Dens( &Right );
-
-      V_LC = Velocity_LC( PresStar, DensStarLeft,  PresLeft,  DensLeft,  VelocityLeft,  Shock_No ); // eq. (4.168)
-      V_RC = Velocity_RC( PresStar, DensStarRight, PresRight, DensRight, VelocityRight, Shock_No );
-      RelativeVelocity( V_LC, V_RC, NULL, &V_LR );
-   }else REPORT_ERROR;
-
-   double VelocityLeftRight;
-
-   VelocityLeftRight = - VelocityRight * sqrt(1.0 + VelocityLeft *VelocityLeft )
-                       + VelocityLeft  * sqrt(1.0 + VelocityRight*VelocityRight);
-
-   return VelocityLeftRight - V_LR;
-} // FUNCTION : PresFunction
-
-
-
-void QuadraticSolver( double A, double B, double C , double *PlusRoot, double *MinusRoot )
-{
-   double Delta;
-
-   Delta = sqrt( B*B - 4.0*A*C );
-
-   if ( Delta != Delta )
-   {
-      printf("no solutions in quadratic equation!!\n");
+    Velocity_LC = sqrt(Velocity_LC);
+  } else  // if ( Shock == true )
+  {
+    if (DensStarLeft != DensStarLeft) {
+      printf("DensStarLeft should be provided!!\n");
       exit(1);
-   }
+    }
 
-   if ( PlusRoot  != NULL )  *PlusRoot  = -2.0*C / (+B + Delta);
-   if ( MinusRoot != NULL )  *MinusRoot = +2.0*C / (-B + Delta);
-} // FUNCTION : QuadraticSolver
+    double Velocity_C;
+    struct Rarefaction upstream;
 
+    upstream.Right_Yes = false;
+    upstream.DensUpStream = DensLeft;
+    upstream.PresUpStream = PresLeft;
+    upstream.VelyUpStream = VelocityLeft;
 
+    Velocity_C = Isentropic_Dens2Velocity(DensStarLeft, &upstream);
+    RelativeVelocity(VelocityLeft, Velocity_C, NULL, &Velocity_LC);
+  }  // if ( Shock == true ) ... else ...
+
+  return Velocity_LC;
+}  // FUNCTION : Velocity_LC
+
+double Velocity_RC(double PresStar, double DensStarRight, double PresRight,
+                   double DensRight, double VelocityRight, bool Shock) {
+  double Velocity_RC;
+
+  if (Shock == true) {
+    double EngyStarRight, EngyRight, EnthalpyStarRight, TempStarRight;
+
+    EnthalpyStarRight = GetEnthalpyDown(PresRight, DensRight, PresStar);
+    TempStarRight = Enthalpy2Temperature(EnthalpyStarRight);
+    EngyStarRight = Flu_TotalInternalEngy(PresStar, PresStar / TempStarRight);
+    EngyRight = Flu_TotalInternalEngy(PresRight, DensRight);
+
+    // 4-velocity
+    Velocity_RC = (PresStar - PresRight) * (EngyStarRight - EngyRight);
+    Velocity_RC /= (EngyStarRight + PresStar) * (EngyRight + PresRight);
+
+    if (Velocity_RC < 0.0) {
+      printf("Velocity_RC = %20.16e\n !!", Velocity_RC);
+      exit(1);
+    }
+
+    Velocity_RC = -sqrt(Velocity_RC);
+  } else  // if ( Shock == true )
+  {
+    if (DensStarRight != DensStarRight) {
+      printf("DensStarRight should be provided!!\n");
+      exit(1);
+    }
+
+    double Velocity_C;
+    struct Rarefaction upstream;
+
+    upstream.Right_Yes = true;
+    upstream.DensUpStream = DensRight;
+    upstream.PresUpStream = PresRight;
+    upstream.VelyUpStream = VelocityRight;
+
+    Velocity_C = Isentropic_Dens2Velocity(DensStarRight, &upstream);
+    RelativeVelocity(VelocityRight, Velocity_C, NULL, &Velocity_RC);
+  }  // if ( Shock == true ) ... else ...
+
+  return Velocity_RC;
+}  // FUNCTION : Velocity_RC
+
+double PresFunction(double PresStar, void *params) {
+  if (PresStar <= 0.0) {
+    printf("PresStar=%20.16e !!\n", PresStar);
+    exit(1);
+  }
+
+  struct InitialCondition *IC = (struct InitialCondition *)params;
+
+  double DensLeft = IC->DensLeft;
+  double VelocityLeft = IC->VelocityLeft;
+  double PresLeft = IC->PresLeft;
+  double DensRight = IC->DensRight;
+  double VelocityRight = IC->VelocityRight;
+  double PresRight = IC->PresRight;
+
+  bool Shock_Yes = true;
+  bool Shock_No = false;
+  double V_LC, V_RC, V_LR;
+  double DensStarLeft, DensStarRight;
+
+  if (PresStar >= MAX(PresLeft, PresRight)) {
+    V_LC = Velocity_LC(PresStar, NAN, PresLeft, DensLeft, VelocityLeft,
+                       Shock_Yes);  // left side of eq. (4.161)
+    V_RC = Velocity_RC(PresStar, NAN, PresRight, DensRight, VelocityRight,
+                       Shock_Yes);  // right side of eq. (4.161)
+
+    V_LR = -V_RC * sqrt(1.0 + V_LC * V_LC) + sqrt(1.0 + V_RC * V_RC) * V_LC;
+  } else if (MIN(PresLeft, PresRight) <= PresStar &&
+             PresStar < MAX(PresLeft, PresRight) && PresLeft >= PresRight) {
+    struct Rarefaction rarefation;
+    rarefation.DensUpStream = DensLeft;
+    rarefation.PresUpStream = PresLeft;
+    rarefation.PresDownStream = PresStar;
+
+    DensStarLeft = Isentropic_Pres2Dens(&rarefation);
+
+    V_LC = Velocity_LC(PresStar, DensStarLeft, PresLeft, DensLeft, VelocityLeft,
+                       Shock_No);  // eq. (4.168)
+    V_RC = Velocity_RC(PresStar, NAN, PresRight, DensRight, VelocityRight,
+                       Shock_Yes);  // right side of eq. (4.161)
+
+    V_LR = -V_RC * sqrt(1.0 + V_LC * V_LC) + sqrt(1.0 + V_RC * V_RC) * V_LC;
+  } else if (MIN(PresLeft, PresRight) <= PresStar &&
+             PresStar < MAX(PresLeft, PresRight) && PresLeft <= PresRight) {
+    struct Rarefaction rarefation;
+    rarefation.DensUpStream = DensRight;
+    rarefation.PresUpStream = PresRight;
+    rarefation.PresDownStream = PresStar;
+
+    DensStarRight = Isentropic_Pres2Dens(&rarefation);
+
+    V_LC =
+        Velocity_LC(PresStar, NAN, PresLeft, DensLeft, VelocityLeft, Shock_Yes);
+    V_RC = Velocity_RC(PresStar, DensStarRight, PresRight, DensRight,
+                       VelocityRight, Shock_No);
+
+    V_LR = -V_RC * sqrt(1.0 + V_LC * V_LC) + sqrt(1.0 + V_RC * V_RC) * V_LC;
+  } else if (PresStar < MIN(PresLeft, PresRight)) {
+    struct Rarefaction Left;
+    struct Rarefaction Right;
+
+    Left.Right_Yes = false;
+    Left.PresUpStream = PresLeft;
+    Left.DensUpStream = DensLeft;
+    Left.VelyUpStream = VelocityLeft;
+    Left.PresDownStream = PresStar;
+
+    Right.Right_Yes = true;
+    Right.PresUpStream = PresRight;
+    Right.DensUpStream = DensRight;
+    Right.VelyUpStream = VelocityRight;
+    Right.PresDownStream = PresStar;
+
+    DensStarLeft = Isentropic_Pres2Dens(&Left);
+    DensStarRight = Isentropic_Pres2Dens(&Right);
+
+    V_LC = Velocity_LC(PresStar, DensStarLeft, PresLeft, DensLeft, VelocityLeft,
+                       Shock_No);  // eq. (4.168)
+    V_RC = Velocity_RC(PresStar, DensStarRight, PresRight, DensRight,
+                       VelocityRight, Shock_No);
+    RelativeVelocity(V_LC, V_RC, NULL, &V_LR);
+  } else
+    REPORT_ERROR;
+
+  double VelocityLeftRight;
+
+  VelocityLeftRight = -VelocityRight * sqrt(1.0 + VelocityLeft * VelocityLeft) +
+                      VelocityLeft * sqrt(1.0 + VelocityRight * VelocityRight);
+
+  return VelocityLeftRight - V_LR;
+}  // FUNCTION : PresFunction
+
+void QuadraticSolver(double A, double B, double C, double *PlusRoot,
+                     double *MinusRoot) {
+  double Delta;
+
+  Delta = sqrt(B * B - 4.0 * A * C);
+
+  if (Delta != Delta) {
+    printf("no solutions in quadratic equation!!\n");
+    exit(1);
+  }
+
+  if (PlusRoot != NULL) *PlusRoot = -2.0 * C / (+B + Delta);
+  if (MinusRoot != NULL) *MinusRoot = +2.0 * C / (-B + Delta);
+}  // FUNCTION : QuadraticSolver
 
 // U_ab is the relative 4-velocity of U_a w.r.t. Ub
 
-void RelativeVelocity( double Ua, double Ub, double *LorentzFactor_ab, double *U_ab )
-{
-  double LorentzFactor_a = sqrt(1.0 + Ua*Ua);
-  double LorentzFactor_b = sqrt(1.0 + Ub*Ub);
+void RelativeVelocity(double Ua, double Ub, double *LorentzFactor_ab,
+                      double *U_ab) {
+  double LorentzFactor_a = sqrt(1.0 + Ua * Ua);
+  double LorentzFactor_b = sqrt(1.0 + Ub * Ub);
 
-  if ( U_ab != NULL )
-  *U_ab             =  -Ub*LorentzFactor_a + LorentzFactor_b*Ua;
+  if (U_ab != NULL) *U_ab = -Ub * LorentzFactor_a + LorentzFactor_b * Ua;
 
-  if ( LorentzFactor_ab != NULL )
-  *LorentzFactor_ab =  LorentzFactor_a*LorentzFactor_b - Ua*Ub;
-} // FUNCTION : RelativeVelocity
+  if (LorentzFactor_ab != NULL)
+    *LorentzFactor_ab = LorentzFactor_a * LorentzFactor_b - Ua * Ub;
+}  // FUNCTION : RelativeVelocity

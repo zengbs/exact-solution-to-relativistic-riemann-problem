@@ -3,8 +3,7 @@
 
 #include <stdbool.h>
 
-struct InitialCondition
-{
+struct InitialCondition {
   double DensLeft;
   double VelocityLeft;
   double PresLeft;
@@ -13,10 +12,8 @@ struct InitialCondition
   double PresRight;
 };
 
-
-struct Shock
-{
-  bool   Right_Yes;
+struct Shock {
+  bool Right_Yes;
   double ShockVelocity;
   double PresUpStream;
   double DensUpStream;
@@ -26,9 +23,8 @@ struct Shock
   double VelyDownStream;
 };
 
-struct Rarefaction
-{
-  bool   Right_Yes;
+struct Rarefaction {
+  bool Right_Yes;
   double PresUpStream;
   double DensUpStream;
   double VelyUpStream;
@@ -40,45 +36,39 @@ struct Rarefaction
   double Xi;
 };
 
-struct SSWaves
-{
+struct SSWaves {
   struct Shock Right;
   struct Shock Leftt;
 };
 
-struct RSWaves
-{
+struct RSWaves {
   struct Rarefaction Leftt;
-  struct Shock       Right;
+  struct Shock Right;
 };
 
-struct SRWaves
-{
-  struct Shock       Leftt;
+struct SRWaves {
+  struct Shock Leftt;
   struct Rarefaction Right;
 };
 
-struct RRWaves
-{
+struct RRWaves {
   struct Rarefaction Right;
   struct Rarefaction Leftt;
 };
 
-struct RiemannProblem
-{
+struct RiemannProblem {
   struct SSWaves SS;
   struct RSWaves RS;
   struct SRWaves SR;
   struct RRWaves RR;
 };
 
-struct PlotParams
-{
+struct PlotParams {
   double DT;
   double End_T;
   double X_Left;
   double X_Right;
-  int    NCell;
+  int NCell;
 };
 
-#endif // #ifndef __STRUCT_H__
+#endif  // #ifndef __STRUCT_H__
