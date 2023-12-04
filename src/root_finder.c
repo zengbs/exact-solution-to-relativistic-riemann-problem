@@ -3,72 +3,74 @@
 #include <gsl/gsl_errno.h>
 #include <gsl/gsl_math.h>
 #include <gsl/gsl_roots.h>
-#include "../includes/struct.h"
-#include "../includes/prototypes.h"
+#include "../include/struct.h"
+#include "../include/prototypes.h"
+
+
 
 double RootFinder( double(*Function)(double X, void *params) , void *params, double AbsErr, double RelErr,
-			       double Guess, double LowerBound, double UpperBound, const char FunctionName[] )
+                   double Guess, double LowerBound, double UpperBound, const char FunctionName[] )
 {
 // Make sure the root is between LowerBound and UpperBound
-  while ( Function(LowerBound, params) *  Function(UpperBound, params) >= 0.0 )
-  {
-    if ( fabs(Function(LowerBound, params)) > fabs(Function(UpperBound, params)) )
-    {
-       UpperBound *= 10.0;
-    }
-    else
-    {
-       LowerBound /= 10.0;
-    }
+   while ( Function(LowerBound, params) *  Function(UpperBound, params) >= 0.0 )
+   {
+     if ( fabs(Function(LowerBound, params)) > fabs(Function(UpperBound, params)) )
+     {
+        UpperBound *= 10.0;
+     }
+     else
+     {
+        LowerBound /= 10.0;
+     }
 
-    if ( Function(LowerBound, params) == Function(UpperBound, params) )
-    {
-       UpperBound *= 10.0;
-       LowerBound *= 10.0;
-    }
-    //printf("LowerBound=%e, UpperBound=%e, f(LowerBound)=%e, f=(UpperBound)=%e: %s\n",
-    //LowerBound, UpperBound, Function(LowerBound, params), Function(UpperBound, params), FunctionName );
-  }
-//printf("hi\n");
-  int status;
+     if ( Function(LowerBound, params) == Function(UpperBound, params) )
+     {
+        UpperBound *= 10.0;
+        LowerBound *= 10.0;
+     }
+     //printf("LowerBound=%e, UpperBound=%e, f(LowerBound)=%e, f=(UpperBound)=%e: %s\n",
+     //LowerBound, UpperBound, Function(LowerBound, params), Function(UpperBound, params), FunctionName );
 
-  int iter = 0, max_iter = 100;
+   } // while ( Function(LowerBound, params) *  Function(UpperBound, params) >= 0.0 )
 
-  const gsl_root_fsolver_type *T;
+   int status;
 
-  gsl_root_fsolver *s;
+   int iter = 0, max_iter = 100;
 
-  double Root, RootTemp;
+   const gsl_root_fsolver_type *T;
 
-  gsl_function F;
+   gsl_root_fsolver *s;
 
-  F.function = Function;
+   double Root, RootTemp;
 
-  F.params = params;
+   gsl_function F;
 
-  T = gsl_root_fsolver_brent;
+   F.function = Function;
 
-  s = gsl_root_fsolver_alloc (T);
+   F.params = params;
 
-  gsl_root_fsolver_set (s, &F, LowerBound, UpperBound );
+   T = gsl_root_fsolver_brent;
 
-  Root = Guess;
+   s = gsl_root_fsolver_alloc( T );
 
-  do
-  {
-    iter++;
+   gsl_root_fsolver_set( s, &F, LowerBound, UpperBound );
 
-    status = gsl_root_fsolver_iterate (s);
+   Root = Guess;
 
-	RootTemp = Root;
+   do
+   {
+      iter++;
 
-    Root = gsl_root_fsolver_root (s);
+      status = gsl_root_fsolver_iterate( s );
 
-    status = gsl_root_test_delta (Root, RootTemp, AbsErr, RelErr );
-  }
-  while (status == GSL_CONTINUE && iter < max_iter);
+      RootTemp = Root;
 
-  gsl_root_fsolver_free(s);
+      Root = gsl_root_fsolver_root( s );
 
-  return Root;
-}
+      status = gsl_root_test_delta( Root, RootTemp, AbsErr, RelErr );
+   } while (status == GSL_CONTINUE && iter < max_iter);
+
+   gsl_root_fsolver_free( s );
+
+   return Root;
+} // FUNCTION : RootFinder

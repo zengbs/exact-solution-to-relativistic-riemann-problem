@@ -1,5 +1,6 @@
 .*.swp
-a.out
+SR_Riemann_solver
+Input__Parameter
 *.dat
 *.dat*
 *.o

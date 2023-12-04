@@ -1,8 +1,8 @@
 #include <stdio.h>
-#include "../includes/struct.h"
-#include "../includes/prototypes.h"
-#include "../includes/global.h"
-#include "../includes/macro.h"
+#include "../include/struct.h"
+#include "../include/prototypes.h"
+#include "../include/global.h"
+#include "../include/macro.h"
 
 
 

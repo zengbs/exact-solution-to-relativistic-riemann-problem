@@ -1,109 +1,54 @@
 #include <stdio.h>
 #include <stdbool.h>
 #include <math.h>
-#include "../includes/struct.h"
-#include "../includes/prototypes.h"
-#include "../includes/global.h"
+#include "../include/struct.h"
+#include "../include/prototypes.h"
+#include "../include/global.h"
 
-
+// the value is given in Makefile
 double Gamma = GAmma;
 double Gamma_1 = GAmma_1;
+
+// input parameters
+double L_X, L_DENS, L_VELX, L_PRES;
+double R_X, R_DENS, R_VELX, R_PRES;
+double DT, END_T;
+int    N_CELL;
+
 
 
 int main()
 {
-//  double DensLeft       =  0.2;
-//  double VelocityLeft   = +1.0;
-//  double PresLeft       =  0.014;
-//
-//  double DensRight      =  2.0;
-//  double VelocityRight  = -0.1;
-//  double PresRight      =  1.0;
+   Load_Parameter();
 
+   printf( "===========================================================\n");
+   printf( "The input LR states are:\n" );
+   printf( "L_X                 = %24.16e\n", L_X    );
+   printf( "L_DENS              = %24.16e\n", L_DENS );
+   printf( "L_VELX              = %24.16e\n", L_VELX );
+   printf( "L_PRES              = %24.16e\n", L_PRES );
+   printf( "R_X                 = %24.16e\n", R_X    );
+   printf( "R_DENS              = %24.16e\n", R_DENS );
+   printf( "R_VELX              = %24.16e\n", R_VELX );
+   printf( "R_PRES              = %24.16e\n", R_PRES );
+   printf( "===========================================================\n");
+   printf( "The other parameters are:\n" );
+   printf( "DT                  = %24.16e\n", DT     );
+   printf( "END_T               = %24.16e\n", END_T  );
+   printf( "N_CELL              = %d\n",      N_CELL );
+   printf( "===========================================================\n");
 
-  double DensLeft       = 10.0;
-  double VelocityLeft   = 0.0;
-  double PresLeft       = 1.0;
+   struct InitialCondition IC = { L_DENS, L_VELX, L_PRES, R_DENS, R_VELX, R_PRES, };
 
-  double DensRight      = 1.0;
-  double VelocityRight  = 0.0;
-  double PresRight      = 10.0;
+   struct RiemannProblem RP;
 
+   struct PlotParams plot = { DT, END_T, L_X, R_X, N_CELL, };
 
-  double DT            = 0.6;
-  double End_T         = 0.6;
-  double X_Left        = 0.0;
-  double X_Right       = 1.0;
-  int NCell            = 4096;
+   int Pattern;
 
+   Pattern = GetAllInfomation( &IC, &RP );
 
-  struct InitialCondition IC =
-  {
-     DensLeft,
-     VelocityLeft,
-     PresLeft,
-     DensRight,
-     VelocityRight,
-     PresRight,
-  };
+   Plot( Pattern, &RP, plot );
 
-
-  struct RiemannProblem RP;
-
-  struct PlotParams plot =
-  {
-     DT,
-	 End_T,
-	 X_Left, X_Right,
-	 NCell,
-  };
-
-  int Pattern;
-
-  Pattern = GetAllInfomation( &IC, &RP );
-
-  printf("Pattern=%d\n", Pattern);
-  Plot( Pattern, &RP, plot );
-
-// Check:
-
-//  struct Rarefaction test;
-//
-//  test.PresUpStream = 2.0;
-//  test.DensUpStream = 0.2;
-//
-//  double Temp_0 = test.PresUpStream/test.DensUpStream;
-//
-//  double PresDown = Isentropic_Temperature2Pres( Temp_0, &test );
-//
-//  test.PresDownStream = PresDown;
-//
-//  double Temp_1 = Isentropic_Pres2Temperature(&test);
-//
-//  printf("error=%20.16e\n", 1.0-Temp_1/Temp_0);
-////-----------------------------------------------------------
-//
-//
-//
-//  double Dens_0 = 2.0;
-//
-//  PresDown = Isentropic_Dens2Pres( Dens_0, test.PresUpStream/test.DensUpStream, test.DensUpStream );
-//
-//  test.PresDownStream = PresDown;
-//
-//  double Dens_1 = Isentropic_Pres2Dens(&test);
-//  printf("error=%20.16e\n", 1.0-Dens_1/Dens_0);
-////-----------------------------------------------------------
-//
-//
-//  Dens_0 = 2.0;
-//
-//  double TempDown = Isentropic_Dens2Temperature( Dens_0, test.PresUpStream/test.DensUpStream, test.DensUpStream );
-//
-//  Dens_1 = Isentropic_Temperature2Dens( TempDown, test.PresUpStream/test.DensUpStream, test.DensUpStream );
-//
-//  printf("error=%20.16e\n", 1.0-Dens_1/Dens_0);
-
-
-  return 0;
-}
+   return 0;
+} // FUNCTION : main
