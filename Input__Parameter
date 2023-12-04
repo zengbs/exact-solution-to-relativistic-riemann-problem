@@ -1,14 +1,14 @@
 # The input LR states and other parameters
-L_X       0.0      # left edge
-L_DENS    1.e-5    # density on the left state
-L_VELX    1.e+6    # velocity on the left state
+L_X       0.0      # left edge of simulation domain
+L_DENS    1.0      # density on the left state
+L_VELX    0.1      # velocity on the left state
 L_PRES    1.0      # pressure on the left state
 
-R_X       1.0      # right edge
-R_DENS    1.e-5    # density on the right state
-R_VELX    -1.e+6   # velocity on the right state
-R_PRES    1.0      # pressure on the right state
+R_X       1.0      # right edge of simulation domain
+R_DENS    10.0     # density on the right state
+R_VELX    0.0      # velocity on the right state
+R_PRES    12.0     # pressure on the right state
 
-DT        1.0      # physical output time increment
+DT        0.5      # physical output time increment
 END_T     1.0      # physical end time
 N_CELL    4096

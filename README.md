@@ -29,7 +29,7 @@ GNU Scientific Library (GSL)
 5. `make clean`
 6. `make`
 7. `./bin/a.out`
-8. `cd plot`
+8. `cd plot_script`
 9. `python plot__profiles.py`
 10. `eog fig__profiles.png`
 
